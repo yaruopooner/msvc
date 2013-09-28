@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Microsoft Visual C/C++ Mode User Manual</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="Microsoft Visual C/C++ Mode User Manual"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2013-09-29T06:05+0900"/>
+<meta name="author" content="yaruopooner"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style><link rel="stylesheet" type="text/css" href="./common.css">
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Microsoft Visual C/C++ Mode User Manual</h1>
+
+
+<p><br/>
+</p>
+<p><br/>
+</p>
+<p><br/>
+</p>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 提供される機能</a>
+<ul>
+<li><a href="#sec-1-1">1.1 プロジェクトの管理</a></li>
+<li><a href="#sec-1-2">1.2 IntelliSenseライクな補完機能</a></li>
+<li><a href="#sec-1-3">1.3 flymakeによるシンタックスチェック</a></li>
+<li><a href="#sec-1-4">1.4 定義/宣言へのジャンプ＆リターン</a></li>
+<li><a href="#sec-1-5">1.5 includeファイルへのジャンプ＆リターン</a></li>
+<li><a href="#sec-1-6">1.6 プロジェクトorソリューションのビルド</a></li>
+<li><a href="#sec-1-7">1.7 プロジェクトorソリューションからVisual Studioを起動</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2 必須環境</a></li>
+<li><a href="#sec-3">3 必須パッケージ</a></li>
+<li><a href="#sec-4">4 対応範囲</a></li>
+<li><a href="#sec-5">5 制限事項</a></li>
+<li><a href="#sec-6">6 既知の不具合</a>
+<ul>
+<li><a href="#sec-6-1">6.1 補完対象が <b>clang-complete</b> に出力されているのに補完メニューが表示されない</a></li>
+<li><a href="#sec-6-2">6.2 編集したヘッダファイルをセーブしようとすると "basic-save-buffer-2: Opening output file: invalid argument `HEADER-FILE-NAME`" となりセーブできない</a>
+<ul>
+<li><a href="#sec-6-2-1">6.2.1 対処方法</a></li>
+<li><a href="#sec-6-2-2">6.2.2 原因（実装上の問題説明、解決案求む）</a></li>
+</ul></li>
+</ul>
+</li>
+<li><a href="#sec-7">7 インストール</a>
+<ul>
+<li><a href="#sec-7-1">7.1 Emacsの起動設定</a></li>
+<li><a href="#sec-7-2">7.2 Emacsパッケージの設定</a></li>
+<li><a href="#sec-7-3">7.3 初期化設定</a></li>
+</ul>
+</li>
+<li><a href="#sec-8">8 使用方法</a>
+<ul>
+<li><a href="#sec-8-1">8.1 プロジェクトのパースと登録1</a>
+<ul>
+<li><a href="#sec-8-1-1">8.1.1 必須パラメーター</a></li>
+<li><a href="#sec-8-1-2">8.1.2 オプションパラメーター</a></li>
+</ul>
+</li>
+<li><a href="#sec-8-2">8.2 プロジェクトのパースと登録2</a></li>
+<li><a href="#sec-8-3">8.3 アクティブプロジェクトバッファ</a></li>
+<li><a href="#sec-8-4">8.4 コード補完</a></li>
+<li><a href="#sec-8-5">8.5 シンタックスチェック</a></li>
+<li><a href="#sec-8-6">8.6 定義/宣言へのジャンプ＆リターン</a></li>
+<li><a href="#sec-8-7">8.7 includeファイルへのジャンプ＆リターン</a></li>
+<li><a href="#sec-8-8">8.8 プロジェクト・ソリューションのビルド</a></li>
+<li><a href="#sec-8-9">8.9 プロジェクト・ソリューションの再パース</a></li>
+<li><a href="#sec-8-10">8.10 Visual Studio の起動</a></li>
+<li><a href="#sec-8-11">8.11 テンポラリファイルの削除</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> 提供される機能</h2>
+<div class="outline-text-2" id="text-1">
+
+<p>  Visual Studio プロジェクトファイルをパースすることにより、  <br/>
+  以下の機能が利用可能になります。  <br/>
+  ※機能を利用するためにVisual Studioを起動しておく必要はありません。インストールされていればOK。  <br/>
+</p>
+<p><br/>
+</p>
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> プロジェクトの管理</h3>
+<div class="outline-text-3" id="text-1-1">
+
+<p>   アクティブ化したプロジェクトに属するソースファイルがオープンされると管理バッファに自動登録されます。<br/>
+   また、該当ソースファイルバッファは自動的に msvc-mode が on になります。<br/>
+   プロジェクトを非アクティブ化すると、所属する全てのソースコードバッファの msvc-mode は off になります<br/>
+</p>
+<p><br/>
+   プロジェクト毎に管理バッファが作成される<br/>
+   <img src="./sample-pic-buffers.png"  alt="./sample-pic-buffers.png" /><br/>
+</p>
+<p><br/>
+   管理バッファ内<br/>
+   <img src="./sample-pic-project-buffers.png"  alt="./sample-pic-project-buffers.png" /><br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> IntelliSenseライクな補完機能</h3>
+<div class="outline-text-3" id="text-1-2">
+
+<p>   auto-completeとlibclangを用いてIntelliSenseライクな補完機能を提供します。<br/>
+   プロジェクトのCFLAGSとincludeに基いて補完を行います。<br/>
+   ※libclangを利用せず ac-source-semantic を情報源とする補完も可能です。<br/>
+</p>
+<p><br/>
+   <img src="./sample-pic-complete.png"  alt="./sample-pic-complete.png" /><br/>
+</p>
+<p>   <br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> flymakeによるシンタックスチェック</h3>
+<div class="outline-text-3" id="text-1-3">
+
+<p>   flymakeでプロジェクトのCFLAGSとソースコードに基いてシンタックスチェックを行います。<br/>
+   flymakeのバックエンドはMSBuildです。<br/>
+</p>
+<p><br/>
+   <img src="./sample-pic-flymake.png"  alt="./sample-pic-flymake.png" /><br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-4" class="outline-3">
+<h3 id="sec-1-4"><span class="section-number-3">1.4</span> 定義/宣言へのジャンプ＆リターン</h3>
+<div class="outline-text-3" id="text-1-4">
+
+<p>   プロジェクト管理下にあるバッファではac-clangの機能を使って<br/>
+   クラス/メソッド/関数/enumなどが定義/宣言されているソースファイルへジャンプすることが出来ます。<br/>
+   GTAGSなどのタグジャンプ機能を使った事があればなじみのある機能だと思います。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-5" class="outline-3">
+<h3 id="sec-1-5"><span class="section-number-3">1.5</span> includeファイルへのジャンプ＆リターン</h3>
+<div class="outline-text-3" id="text-1-5">
+
+<p>   プロジェクト管理下にあるバッファではCEDETの機能を使ってinclude記述されているファイルへジャンプすることが出来ます。<br/>
+   また、特定操作によりジャンプ元へ戻る事も可能です。<br/>
+   ジャンプ履歴はスタックされ戻る場合はポップされるので、複数回のジャンプが可能です。<br/>
+   タグファイル系との差は事前にタグファイルを生成しておく必要がなくオンザフライでジャンプできるのが利点です。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-6" class="outline-3">
+<h3 id="sec-1-6"><span class="section-number-3">1.6</span> プロジェクトorソリューションのビルド</h3>
+<div class="outline-text-3" id="text-1-6">
+
+<p>   Emacs上でアクティブ化したプロジェクトに対してビルドを実行できます。<br/>
+   ビルドログはバッファに表示されます。<br/>
+</p>
+<p><br/>
+   <img src="./sample-pic-build.png"  alt="./sample-pic-build.png" /><br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-7" class="outline-3">
+<h3 id="sec-1-7"><span class="section-number-3">1.7</span> プロジェクトorソリューションからVisual Studioを起動</h3>
+<div class="outline-text-3" id="text-1-7">
+
+<p>   Emacs上でアクティブ化したプロジェクトをVisual Studioを起動してオープンします。<br/>
+   既に同一のプロジェクトがオープンされていても、再度Visual Studioを起動します。<br/>
+   ※Visual Studioのプロセスチェック等は行っていません。powershell経由でできないかテスト中。<br/>
+</p>
+<p><br/>
+</p></div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> 必須環境</h2>
+<div class="outline-text-2" id="text-2">
+
+<dl>
+<dt>GNU Emacs 24.1以上</dt><dd>
+<p><br/>
+    24.1以降でのみ動作保証<br/>
+</p></dd>
+<dt>Cygwin 32bit(or MSYS)</dt><dd>
+<p><br/>
+    bashが必要<br/>
+</p></dd>
+<dt>Microsoft Windows 32bit/64bit</dt><dd>
+<p><br/>
+</p></dd>
+<dt>Microsoft Visual Studio Professional 2010/2012?</dt><dd>
+<p><br/>
+    CL.exe/MSBuild.exe 等を使います<br/>
+</p></dd>
+</dl>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> 必須パッケージ</h2>
+<div class="outline-text-2" id="text-3">
+
+<p>  Emacsで標準組み込み済みorインストールが必要なパッケージ<br/>
+</p>
+<p><br/>
+</p><ul>
+<li>CEDET(built-in)<br/>
+</li>
+<li>flymake(built-in)<br/>
+</li>
+<li>auto-complete<br/>
+</li>
+<li>yasnippet<br/>
+</li>
+<li>ac-clang<br/>
+</li>
+</ul>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> 対応範囲</h2>
+<div class="outline-text-2" id="text-4">
+
+<dl>
+<dt>Emacs</dt><dd>
+<p><br/>
+    CEDETが標準built-inになったバージョン以降で動作<br/>
+</p>
+<p><br/>
+    Emacs はgnupack emacs onlyでテスト<br/>
+    <a href="http://sourceforge.jp/projects/gnupack/releases/?package_id=10839">http://sourceforge.jp/projects/gnupack/releases/?package\_id=10839</a><br/>
+</p>
+<p><br/>
+</p></dd>
+<dt>Cygwin(MSYS)</dt><dd>
+<p><br/>
+    $ uname -r<br/>
+    1.7.20(0.266/5/3)<br/>
+    Cygwin 64bitは未テスト<br/>
+    MSYSでも動作するがCygwin推奨<br/>
+</p>
+<p><br/>
+</p></dd>
+<dt>Microsoft Windows 32bit/64bit</dt><dd>
+<p><br/>
+</p><dl>
+<dt>XP</dt><dd>
+<p><br/>
+      え？<br/>
+</p></dd>
+<dt>Vista</dt><dd>
+<p><br/>
+      動くんじゃないかな・・？<br/>
+</p></dd>
+<dt>7</dt><dd>
+<p><br/>
+      Professional 64 bit でのみ動作テスト<br/>
+</p></dd>
+<dt>8</dt><dd>
+<p><br/>
+      Professional 64 bit でのみ動作テスト<br/>
+      cygwin動作に難アリ。<br/>
+      私の環境ではmakeやその他ツールが実行するたびにcoredumpしまくっていたので動作状況が芳しくありません。<br/>
+      msvcはbashしか使わないので動作に問題はないでしょうが、 <br/>
+      grepなど他のツールを使ったりするでしょうから、8ではcygwinがまともに動く方のみ使用するとよいでしょう。<br/>
+</p>
+<p><br/>
+</p></dd>
+</dl>
+
+</dd>
+<dt>Microsoft Visual Studio Professional 2010/2012?</dt><dd>
+<p><br/>
+    2010 64 bit でのみ動作テスト<br/>
+</p>
+<p><br/>
+</p></dd>
+<dt>SDK</dt><dd>
+<p><br/>
+    下記SDKのサンプルプロジェクトでテスト。<br/>
+    対象SDKのAPIがac-clangにより補完されることを確認。<br/>
+</p>
+<p>    <br/>
+</p><dl>
+<dt>Windows SDK 7.0A/7.1</dt><dd>
+<p><br/>
+      Visual Studio 2008のプロジェクトは2010に変換してテスト<br/>
+</p></dd>
+<dt>Direct X SDK(June 2010)</dt><dd>
+<p><br/>
+      いくつかのサンプルでビルドテスト<br/>
+</p></dd>
+<dt>STL,std::tr1</dt><dd>
+<p><br/>
+      テンプレートの展開などをテスト<br/>
+      boostは未テスト<br/>
+</p></dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> 制限事項</h2>
+<div class="outline-text-2" id="text-5">
+
+<ol>
+<li>ソリューション・プロジェクトの配置場所<br/>
+
+<p><br/>
+     空白を含んだパス上にプロジェクトファイル群が配置されている場合正常に補完が行えません。<br/>
+     libclangのparserの仕様orバグだと思います・・・。<br/>
+</p>
+<p>     <br/>
+</p>
+<p><br/>
+<pre class="example">NG  d:/user projects/my proj/test.sln
+NG  d:/user projects/my proj/test.vcxproj
+OK  d:/user_projects/my_proj/test.sln
+OK  d:/user_projects/my_proj/test.vcxproj
+</pre>
+
+     など<br/>
+</p>
+<p>     <br/>
+     プロジェクト名は空白を許容します。<br/>
+</p>
+<p><br/>
+<pre class="example">OK  d:/user_projects/my_proj/my proj.sln
+OK  d:/user_projects/my_proj/my proj.vcxproj
+</pre>
+
+</p>
+<p>     <br/>
+     includeディレクトリが空白を含んでいるのは問題ありません。<br/>
+</p>
+<p><br/>
+<pre class="example">OK  C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/include
+OK  C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include
+</pre>
+
+     など<br/>
+</p>
+<p><br/>
+</p></li>
+<li>プリコンパイル済みヘッダ(PCH)は使用不可<br/>
+
+<p><br/>
+     Visual Studio のPCHは使用できません。<br/>
+     PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。<br/>
+</p></li>
+</ol>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> 既知の不具合</h2>
+<div class="outline-text-2" id="text-6">
+
+
+</div>
+
+<div id="outline-container-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> 補完対象が <b>clang-complete</b> に出力されているのに補完メニューが表示されない</h3>
+<div class="outline-text-3" id="text-6-1">
+
+<p>   CEDET semantic-mode が影響している場合があります。<br/>
+   (setq semantic-idle-scheduler-idle-time TIME)<br/>
+   TIMEの時間を多めにするか semantic-mode を off にしてテストしてみてください。<br/>
+</p>
+<p><br/>
+   semantic-mode の idle-parsing などが影響？<br/>
+   同様に idle-parsing が異常終了してbacktraceなどが出力されているような場合でも正常動作しないケースがある。<br/>
+   semantic のバッファパース処理で save-excursion されていないポイント操作などがあるのではと推測。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> 編集したヘッダファイルをセーブしようとすると "basic-save-buffer-2: Opening output file: invalid argument `HEADER-FILE-NAME`" となりセーブできない</h3>
+<div class="outline-text-3" id="text-6-2">
+
+<p>   必ず発生するわけではなくヘッダファイルサイズが大きいソース？などで発生する。<br/>
+</p>
+<p>   <br/>
+   libclang の TranslationUnit(以下TU) の問題。<br/>
+   libclang の TU がinclude対象のファイルをロックしている。<br/>
+   ※なぜかプロセスがロックしているファイル一覧には出てこない。<br/>
+   ac-clang側で暫定対処パッチを施してあるので多少は緩和されているが完全に回避はできない。<br/>
+   発生した場合はマニュアル対処する以外ない。<br/>
+</p>
+<p><br/>
+</p>
+</div>
+
+<div id="outline-container-6-2-1" class="outline-4">
+<h4 id="sec-6-2-1"><span class="section-number-4">6.2.1</span> 対処方法</h4>
+<div class="outline-text-4" id="text-6-2-1">
+
+<p>    include対象なので大抵は foo.cpp/foo.hpp という構成だとおもわれます。<br/>
+    foo.hpp(modified)がセーブできない場合、大抵foo.cppが(modified)になっているのでfoo.cppをセーブしましょう。<br/>
+    これによりfoo.hppはセーブ可能になるはずです。<br/>
+    これでもセーブできない場合は、foo.cpp以外のソースでfoo.hppをインクルードしており(modified)になっているバッファがあるはずなので<br/>
+    それもセーブしましょう。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-6-2-2" class="outline-4">
+<h4 id="sec-6-2-2"><span class="section-number-4">6.2.2</span> 原因（実装上の問題説明、解決案求む）</h4>
+<div class="outline-text-4" id="text-6-2-2">
+
+<p>    foo.cpp(modified)のとき foo.cppのセッションで<br/>
+    TUが foo.cpp パース後もincludeされているファイルのロックを保持しつづけている。<br/>
+    この状態で foo.hpp を編集してセーブしようとするとファイルロックでエラーになる。<br/>
+    ファイルロックを解除するには、 foo.cpp のTUをリリースすることにより可能。<br/>
+    なので foo.cpp セーブ時にセッションは保持した状態で TU だけをリリースして、<br/>
+    foo.cpp が再び modified になったときに TU を生成するように修正。<br/>
+    これにより foo.cpp セーブ後であればincludeファイルロックが全解除されるので foo.hpp がセーブ可能になる。<br/>
+    当然 foo.cpp 以外に foo.hpp をinclude しているソースでかつ、編集中のバッファがある場合は、<br/>
+    それら全てを保存しないとファイルロックは解除されない。<br/>
+    ファイルロックは ReaderLock ぽい動作。<br/>
+    しかし、小規模のヘッダファイルはまったくロックされていない。<br/>
+    内部キャッシュに載るサイズキャパシティとかあるのかな？詳細不明。<br/>
+</p>
+<p>    <br/>
+</p></div>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> インストール</h2>
+<div class="outline-text-2" id="text-7">
+
+
+</div>
+
+<div id="outline-container-7-1" class="outline-3">
+<h3 id="sec-7-1"><span class="section-number-3">7.1</span> Emacsの起動設定</h3>
+<div class="outline-text-3" id="text-7-1">
+
+<p>   GNU Emacs を cygwin(or msys)から起動できるようにします。<br/>
+   .bashrc あたりに以下を記述しておくとよいでしょう。<br/>
+</p>
+<p><br/>
+   Emacsが配置されているパスを<br/>
+   c:/emacs/32/emacs-24.3-20130503<br/>
+   とします<br/>
+</p>
+<p><br/>
+</p><dl>
+<dt>Cygwin</dt><dd>
+<p><br/>
+</p>
+<p><br/>
+<pre class="example">alias emacs32-243-1='/cygdrive/c/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+alias emacs='emacs32-243-1'
+</pre>
+
+
+</p></dd>
+<dt>MSYS</dt><dd>
+<p><br/>
+</p>
+<p><br/>
+<pre class="example">alias emacs32-243-1='c:/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+alias emacs='emacs32-243-1'
+</pre>
+
+</p></dd>
+</dl>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-7-2" class="outline-3">
+<h3 id="sec-7-2"><span class="section-number-3">7.2</span> Emacsパッケージの設定</h3>
+<div class="outline-text-3" id="text-7-2">
+
+<p>   以下のパッケージの設定が必要です。<br/>
+   設定が実行される順番も下記の順番が望ましいです。<br/>
+</p>
+<p><br/>
+</p><dl>
+<dt>CEDET(built-in)</dt><dd>
+<p><br/>
+</p></dd>
+<dt>flymake(built-in)</dt><dd>
+<p><br/>
+</p></dd>
+<dt>auto-complete</dt><dd>
+<p><br/>
+     M-x list-packages で入手<br/>
+</p></dd>
+<dt>yasnippet</dt><dd>
+<p><br/>
+     M-x list-packages で入手<br/>
+</p></dd>
+<dt>ac-clang</dt><dd>
+<p><br/>
+     <a href="https://github.com/yaruopooner/ac-clang">https://github.com/yaruopooner/ac-clang</a><br/>
+</p>
+<p><br/>
+     emacs-clang-complete-asyncからforkして独自拡張したもの。<br/>
+</p>
+<p><br/>
+     <a href="https://github.com/Golevka/emacs-clang-complete-async">https://github.com/Golevka/emacs-clang-complete-async</a><br/>
+</p>
+<p><br/>
+     オリジナルは list-packages で入手可能ですがmsvcでは動作しません。<br/>
+     emacs-clang-complete-asyncではバッファ毎にプロセスを起動する仕様や<br/>
+     libclang.aがVisual Studio向けでなかったので独自拡張になりました。<br/>
+     詳細はac-clang側ドキュメントに記載。<br/>
+</p></dd>
+</dl>
+
+
+<p><br/>
+   必要最低限の設定が行えるサンプルファイルを添付しているので、<br/>
+   パッケージに関する自前設定がない人は添付ファイルをロードするなりコピペするなりしてください。<br/>
+   すでに上記パッケージを利用しており自前の設定がある場合は、設定が競合していないかチェックをお勧めします。<br/>
+   msvc/.minimal-config-sample を参照してください。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-7-3" class="outline-3">
+<h3 id="sec-7-3"><span class="section-number-3">7.3</span> 初期化設定</h3>
+<div class="outline-text-3" id="text-7-3">
+
+<p>   上記で説明した必須パッケージ群(CEDET/flymake/auto-complete/yasnippet/ac-clang)のロードも含めた初期設定を実行後に以下が実行される必要があります。<br/>
+</p>
+<p><br/>
+   基本的に以下の設定を .emacs に記述するだけで問題ないです。<br/>
+   以下の記述はパッケージディレクトリが "~/.emacs.d" に配置された事を想定した記述なので自分の環境に合わせて修正してください。<br/>
+</p>
+<p><br/>
+</p>
+<p><br/>
+<pre class="example">(add-to-list 'load-path (expand-file-name "msvc/" "~/.emacs.d"))
+
+(require 'msvc)
+
+(msvc:initialize)
+(msvc-flags:load-db :parsing-buffer-delete-p t)
+(add-hook 'c-mode-common-hook 'msvc:mode-on t)
+</pre>
+
+
+</p></div>
+</div>
+
+</div>
+
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> 使用方法</h2>
+<div class="outline-text-2" id="text-8">
+
+
+</div>
+
+<div id="outline-container-8-1" class="outline-3">
+<h3 id="sec-8-1"><span class="section-number-3">8.1</span> プロジェクトのパースと登録1</h3>
+<div class="outline-text-3" id="text-8-1">
+
+<p>   下記パラメーターで関数を実行すると非同期実行されmsvc-dbに該当プロジェクトのデータベースが作成されます。<br/>
+   プロジェクト管理・補完・シンタックスチェックなどはこのデータベースを元にして実行されます。<br/>
+   データベース化されたプロジェクトは日付情報を参照しており、<br/>
+   同一プロジェクトが再パースリクエストを受けた際に、<br/>
+   プロジェクトが前回データベース化された日付より新しい場合のみデータベースを再構築します。<br/>
+   ※更新要因はプロジェクトのプロパティを変更した、SVNなどversion controlツールによる更新でプロジェクトファイルが新しくなった、など。<br/>
+   プロジェクトがアクティブになると、該当プロジェクト名を持つバッファが作成されます。<br/>
+   プロジェクトバッファ名は以下のフォーマットに基きます。<br/>
+   <b>MSVC Project&lt;`db-name`&gt;</b><br/>
+   また、該当プロジェクトに属するソースコードがオープンされていたり、アクティブ中にオープンすると自動的にmsvc-modeが適用されます。<br/>
+   msvc-modeが適用されたバッファはモードラインに MSVC[platform|configuration] と表示されます。<br/>
+</p>
+<p><br/>
+   以下の関数でパース＆アクティブ化を行います。<br/>
+   (msvc:activate-projects-after-parse &amp;rest args)<br/>
+</p>
+<p><br/>
+   異なるプロジェクトを複数同時にアクティブ化可能です。<br/>
+   個数制限は特に無いです。<br/>
+   同一プロジェクトでプラットフォームとコンフィグレーションが異なるプロジェクトは同時にアクティブ化できません。<br/>
+   この場合、最初にアクティブ化されたプロジェクトが有効になります。<br/>
+   ※対象となるソースバッファが１つしか存在ないことが理由。<br/>
+     バッファ自身はどのプロジェクトで、どんな platform|configuration で動作するのかを保持しているため。<br/>
+</p>
+<p><br/>
+</p><dl>
+<dt>登録サンプル</dt><dd>
+<p><br/>
+</p></dd>
+</dl>
+
+
+<p><br/>
+<pre class="example">(msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
+                                    :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
+                                    :platform "x64"
+                                    :configuration "Release" 
+                                    :force-parse-p nil
+                                    :allow-cedet-p t
+                                    :allow-ac-clang-p t
+                                    :allow-flymake-p t
+                                    :cedet-root-path "d:/DirectXSamples/SubD11"
+                                    :cedet-spp-table nil
+                                    :flymake-manually-p nil
+                                    :flymake-manually-back-end nil)
+</pre>
+
+
+</p>
+</div>
+
+<div id="outline-container-8-1-1" class="outline-4">
+<h4 id="sec-8-1-1"><span class="section-number-4">8.1.1</span> 必須パラメーター</h4>
+<div class="outline-text-4" id="text-8-1-1">
+
+<dl>
+<dt>:solution-file or :project-file</dt><dd>
+<p><br/>
+      いずれかが設定されていればOKです。<br/>
+      :solution-file のみを指定した場合<br/>
+      ソリューションに含まれる全てのプロジェクトがパースされ、アクティブ化されます。<br/>
+      以下の機能が追加されます。<br/>
+      アクティブ化したプロジェクトからソリューションのビルド呼び出しなどが可能になります。<br/>
+      ソリューションに登録されているプロジェクト数が少ない場合はこのスタイルで記述するのがよいでしょう。<br/>
+      :project-file のみの場合<br/>
+      指定したプロジェクトのみがパース・アクティブ化されます。<br/>
+      ソリューションに関連した機能は実行できなくなります。<br/>
+      :solution-file &amp; :project-file で指定した場合<br/>
+      ソリューションのみを指定した場合と同じ効果を持ちますが、<br/>
+      ソリューションのみの場合は所属全プロジェクトがパース＆アクティブ化されるのに対し<br/>
+      こちらは指定したプロジェクトのみがパース＆アクティブ化されます。<br/>
+      ソリューションに登録されているプロジェクトが膨大な場合は、必要なプロジェクトだけをこのスタイルで記述するのがよいでしょう。<br/>
+</p></dd>
+<dt>:platform</dt><dd>
+<p><br/>
+      パース・アクティブ化するプラットフォームを指定します。<br/>
+      プロジェクトファイルに存在するプラットフォームでなければなりません。<br/>
+</p></dd>
+<dt>:configuration</dt><dd>
+<p><br/>
+      パース・アクティブ化するコンフィグを指定します。<br/>
+      プロジェクトファイルに存在するコンフィグでなければなりません。<br/>
+</p></dd>
+</dl>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-1-2" class="outline-4">
+<h4 id="sec-8-1-2"><span class="section-number-4">8.1.2</span> オプションパラメーター</h4>
+<div class="outline-text-4" id="text-8-1-2">
+
+<dl>
+<dt>:force-parse-p</dt><dd>
+<p><br/>
+      nil 推奨<br/>
+      すでにパース済みのプロジェクトであっても強制的にパースする。<br/>
+      主にデバッグ用途です。<br/>
+</p></dd>
+<dt>:sync-p</dt><dd>
+<p><br/>
+      nil 推奨<br/>
+      同期パースします。<br/>
+      ですので、プロジェクトファイルが多い場合は関数から戻るまで時間がかかります。<br/>
+      通常使用する分にはまず使用する必要は無いと思います。<br/>
+      主にデバッグ用途です。<br/>
+</p></dd>
+<dt>:allow-cedet-p</dt><dd>
+<p><br/>
+      t 推奨<br/>
+      CEDET機能を利用する<br/>
+      CEDETのプロジェクト管理に登録されsemanticが有効化されます。<br/>
+      nil の場合はincludeファイルへのジャンプが利用できなくなります。<br/>
+</p></dd>
+<dt>:allow-ac-clang-p</dt><dd>
+<p><br/>
+      t 推奨  <br/>
+      ac-clang機能を利用する<br/>
+      libclangによるコード補完と宣言/定義へのジャンプが可能になります。<br/>
+      nil の場合はジャンプは利用不可になり、補完は情報源としてsemanticを利用するようになります。<br/>
+</p></dd>
+<dt>:allow-flymake-p</dt><dd>
+<p><br/>
+      t 推奨<br/>
+      flymake機能を利用する<br/>
+      MSBuildによるシンタックスチェックを利用します。<br/>
+</p></dd>
+<dt>:cedet-root-path</dt><dd>
+<p><br/>
+      :allow-cedet-p t の時だけ参照される<br/>
+      CEDET edeプロジェクト基準ディレクトリを指定する<br/>
+      指定したディレクトリに*.edeファイルが生成される<br/>
+      大抵はプロジェクトファイルが配置されているディレクトリで問題ないです。<br/>
+      ただ、ソースコードの配置場所がプロジェクトファイル配置ディレクトリと同階層か子孫で無い場合は注意が必要になります。<br/>
+      この場合は同階層か子孫になるような共通の親ディレクトリを指定する必要があります。<br/>
+</p></dd>
+<dt>:cedet-spp-table</dt><dd>
+<p><br/>
+      nil 推奨<br/>
+      :allow-cedet-p t の時だけ参照される<br/>
+      semanticがソースをパースする際にリプレースさせたいワードの連想テーブル<br/>
+      semanticが解釈できないdefineなどをリプレースするテーブルです。<br/>
+      semantic.cacheがうまく作成できない場合は設定が必要です。<br/>
+      以下記述サンプル<br/>
+</p>
+<p><br/>
+<pre class="example">:cedet-spp-table '(
+                   ("ALIGN"              . "")
+                   ("FORCE_INLINE"       . "")
+                   ("NO_INLINE"          . "")
+                   ("THREAD_LOCAL"       . "")
+                   ("DLL_IMPORT"         . "")
+                   ("DLL_EXPORT"         . "")
+                   ("RESTRICT"           . ""))
+</pre>
+
+      詳細はCEDETマニュアル参照。<br/>
+</p></dd>
+<dt>:flymake-manually-p</dt><dd>
+<p><br/>
+      nil 推奨<br/>
+      :allow-flymake-p t の時だけ参照される<br/>
+      flymake のシンタックスチェックを自動起動しない<br/>
+      マニュアルチェックのみ有効<br/>
+</p></dd>
+<dt>:flymake-manually-back-end</dt><dd>
+<p><br/>
+      nil 推奨<br/>
+      :allow-flymake-p t の時だけ参照される<br/>
+      MSBuild 以外を使用する場合のみ指定する<br/>
+      現在は 'clang のみ対応<br/>
+      ac-clang の clang-server を利用してシンタックスチェックをする。<br/>
+      ※この場合マニュアル操作のみ<br/>
+      ※現在動作不良なので使用は非推奨<br/>
+</p></dd>
+</dl>
+
+
+<p><br/>
+</p></div>
+</div>
+
+</div>
+
+<div id="outline-container-8-2" class="outline-3">
+<h3 id="sec-8-2"><span class="section-number-3">8.2</span> プロジェクトのパースと登録2</h3>
+<div class="outline-text-3" id="text-8-2">
+
+<p>   ~/.emacs.d/<br/>
+   に<br/>
+   .msvc<br/>
+   というファイルを作成しておくと初期化時に実行されます。<br/>
+   msvc:activate-projects-after-parse などはこのファイルに記述しておくとよいでしょう。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-3" class="outline-3">
+<h3 id="sec-8-3"><span class="section-number-3">8.3</span> アクティブプロジェクトバッファ</h3>
+<div class="outline-text-3" id="text-8-3">
+
+<p>   アクティブなプロジェクトは以下のバッファ名が与えられます。<br/>
+   <b>MSVC Project&lt;`db-name`&gt;</b><br/>
+</p>
+<p><br/>
+   バッファに入るとmsvc:activate-projects-after-parse で指定したパラメーターが確認可能です。<br/>
+   また、現在開いているソースコードバッファでプロジェクトに所属しているバッファが :target-buffers に表示されます。<br/>
+   バッファ名をマウスクリックするとバッファへジャンプ可能、カーソル移動未対応。そのうちやります。<br/>
+</p>
+<p><br/>
+   このバッファを削除すると、関連する全ソースコードバッファのmsvc-modeがoffになります。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-4" class="outline-3">
+<h3 id="sec-8-4"><span class="section-number-3">8.4</span> コード補完</h3>
+<div class="outline-text-3" id="text-8-4">
+
+<p>   利用可能な場所：msvc-mode onのソースコードバッファ上<br/>
+</p>
+<p><br/>
+   :allow-ac-clang-p tの場合補完可能になります。<br/>
+</p>
+<p><br/>
+</p><ul>
+<li>操作<br/>
+<dl>
+<dt>補完</dt><dd>
+<p><br/>
+       キー : `::`, `.`, `-&gt;`<br/>
+       説明 : 補完が自動起動します。<br/>
+</p></dd>
+</dl>
+
+</li>
+</ul>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-5" class="outline-3">
+<h3 id="sec-8-5"><span class="section-number-3">8.5</span> シンタックスチェック</h3>
+<div class="outline-text-3" id="text-8-5">
+
+<p>   利用可能な場所：msvc-mode onのソースコードバッファ上<br/>
+</p>
+<p><br/>
+   :allow-flymake-p tの場合可能になります。<br/>
+   buffer modified で自動起動します。<br/>
+   "F5"でマニュアルシンタックスチェック。<br/>
+   :allow-flymake-p tであれば:flymake-manually-p nilであってもオート・マニュアル併用が可能です。<br/>
+</p>
+<p><br/>
+   エラー表示スタイルは以下の変数にシンボルをセットすることにより変更が可能です。<br/>
+   (setq msvc:flymake-error-display-style DISPLAY-STYLE-SYMBOL)<br/>
+</p>
+<p><br/>
+</p><ul>
+<li>DISPLAY-STYLE-SYMBOL<br/>
+<dl>
+<dt>'popup</dt><dd>
+<p><br/>
+       初期値です。<br/>
+       auto-completeパッケージ付属のpopup.elを使用してエラー表示をします<br/>
+</p></dd>
+<dt>'mini-buffer</dt><dd>
+<p><br/>
+       ミニバッファにエラー表示をします<br/>
+</p></dd>
+<dt>nil</dt><dd>
+<p><br/>
+       msvcはエラー表示を行いません<br/>
+       エラー表示手法は各個人のflymake設定に依存します<br/>
+</p>
+<p><br/>
+</p></dd>
+</dl>
+
+</li>
+<li>操作<br/>
+<dl>
+<dt>マニュアルシンタックスチェック</dt><dd>
+<p><br/>
+       キー : F5<br/>
+       説明 : マニュアルでflymakeを実行します<br/>
+</p></dd>
+<dt>エラー行へジャンプ(prev-error)</dt><dd>
+<p><br/>
+       キー : M-[<br/>
+       説明 : エラー行へジャンプしてエラー内容をポップアップ表示します<br/>
+</p></dd>
+<dt>エラー行へジャンプ(next-error)</dt><dd>
+<p><br/>
+       キー : M-]<br/>
+       説明 : エラー行へジャンプしてエラー内容をポップアップ表示します<br/>
+</p></dd>
+</dl>
+
+</li>
+</ul>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-6" class="outline-3">
+<h3 id="sec-8-6"><span class="section-number-3">8.6</span> 定義/宣言へのジャンプ＆リターン</h3>
+<div class="outline-text-3" id="text-8-6">
+
+<p>   利用可能な場所：msvc-mode onのソースコードバッファ上<br/>
+</p>
+<p><br/>
+   ソースコードバッファでジャンプしたいワード上にカーソルをポイントしてジャンプします。<br/>
+   ジャンプ履歴はスタックされており複数回ジャンプ後に最初のジャンプ元へ戻る事が可能です。<br/>
+   msvc-modeによるジャンプ機能はac-clangで実装されており、<br/>
+   あくまでC/C++かつVisual Studioプロジェクト管理化にあるファイルに限定されています。<br/>
+   ですので、 luaなどその他スクリプト言語も使用しており GTAGS + CTAGS を利用するような場合はそれらと併用するのがよいでしょう。<br/>
+</p>
+<p><br/>
+</p><ul>
+<li>操作<br/>
+<dl>
+<dt>定義/宣言へジャンプ</dt><dd>
+<p><br/>
+       キー : M-.<br/>
+       説明 : ジャンプしたいワード上にカーソルをポイントしてキー操作をすると<br/>
+              定義/宣言がされているソースファイルをオープンし該当バッファの定義/宣言場所へカーソルをポイントします<br/>
+</p></dd>
+<dt>ジャンプ元へリターン</dt><dd>
+<p><br/>
+       キー : M-,<br/>
+       説明 : 一つ前のジャンプ元へリターンします<br/>
+              この操作を繰り返す事によりジャンプ履歴をさかのぼれます<br/>
+</p></dd>
+</dl>
+
+</li>
+</ul>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-7" class="outline-3">
+<h3 id="sec-8-7"><span class="section-number-3">8.7</span> includeファイルへのジャンプ＆リターン</h3>
+<div class="outline-text-3" id="text-8-7">
+
+<p>   利用可能な場所：msvc-mode onのソースコードバッファ上<br/>
+</p>
+<p><br/>
+   includeのライン上で"M-i" すると対象ファイルへジャンプします。<br/>
+   ジャンプ履歴はスタックされており複数回ジャンプ後に最初のジャンプ元へ戻る事が可能です。<br/>
+   ※制限事項：プロジェクトで管理されていないインクルードファイルへジャンプするとM-Iで戻れません。<br/>
+     マニュアルで戻ってください・・。たとえば標準ライブラリ stdio.h, vectorやその他SDKのincludeなど。<br/>
+</p>
+<p><br/>
+   またジャンプできず以下のメッセージが表示される場合は<br/>
+   <b>semantic-decoration-include-visit: Point is not on an include tag</b><br/>
+   "C-c , ," という操作を行い semantic に該当バッファの reparse を行わせます。<br/>
+   これによりジャンプ可能になるはずです。<br/>
+</p>
+<p><br/>
+</p><ul>
+<li>操作<br/>
+<dl>
+<dt>includeファイルへジャンプ</dt><dd>
+<p><br/>
+       キー : M-i<br/>
+       説明 : ジャンプしたいincludeファイル上にカーソルをポイントしてキー操作をすると<br/>
+              includeファイルをオープンして該当バッファへジャンプします<br/>
+</p></dd>
+<dt>ジャンプ元へリターン</dt><dd>
+<p><br/>
+       キー : M-I<br/>
+       説明 : 一つ前のジャンプ元へリターンします<br/>
+              この操作を繰り返す事によりジャンプ履歴をさかのぼれます<br/>
+</p></dd>
+</dl>
+
+</li>
+</ul>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-8" class="outline-3">
+<h3 id="sec-8-8"><span class="section-number-3">8.8</span> プロジェクト・ソリューションのビルド</h3>
+<div class="outline-text-3" id="text-8-8">
+
+<p>   利用可能な場所：アクティブなプロジェクトバッファ・msvc-mode onのソースコードバッファ上<br/>
+</p>
+<p><br/>
+   C-f5 でプロジェクト・ソリューションのビルドが起動します。<br/>
+   コマンドからの呼び出しは<br/>
+   (msvc:mode-feature-build-solution)<br/>
+</p>
+<p>   <br/>
+   コマンドのみで提供されている機能<br/>
+   (msvc:mode-feature-rebuild-solution)<br/>
+   (msvc:mode-feature-clean-solution)<br/>
+</p>
+<p><br/>
+</p><ul>
+<li>操作<br/>
+<dl>
+<dt>プロジェクト・ソリューションのビルド</dt><dd>
+<p><br/>
+       キー : C-f5<br/>
+       説明 : プロジェクト・ソリューションのビルドが起動します<br/>
+</p></dd>
+</dl>
+
+</li>
+</ul>
+
+
+<p><br/>
+</p>
+<p><br/>
+   ビルドログ報告スタイルを設定可能<br/>
+   以下の変数にシンボルをセットすることにより変更が可能です。(.msvcあたりで記述しておく)<br/>
+   (setq msvc:solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)<br/>
+</p>
+<p><br/>
+</p><dl>
+<dt>DISPLAY-TIMING-SYMBOL</dt><dd>
+<p><br/>
+     ビルドログバッファのウィンドウ表示タイミングを指定<br/>
+</p><dl>
+<dt>'before</dt><dd>
+<p><br/>
+       ビルドを開始した時点でウィンドウを分割して表示します。<br/>
+</p></dd>
+<dt>'after</dt><dd>
+<p><br/>
+       ビルドが完了した時点でウィンドウを分割して表示します。<br/>
+</p></dd>
+<dt>nil</dt><dd>
+<p><br/>
+       ログバッファは生成するがビルド完了後もフォアグラウンドにしない。<br/>
+</p></dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<p><br/>
+</p>
+<p><br/>
+   ビルドログバッファ内での表示方法を指定<br/>
+   (msvc:solution-build-report-realtime-display-p BOOLEAN)<br/>
+</p>
+<p><br/>
+</p><dl>
+<dt>BOOLEAN</dt><dd>
+<p><br/>
+</p><dl>
+<dt>t</dt><dd>
+<p><br/>
+       ビルドログをリアルタイム表示<br/>
+</p></dd>
+<dt>nil</dt><dd>
+<p><br/>
+       ビルド完了後に一括表示<br/>
+</p></dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<p>   <br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-9" class="outline-3">
+<h3 id="sec-8-9"><span class="section-number-3">8.9</span> プロジェクト・ソリューションの再パース</h3>
+<div class="outline-text-3" id="text-8-9">
+
+<p>   利用可能な場所：どこでも<br/>
+</p>
+<p><br/>
+   msvcプロジェクトがアクティブな状態で、<br/>
+   Visual Studio上でプロジェクトファイルを編集したり、<br/>
+   バージョンコントロールによるアップデートでプロジェクトファイルが更新された場合に使用します。<br/>
+   現在Emacs上でアクティブになっている全てのプロジェクトを再パース・再アクティブ化します。<br/>
+   (msvc:reparse-active-projects)<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-10" class="outline-3">
+<h3 id="sec-8-10"><span class="section-number-3">8.10</span> Visual Studio の起動</h3>
+<div class="outline-text-3" id="text-8-10">
+
+<p>   利用可能な場所：アクティブなプロジェクトバッファ・msvc-mode onのソースコードバッファ上<br/>
+</p>
+<p><br/>
+   該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。<br/>
+   ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。<br/>
+</p>
+<p>   <br/>
+</p><dl>
+<dt>(msvc:mode-feature-launch-msvs)</dt><dd>
+<p><br/>
+     バッファにソリューションが関連付けされていればソリューションで起動。<br/>
+     プロジェクトのみの場合はプロジェクトで起動。<br/>
+</p></dd>
+<dt>(msvc:mode-feature-launch-msvs-by-project)</dt><dd>
+<p><br/>
+     プロジェクトで起動。<br/>
+</p></dd>
+<dt>(msvc:mode-feature-launch-msvs-by-solution)</dt><dd>
+<p><br/>
+     ソリューションで起動。<br/>
+</p></dd>
+</dl>
+
+
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-8-11" class="outline-3">
+<h3 id="sec-8-11"><span class="section-number-3">8.11</span> テンポラリファイルの削除</h3>
+<div class="outline-text-3" id="text-8-11">
+
+<p>   ac-clang を使用していると /tmp 以下に<br/>
+   preamble.pch-*****<br/>
+   (*****)は適当なナンバーです。<br/>
+   という名前のファイルが生成されます。<br/>
+   これらは libclang の TranslationUnit が一時的なPCHファイルとして生成しています。<br/>
+   過去のものは使われていないで、<br/>
+   このテンポラリファイルが溜まってきたら削除してかまいません。<br/>
+</p></div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2013-09-29T06:05+0900</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.3f with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>
