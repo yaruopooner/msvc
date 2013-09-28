@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2013/09/29.03:17:22
+# last updated : 2013/09/29.07:10:32
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -237,7 +237,9 @@
    必要最低限の設定が行えるサンプルファイルを添付しているので、
    パッケージに関する自前設定がない人は添付ファイルをロードするなりコピペするなりしてください。
    すでに上記パッケージを利用しており自前の設定がある場合は、設定が競合していないかチェックをお勧めします。
-   msvc/.minimal-config-sample を参照してください。
+   msvc/.minimal-config-sample/init.el を参照してください。
+   init.el は ~/.emacs.d/ 以下に配置した場合に動作するよう記述されています。
+   必要に応じてコードを抜き出してください。
 
 ** 初期化設定
    上記で説明した必須パッケージ群(CEDET/flymake/auto-complete/yasnippet/ac-clang)のロードも含めた初期設定を実行後に以下が実行される必要があります。
