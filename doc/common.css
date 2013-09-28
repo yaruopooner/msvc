@@ -1,0 +1,213 @@
+/*
+ * Org-mode の HTML 出力用スタイルシート
+ */
+
+/* 文書全体 */
+html {
+    font-family: sans-serif;
+    font-size: small;
+}
+body {
+    color: black;
+    background-color: white;
+    line-height: 1.3;  /* IE 8 では "1.3" と "130%" と "1.3em" とで <h1> などの出力が異なるので注意 */
+    margin: 2%;
+}
+
+/* リンク */
+a:link {
+    color: #c00000;
+}
+a:visited {
+    color: #400000;
+}
+a:active {
+    color: #ff0000;
+}
+a:hover {
+    color: #ff0000;
+}
+
+/* タイトル */
+h1.title {
+    color: white;
+    background-color: #c00000;
+    text-align: left;
+    border: 3px solid black;
+    padding: 0.1em 0.3em;
+}
+
+/* 目次 */
+div#table-of-contents h2 {
+    display: none;  /* 目次なのは見れば分かるし、デフォルトでは "Table of Contents" という見出しで分かりにくい */
+}
+div#table-of-contents {
+    margin: 1em 30% 1em 2em;
+}
+div#text-table-of-contents {
+    background-color: #e8e8e8;
+    padding: 0.5em;
+    border: 1px dotted black;
+}
+
+/* 見出し */
+h2, h3, h4, h5, h6 {
+    padding: 0.2em 0.3em;
+}
+h4, h5, h6 {
+    font-size: 1em;  /* ブラウザによっては本文よりも小さくなってしまうので */
+}
+h5, h6 {
+    margin: 0.5em;
+}
+h2 {
+    border-bottom: 3px solid #c00000;;
+}
+h3 {
+    border-bottom: 2px dotted black;
+}
+h4 {
+    border-bottom: 1px solid black;
+}
+h5 {
+    border-bottom: 1px solid #c0c0c0;
+}
+h6 {
+    border-bottom: 1px dotted #c0c0c0;
+}
+span.section-number-2, span.section-number-3, span.section-number-4, span.section-number-5, span.section-number-6 {
+    color: #c00000;
+}
+
+/* 本文 */
+div.outline-text-2, div.outline-text-3, div.outline-text-4 {
+    margin: 1em;
+}
+div.outline-text-5, div.outline-text-6 {
+    margin: 1em 1.5em;
+}
+
+/* 文字装飾 */
+b {
+    color: #c00000;
+}
+i {
+    color: #600000;
+}
+code {
+    color: #600000;
+}
+del {
+    color: #608080;
+}
+
+/* 画像 */
+a img {
+    border: none;
+}
+img.figure {  /* 図としての画像 */
+    display: block;
+    margin: 1em auto;
+    border: 1px dotted #c00000;
+}
+
+/* ソース、例文 */
+pre {
+    font-family: "ＭＳ ゴシック", "Osaka-Mono", monospace;
+    font-size: medium;
+    margin: 0.5em;
+    padding: 0.5em;
+}
+pre.src {
+    color: #f0f0d0;
+    background-color: #101010;
+    border-top: 2px solid #404040;
+    border-left: 2px solid #404040;
+    border-bottom: 2px solid #c0c0c0;
+    border-right: 2px solid #c0c0c0;
+}
+pre.example {
+    color: #202020;
+    background-color: #f0d0d0;
+    border-top: 2px solid #804040;
+    border-left: 2px solid #804040;
+    border-bottom: 2px solid #d0a0a0;
+    border-right: 2px solid #d0a0a0;
+}
+
+/* テーブル */
+table {
+    margin: auto;
+}
+thead {
+    color: white;
+    background-color: #c00000;
+/*    background-color: #c0c0c0;*/
+}
+tbody {
+    background-color: #f0f0f0;
+}
+/* 無効化
+table, th, td {
+    border: 1px solid black;
+}
+*/
+th, td {
+    padding: 0.5em;
+}
+th {
+    font-weight: bold;
+}
+caption {
+    color: #c00000;
+    font-weight: bold;
+    font-size: smaller;
+    white-space: nowrap;
+}
+
+/* リスト */
+ol, ul {
+    padding-left: 2em;
+}
+ol li {
+    /* レベル 1 の数付きリストには数字の横に線を付けてみる */
+    border-left: 1px solid #d0d0d0;
+    padding-left: 0.5em;
+}
+ol li ol li{
+    /* レベル 2 以下の数付きリストには数字の横に線を付けない */
+    border: none;
+    padding-left: 0em;
+}
+ul li {
+    border: none;
+}
+dt {
+    font-weight: normal;
+    border-left: 0.5em solid #c00000;
+    border-bottom: 1px dotted #c00000;
+    padding-left: 0.3em;
+    margin: 0.3em 0em;
+    width: 50%;
+}
+
+/* 水平線 */
+hr {
+    height: 1px;
+    background-color: #c00000;
+    border-style: none;
+}
+
+/* フッタ */
+div#postamble {
+    text-align: right;
+    font-size: smaller;
+    border-top: 2px solid #808080;
+    padding: 1em 0em;
+}
+div#postamble p {
+    margin: 0.2em 0em;
+}
+p.creator {
+    color: #a0a0a0;
+}

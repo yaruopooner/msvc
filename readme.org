@@ -1,0 +1,12 @@
+# -*- mode: org ; coding: utf-8-unix -*-
+# last updated : 2013/09/29.05:22:41
+
+
+#+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
+#+AUTHOR:    yaruopooner
+#+EMAIL:     [https://github.com/yaruopooner]
+#+OPTIONS:   author:nil timestamp:t |:t \n:t ^:nil
+
+
+[[./doc/manual.ja.org][org document]]
+[[./doc/manual.ja.html][html document]]

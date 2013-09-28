@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="ClCompile" InitialTargets="SingleFileCompilation" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="SingleFileCompilation">
+    <ItemGroup>
+	  <!-- backup all target files -->
+	  <CFLAG_TargetSourceFiles Include="@(ClCompile)"/>
+	  <CFLAG_TargetHeaderFiles Include="@(ClInclude)"/>
+
+	  <!-- remove all reference -->
+      <ProjectReference Remove="@(ProjectReference)"/>
+
+	  <!-- remove all target files & hijack target -->
+      <ClCompile Remove="@(ClCompile)"/>
+      <ClCompile Include="$(CompileFile)" Condition="'$(CompileFile)' != ''"/>
+      <ClCompile Include="empty.cpp" Condition="'$(CompileFile)' == ''"/>
+      <ClInclude Remove="@(ClInclude)" />
+      <!-- <ClInclude Include="empty.hpp" /> -->
+	  <!-- <SelectedFiles Remove="$(SelectedFiles)" /> -->
+	  <!-- <SelectedFiles Include="empty.cpp" /> -->
+
+
+	  <ClCompile>
+		<!-- syntax check only -->
+		<AdditionalOptions>/Zs</AdditionalOptions>
+		<DebugInformationFormat/>
+		<ProgramDataBaseFileName/>
+		<!-- <ProgramDataBaseFileName>$(OutDir)</ProgramDataBaseFileName> -->
+		<PrecompiledHeader>NotUsing</PrecompiledHeader>
+	  </ClCompile>
+
+	  <!-- <CLTLogReadFiles Remove="@(CLTLogReadFiles)" /> -->
+	  <!-- <CLTLogWriteFiles Remove="@(CLTLogWriteFiles)" /> -->
+	  <!-- <CLTLogReadFiles Include="" /> -->
+	  <!-- <CLTLogWriteFiles Include="" /> -->
+
+
+	  <!-- CFLAG_* item metadatas create, this metadata reference by CFLAG_* item's condition -->
+	  <CFLAG Include="empty">
+		<TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
+		<TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>
+		<TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM')">MachineARM</TargetMachine>
+	  </CFLAG>
+
+
+	  <!-- CFLAG_* item create -->
+	  <CFLAG_SystemPreprocessorDefinitions Include="_WIN32"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_WIN64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_ATL_VER=0x1000"/>
+	  <!-- <CFLAG_SystemPreprocessorDefinitions Include="_CHAR_UNSIGNED"/> -->
+	  <CFLAG_SystemPreprocessorDefinitions Include="__CLR_VER=0" Condition="('%(ClCompile.CompileAsManaged)' != 'false')"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus_cli=200406" Condition="('%(ClCompile.CompileAsManaged)' == 'true') OR ('%(ClCompile.CompileAsManaged)' == 'Pure') OR ('%(ClCompile.CompileAsManaged)' == 'Safe')"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus" Condition="('%(ClCompile.CompileAs)' == 'Default') OR ('%(ClCompile.CompileAs)' == 'CompileAsCpp')"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MT" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreaded') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebug') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDLL') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_DLL" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDLL') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_DEBUG" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebug') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_CPPRTTI" Condition="'%(ClCompile.RuntimeTypeInfo)' == 'true'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_CPPUNWIND" Condition="'%(ClCompile.ExceptionHandling)' == 'SyncCThrow'"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86_FP=0" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == '') AND (('%(CFLAG.TargetMachine)' == 'MachineX86') OR ('%(CFLAG.TargetMachine)' == 'MachineX64'))"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86_FP=1" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == 'StreamingSIMDExtensions') AND (('%(CFLAG.TargetMachine)' == 'MachineX86') OR ('%(CFLAG.TargetMachine)' == 'MachineX64'))"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86_FP=2" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == 'StreamingSIMDExtensions2') AND (('%(CFLAG.TargetMachine)' == 'MachineX86') OR ('%(CFLAG.TargetMachine)' == 'MachineX64'))"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_ARM_FP" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == '') AND ('%(CFLAG.TargetMachine)' == 'MachineARM')"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_INTEGRAL_MAX_BITS=64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX86'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_INTEGRAL_MAX_BITS=64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_CEE" Condition="('%(ClCompile.CompileAsManaged)' != 'false') AND ('%(ClCompile.CompileAsManaged)' != '')"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_CEE_PURE" Condition="'%(ClCompile.CompileAsManaged)' == 'Pure'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_CEE_SAFE" Condition="'%(ClCompile.CompileAsManaged)' == 'Safe'"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86=600" Condition="'%(CFLAG.TargetMachine)' == 'MachineX86'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_X64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_AMD64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_M_IA64" Condition="'%(CFLAG.TargetMachine)' == 'MachineIA64'"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MANAGED" Condition="'%(ClCompile.CompileAsManaged)' == 'true'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MFC_VER=0x0A00"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MSC_BUILD"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MSC_EXTENSIONS" Condition="'%(ClCompile.DisableLanguageExtensions)' != 'true'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=150020706"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1600"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_WCHAR_T_DEFINED;_NATIVE_WCHAR_T_DEFINED" Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)' == 'true'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="__MSVC_RUNTIME_CHECKS" Condition="'%(ClCompile.SmallerTypeCheck)' == 'true'"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="_OPENMP" Condition="'%(ClCompile.OpenMPSupport)' == 'true'"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_UNICODE"/>
+	  <CFLAG_SystemPreprocessorDefinitions Include="UNICODE"/>
+
+	  <CFLAG_SystemPreprocessorDefinitions Include="_VC_NODEFAULTLIB" Condition="'%(ClCompile.DebugInformationFormat)' == 'EditAndContinue'"/>
+
+	  <!-- all remove check -->
+	  <CFLAG_SystemPreprocessorDefinitions Remove="@(CFLAG_SystemPreprocessorDefinitions)" Condition="'%(ClCompile.UndefineAllPreprocessorDefinitions)' == 'true'"/>
+	  
+	  <!-- this item exclude remove process -->
+	  <CFLAG_SystemPreprocessorDefinitions Include="__STDC__" Condition="'%(ClCompile.DisableLanguageExtensions)' == 'true'"/>
+
+
+	  <CFLAG_AdditionalPreprocessorDefinitions Include="%(ClCompile.PreprocessorDefinitions)"/>
+
+	  <CFLAG_UndefinePreprocessorDefinitions Include="%(ClCompile.UndefinePreprocessorDefinitions)"/>
+
+	  <CFLAG_SystemIncludePath Include="$(IncludePath)" Condition="'%(ClCompile.IgnoreStandardIncludePath)' != 'true'"/>
+	  <CFLAG_AdditionalIncludePath Include="%(ClCompile.AdditionalIncludeDirectories)"/>
+	  <CFLAG_ExcludePath Include="$(ExcludePath)"/>
+	  <CFLAG_ForceIncludeFiles Include="%(ClCompile.ForcedIncludeFiles)"/>
+
+    </ItemGroup>
+
+
+	<!-- output message to STDOUT for msvc-flags's parser -->
+	<Message Text="#CFLAG#:IncludePath:$(IncludePath)"/>
+	<Message Text="#CFLAG#:ClCompile.AdditionalIncludeDirectories:%(ClCompile.AdditionalIncludeDirectories)"/>
+	<Message Text="#CFLAG#:ClCompile.AdditionalUsingDirectories:%(ClCompile.AdditionalUsingDirectories)"/>
+	<Message Text="#CFLAG#:ExcludePath:$(ExcludePath)"/>
+	<Message Text="#CFLAG#:ReferencePath:$(ReferencePath)"/>
+	<Message Text="#CFLAG#:ClCompile.ForcedIncludeFiles:%(ClCompile.ForcedIncludeFiles)"/>
+	<Message Text="#CFLAG#:ClCompile.ForcedUsingFiles:%(ClCompile.ForcedUsingFiles)"/>
+	<Message Text="#CFLAG#:ClCompile.AdditionalOptions:%(ClCompile.AdditionalOptions)"/>
+
+	<Message Text="#CFLAG#:ClCompile.UndefineAllPreprocessorDefinitions:%(ClCompile.UndefineAllPreprocessorDefinitions)"/>
+	<Message Text="#CFLAG#:ClCompile.IgnoreStandardIncludePath:%(ClCompile.IgnoreStandardIncludePath)"/>
+
+	<Message Text="#CFLAG#:ClCompile.ExceptionHandling:%(ClCompile.ExceptionHandling)"/>
+
+	<Message Text="#CFLAG#:ClCompile.DisableLanguageExtensions:%(ClCompile.DisableLanguageExtensions)"/>
+
+	<Message Text="#CFLAG#:ClCompile.EnableEnhancedInstructionSet:%(ClCompile.EnableEnhancedInstructionSet)"/>
+	<Message Text="#CFLAG#:ClCompile.PreprocessorDefinitions:%(ClCompile.PreprocessorDefinitions)"/>
+
+	<Message Text="#CFLAG#:ClCompile.RuntimeLibrary:%(ClCompile.RuntimeLibrary)"/>
+
+	<Message Text="#CFLAG#:ClCompile.TreatWChar_tAsBuiltInType:%(ClCompile.TreatWChar_tAsBuiltInType)"/>
+
+	<Message Text="#CFLAG#:ClCompile.UndefinePreprocessorDefinitions:%(ClCompile.UndefinePreprocessorDefinitions)"/>
+
+	<Message Text="#CFLAG#:ClCompile.RuntimeTypeInfo:%(ClCompile.RuntimeTypeInfo)"/>
+
+	<Message Text="#CFLAG#:ClCompile.PreprocessSuppressLineNumbers:%(ClCompile.PreprocessSuppressLineNumbers)"/>
+	<Message Text="#CFLAG#:ClCompile.PreprocessToFile:%(ClCompile.PreprocessToFile)"/>
+	<Message Text="#CFLAG#:ClCompile.CompileAs:%(ClCompile.CompileAs)"/>
+	<Message Text="#CFLAG#:ClCompile.CompileAsManaged:%(ClCompile.CompileAsManaged)"/>
+	<Message Text="#CFLAG#:ClCompile.SmallerTypeCheck:%(ClCompile.SmallerTypeCheck)"/>
+	<Message Text="#CFLAG#:ClCompile.OpenMPSupport:%(ClCompile.OpenMPSupport)"/>
+	<Message Text="#CFLAG#:ClCompile.DebugInformationFormat:%(ClCompile.DebugInformationFormat)"/>
+
+	<Message Text="#CFLAG#:ClCompile.PrecompiledHeader:%(ClCompile.PrecompiledHeader)"/>
+	<Message Text="#CFLAG#:ClCompile.PrecompiledHeaderFile:%(ClCompile.PrecompiledHeaderFile)"/>
+
+
+	<!-- <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)" Condition="'%(Midl.CPreprocessOptions)' != '' AND '%(Midl.CPreprocessOptions)' != 'false'" /> -->
+	<Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)"/>
+	<Message Text="#CFLAG#:Midl.PreprocessorDefinitions:%(Midl.PreprocessorDefinitions)"/>
+	<Message Text="#CFLAG#:Midl.UndefinePreprocessorDefinitions:%(Midl.UndefinePreprocessorDefinitions)"/>
+	<!-- <Message Text="#CFLAG#:"/> -->
+
+	<Message Text="#CFLAG#:Lib.TargetMachine:%(Lib.TargetMachine)"/>
+	<Message Text="#CFLAG#:ImpLib.TargetMachine:%(ImpLib.TargetMachine)"/>
+	<Message Text="#CFLAG#:Link.TargetMachine:%(Link.TargetMachine)"/>
+
+	<!-- CFLAG_* key begin -->
+	<Message Text="#CFLAG#:CFLAG_TargetMachine:%(CFLAG.TargetMachine)"/>
+	<Message Text="#CFLAG#:CFLAG_SystemPreprocessorDefinitions:@(CFLAG_SystemPreprocessorDefinitions)"/>
+	<Message Text="#CFLAG#:CFLAG_AdditionalPreprocessorDefinitions:@(CFLAG_AdditionalPreprocessorDefinitions)"/>
+	<Message Text="#CFLAG#:CFLAG_UndefinePreprocessorDefinitions:@(CFLAG_UndefinePreprocessorDefinitions)"/>
+	<Message Text="#CFLAG#:CFLAG_SystemIncludePath:@(CFLAG_SystemIncludePath)"/>
+	<Message Text="#CFLAG#:CFLAG_AdditionalIncludePath:@(CFLAG_AdditionalIncludePath)"/>
+	<Message Text="#CFLAG#:CFLAG_ExcludePath:@(CFLAG_ExcludePath)"/>
+	<Message Text="#CFLAG#:CFLAG_ForceIncludeFiles:@(CFLAG_ForceIncludeFiles)"/>
+
+	<Message Text="#CFLAG#:CFLAG_TargetSourceFiles:@(CFLAG_TargetSourceFiles)"/>
+	<Message Text="#CFLAG#:CFLAG_TargetHeaderFiles:@(CFLAG_TargetHeaderFiles)"/>
+	<!-- CFLAG_* key end -->
+	
+  </Target>
+ 
+  <!-- <PropertyGroup> -->
+  <!-- 	<BuildSteps> -->
+  <!--     SetBuildDefaultEnvironmentVariables; -->
+  <!--     SetUserMacroEnvironmentVariables; -->
+  <!--     ResolveReferences; -->
+  <!--     PrepareForBuild; -->
+  <!--     InitializeBuildStatus; -->
+  <!--     BuildGenerateSources; -->
+  <!--     BuildCompile; -->
+      <!-- BuildLink; -->
+  <!-- 	</BuildSteps> -->
+  <!-- </PropertyGroup> -->
+
+
+  <!-- import original project file -->
+  <Import Project="$(ImportProjectFile)" />
+</Project>
