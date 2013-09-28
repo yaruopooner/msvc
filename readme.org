@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2013/09/29.05:22:41
+# last updated : 2013/09/29.06:04:21
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
@@ -9,4 +9,5 @@
 
 
 [[./doc/manual.ja.org][org document]]
+
 [[./doc/manual.ja.html][html document]]
