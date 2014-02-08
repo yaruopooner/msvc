@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2013/09/05.01:42:11
+;;; last updated : 2014/02/08.18:12:45
 
 ;; Copyright (C) 2013  yaruopooner
 ;; 
@@ -30,7 +30,8 @@
 (defvar msvc-env:product-detected-p nil)
 (defvar msvc-env:product-version nil)
 
-(defconst msvc-env:product-details '((:version 2012 :env-var "VS110COMNTOOLS")
+(defconst msvc-env:product-details '((:version 2013 :env-var "VS120COMNTOOLS")
+									 (:version 2012 :env-var "VS110COMNTOOLS")
 									 (:version 2010 :env-var "VS100COMNTOOLS")
 									 (:version 2008 :env-var "VS90COMNTOOLS")))
 
