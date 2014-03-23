@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2013/11/01.12:40:12
+# last updated : 2014/03/10.12:04:59
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -65,7 +65,7 @@
   - Cygwin 32bit(or MSYS) ::
     bashが必要
   - Microsoft Windows 32bit/64bit ::
-  - Microsoft Visual Studio Professional 2010/2012 ::
+  - Microsoft Visual Studio Professional 2010/2012/2013 ::
     CL.exe/MSBuild.exe 等を使います
 
 * 必須パッケージ

@@ -1,5 +1,5 @@
 ;;; -*- Mode: Emacs-Lisp ; Coding: utf-8-unix -*-
-;;; last updated : 2013/09/24.01:12:37
+;;; last updated : 2014/03/07.13:16:58
 
 
 ;;==============================================================================
@@ -7,7 +7,7 @@
 ;;==============================================================================
 
 
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path user-emacs-directory)
 
 
 (setq explicit-shell-file-name "bash")
