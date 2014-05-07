@@ -1,7 +1,7 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2013/09/29.05:46:29
+;;; last updated : 2014/05/07.23:07:11
 
-;; Copyright (C) 2013  yaruopooner
+;; Copyright (C) 2013-2014  yaruopooner
 ;; 
 ;; Author          : yaruopooner [https://github.com/yaruopooner]
 ;; Keywords        : languages, completion, syntax check, mode, convenience
