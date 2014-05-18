@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/03/10.12:04:59
+# last updated : 2014/05/15.04:06:09
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -97,7 +97,7 @@
       動くんじゃないかな・・？
     - 7 ::
       Professional 64 bit でのみ動作テスト
-    - 8 ::
+    - 8 & 8.1 ::
       Professional 64 bit でのみ動作テスト
       cygwin動作に難アリ。
       私の環境ではmakeやその他ツールが実行するたびにcoredumpしまくっていたので動作状況が芳しくありません。
@@ -105,8 +105,7 @@
       grepなど他のツールを使ったりするでしょうから、8ではcygwinがまともに動く方のみ使用するとよいでしょう。
 
   - Microsoft Visual Studio Professional 2010/2012 ::
-    2010/2012 64 bit でのみ動作テスト
-	2013は未テスト
+    2010/2012/2013 64 bit でのみ動作テスト
 
   - SDK ::
     下記SDKのサンプルプロジェクトでテスト。
