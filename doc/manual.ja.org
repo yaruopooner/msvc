@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/05/19.02:27:24
+# last updated : 2014/05/31.23:59:53
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -23,6 +23,11 @@
 
    管理バッファ内
    [[./sample-pic-project-buffers.png]]
+
+** バージョンの異なるVisual Studio共存と利用
+   Visual Studio 2008/2010/2012/2013 などバージョンの異なるVisual Studioが複数インストールされている場合でも
+   msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。
+   これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。
 
 ** IntelliSenseライクな補完機能
    auto-completeとlibclangを用いてIntelliSenseライクな補完機能を提供します。
@@ -278,7 +283,7 @@
    プロジェクトバッファ名は以下のフォーマットに基きます。
    *MSVC Project<`db-name`>*
    また、該当プロジェクトに属するソースコードがオープンされていたり、アクティブ中にオープンすると自動的にmsvc-modeが適用されます。
-   msvc-modeが適用されたバッファはモードラインに MSVC[platform|configuration] と表示されます。
+   msvc-modeが適用されたバッファはモードラインに MSVC`version`[platform|configuration] と表示されます。
 
    以下の関数でパース＆アクティブ化を行います。
    (msvc:activate-projects-after-parse &rest args)
@@ -330,6 +335,13 @@
       プロジェクトファイルに存在するコンフィグでなければなりません。
 
 *** オプションパラメーター
+    - :version ::
+      プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。
+      指定は文字列で行う。整数ではないので注意。
+      "2013" のように指定。
+	  指定しない or nil場合、msvc-env:default-use-versionの値がセットされる。
+	  msvc-env:default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。
+	  msvc::initialize実行後にmsvc-env:default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
     - :force-parse-p ::
       nil 推奨
       すでにパース済みのプロジェクトであっても強制的にパースする。

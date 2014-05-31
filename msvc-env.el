@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/05/07.23:07:05
+;;; last updated : 2014/05/31.18:42:11
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -29,11 +29,12 @@
 ;; Microsoft Visual C/C++ Product information
 (defvar msvc-env:product-detected-p nil)
 (defvar msvc-env:product-version nil)
+(defvar msvc-env:default-use-version nil)
 
-(defconst msvc-env:product-details '((:version 2013 :env-var "VS120COMNTOOLS")
-									 (:version 2012 :env-var "VS110COMNTOOLS")
-									 (:version 2010 :env-var "VS100COMNTOOLS")
-									 (:version 2008 :env-var "VS90COMNTOOLS")))
+(defconst msvc-env:product-details '((:version "2013" :env-var "VS120COMNTOOLS")
+									 (:version "2012" :env-var "VS110COMNTOOLS")
+									 (:version "2010" :env-var "VS100COMNTOOLS")
+									 (:version "2008" :env-var "VS90COMNTOOLS")))
 
 
 ;; Microsoft Visual C/C++ Command Prompt 
@@ -63,17 +64,17 @@
 
 
 
-(defun* msvc-env:detect-product ()
+(defun msvc-env:detect-product ()
   (dolist (detail msvc-env:product-details)
-	(when (or (not msvc-env:product-version) (eq msvc-env:product-version (plist-get detail :version)))
-	  (let ((path (getenv (plist-get detail :env-var))))
-		(when path
-		  (setq path (expand-file-name "../../VC/vcvarsall.bat" path))
-		  (when (file-exists-p path)
-			(setq msvc-env:product-detected-p t)
-			(setq msvc-env:product-version (plist-get detail :version))
-			(setq msvc-env:shell-msvc path)
-			(return-from msvc-env:detect-product t)))))))
+	(let ((version (plist-get detail :version))
+		  (path (getenv (plist-get detail :env-var))))
+	  (when path
+		(setq path (expand-file-name "../../VC/vcvarsall.bat" path))
+		(when (file-exists-p path)
+		  (setq msvc-env:product-detected-p t)
+		  (add-to-list 'msvc-env:product-version version t)
+		  (setq msvc-env:shell-msvc (plist-put msvc-env:shell-msvc (intern (concat ":" version)) path))))))
+  msvc-env:product-detected-p)
 
 
 
@@ -133,12 +134,12 @@
 
 
 ;; log-file は cmd から type されるのでパスセパレーターが \ である必要がある
-(defun msvc-env:build-msb-command-args (msb-rsp-file log-file)
+(defun msvc-env:build-msb-command-args (version msb-rsp-file log-file)
   (interactive)
   (list
    "/c"
    msvc-env:shell-msbuild
-   msvc-env:shell-msvc
+   (plist-get msvc-env:shell-msvc (intern (concat ":" version)))
    (symbol-name msvc-env:shell-msvc-arg)
    msb-rsp-file
    (replace-regexp-in-string "/" "\\\\" log-file)))
@@ -149,6 +150,7 @@
 (defun msvc-env:clear-variables ()
   (setq msvc-env:product-detected-p nil)
   (setq msvc-env:product-version nil)
+  (setq msvc-env:default-use-version nil)
   (setq msvc-env:shell-msvc nil)
   (setq msvc-env:shell-msvc-arg nil))
 
@@ -157,6 +159,9 @@
   (unless (msvc-env:detect-product)
 	(message "msvc-env : product not detected : Microsoft Visual Studio")
 	(return-from msvc-env:initialize nil))
+
+  ;; default is latest product
+  (setq msvc-env:default-use-version (nth 0 msvc-env:product-version))
 
   (message "msvc-env : product detected : Microsoft Visual Studio %s" msvc-env:product-version)
   t)

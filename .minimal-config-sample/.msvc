@@ -1,8 +1,12 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2013/09/24.01:19:27
+;;; last updated : 2014/05/31.23:05:28
 
 
 ;; (setq msvc:solution-build-report-display-timing 'after)
+
+;; パース&アクティブ前にデフォルトで使用する Visual Studio を指定可能
+;; (setq msvc-env:default-use-version "2013")
+
 
 ;; 複数のプロジェクトを同時にアクティブ化
 

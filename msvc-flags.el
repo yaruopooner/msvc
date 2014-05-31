@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/05/07.23:07:11
+;;; last updated : 2014/05/31.20:57:34
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -83,8 +83,8 @@
 ")
 
 
-;; CFLAGS/CXXFLAGS Database : Microsoft Visual C/C++ 2010 Project's CFLAGS/CXXFLAGS
-(defvar msvc-flags:cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration.")
+;; CFLAGS/CXXFLAGS Database : Microsoft Visual C/C++ Project's CFLAGS/CXXFLAGS
+(defvar msvc-flags:cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + Version.")
 
 
 ;; delete the buffer after end of parse.
@@ -98,9 +98,9 @@
 
 
 
-(defun msvc-flags:create-db-name (vcx-proj-path platform configuration)
+(defun msvc-flags:create-db-name (vcx-proj-path platform configuration version)
   (cedet-directory-name-to-file-name 
-   (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path)))))
+   (expand-file-name version (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path))))))
 
 (defun msvc-flags:create-db-path (db-name)
   (file-name-as-directory (expand-file-name db-name msvc-flags:db-root-path)))
@@ -108,16 +108,17 @@
 
 (defun msvc-flags:create-project-property (db-name)
   (let* ((parsing-path (cedet-file-name-to-directory-name db-name))
-		 (configuration (file-name-nondirectory parsing-path))
+		 (version (file-name-nondirectory parsing-path))
+		 (configuration (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
 		 (platform (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
 		 (project-file (concat (setq parsing-path (directory-file-name (file-name-directory parsing-path))) ".vcxproj")))
 
-	`(:project-file ,project-file :platform ,platform :configuration ,configuration)))
+	`(:project-file ,project-file :platform ,platform :configuration ,configuration :version ,version)))
 
 
 (defun msvc-flags:create-project-path (db-name)
-  ;; project-path/project-file-name/platform/configuration/
-  (expand-file-name "../../../" (cedet-file-name-to-directory-name db-name)))
+  ;; project-path/project-file-name/platform/configuration/version -> project-path/project-file-name/
+  (expand-file-name "../../../../" (cedet-file-name-to-directory-name db-name)))
 
 
 
@@ -128,7 +129,7 @@
 
 
 (defun msvc-flags:query-cflags (db-name)
-  "CFLAGS/CXXFLAGS Query. return Database : Microsoft Visual C/C++ 2010 Project's CFLAGS/CXXFLAGS"
+  "CFLAGS/CXXFLAGS Query. return Database : Microsoft Visual C/C++ Project's CFLAGS/CXXFLAGS"
   (cdr (assoc-string db-name msvc-flags:cflags-db)))
 
 (defun msvc-flags:query-cflag (db-name cflag-name)
@@ -210,11 +211,6 @@
 	;; next parse search & exec
 	(let (request)
 	  (while (and (not msvc-flags:parsing-p) (setq request (pop msvc-flags:parse-requests)))
-		;; (msvc-flags:parse-vcx-project
-		;;  (plist-get request :vcx-proj-path)
-		;;  (plist-get request :platform)
-		;;  (plist-get request :configuration)
-		;;  (plist-get request :force-parse-p))
 		(apply 'msvc-flags:parse-vcx-project request))
 	  ;; final request check
 	  (when (and (not msvc-flags:parsing-p) (null msvc-flags:parse-requests))
@@ -258,11 +254,12 @@
 
 
 (defun* msvc-flags:parse-vcx-project (&rest args)
-  "parse *.vcxproj file : Microsoft Visual Studio 2010
+  "parse *.vcxproj file : Microsoft Visual Studio
 attributes
 :project-file
 :platform
 :configuration
+:version
 
 optionals
 :parsing-buffer-delete-p
@@ -281,6 +278,7 @@ optionals
   (let ((project-file (plist-get args :project-file))
 		(platform (plist-get args :platform))
 		(configuration (plist-get args :configuration))
+		(version (plist-get args :version))
 		(parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
 		(force-parse-p (plist-get args :force-parse-p))
 		(sync-p (plist-get args :sync-p)))
@@ -299,11 +297,11 @@ optionals
 	(unless (file-accessible-directory-p msvc-flags:db-root-path)
 	  (make-directory msvc-flags:db-root-path))
 
-	(let* ((db-name (msvc-flags:create-db-name project-file platform configuration))
+	(let* ((db-name (msvc-flags:create-db-name project-file platform configuration version))
 		   (db-path (msvc-flags:create-db-path db-name))
 
 		   (log-file (expand-file-name msvc-flags:db-log-cflags db-path))
-		   (parse-p (or force-parse-p (not (file-exists-p log-file)) (file-newer-than-file-p project-file log-file))))
+		   (parse-p (or force-parse-p (file-newer-than-file-p project-file log-file))))
 
 	  ;; project file and db-log file compare date check
 	  (unless parse-p
@@ -335,7 +333,7 @@ optionals
 			 (default-process-coding-system '(utf-8-dos . utf-8-unix))
 
 			 (command (shell-quote-argument msvc-env:invoke-command))
-			 (command-args (msvc-env:build-msb-command-args msb-rsp-file log-file)))
+			 (command-args (msvc-env:build-msb-command-args version msb-rsp-file log-file)))
 
 		;; db-path ディレクトリはあらかじめ作成しておく必要がある
 		;; プロセス開始前に *.rsp を生成・保存する必要がある
@@ -353,7 +351,7 @@ optionals
 
 		;; プロジェクトファイルと同じ場所にインポートプロジェクトが配置されている必要がある
 		;; MSBuild の仕様のため(詳細後述)
-		(when (or (not (file-exists-p msb-target-file)) (file-newer-than-file-p msvc-flags:vcx-proj-file msb-target-file))
+		(when (file-newer-than-file-p msvc-flags:vcx-proj-file msb-target-file)
 		  (copy-file msvc-flags:vcx-proj-file msb-target-file t t))
 
 
@@ -418,11 +416,12 @@ optionals
 
 
 (defun* msvc-flags:parse-vcx-solution (&rest args)
-  "parse *.sln file : Microsoft Visual Studio 2010
+  "parse *.sln file : Microsoft Visual Studio
 attributes
 :solution-file
 :platform
 :configuration
+:version
 
 optionals
 :parsing-buffer-delete-p
@@ -525,9 +524,10 @@ optionals
 		(let* ((property (msvc-flags:create-project-property db-name))
 			   (project-file (plist-get property :project-file))
 			   (platform (plist-get property :platform))
-			   (configuration (plist-get property :configuration)))
+			   (configuration (plist-get property :configuration))
+			   (version (plist-get property :version)))
 
-		  (when (msvc-flags:parse-vcx-project :project-file project-file :platform platform :configuration configuration :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p)
+		  (when (msvc-flags:parse-vcx-project :project-file project-file :platform platform :configuration configuration :version version :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p)
 			(setq count (1+ count))))))
 	count))
 

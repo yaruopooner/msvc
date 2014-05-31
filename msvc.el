@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/05/07.23:07:19
+;;; last updated : 2014/05/31.23:07:39
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -32,7 +32,7 @@
 
 
 
-(defconst msvc:version "1.0")
+(defconst msvc:version "1.1")
 
 
 (defconst msvc:project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -46,6 +46,7 @@
 ;; 		   (project-file . project-file)
 ;; 		   (platform . nil)
 ;; 		   (configuration . nil)
+;; 		   (version . nil)
 ;; 		   (allow-cedet-p . t)
 ;; 		   (allow-ac-clang-p . t)
 ;; 		   (allow-flymake-p . t)
@@ -87,6 +88,7 @@
 										:project-file
 										:platform
 										:configuration
+										:version
 										:allow-cedet-p
 										:allow-ac-clang-p
 										:allow-flymake-p
@@ -386,7 +388,7 @@
 
 (defconst msvc:flymake-err-line-patterns
   '(
-	;; Visual C/C++ 2010
+	;; Visual C/C++ 2010/2012/2013
 	msbuild
 	(("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
 
@@ -406,13 +408,14 @@
 		 (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags:create-project-path db-name)))
 		 (fix-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
 
+		 (property (msvc-flags:create-project-property db-name))
+		 (version (plist-get property :version))
 		 (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
 		 (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
 	;; create rsp file
 	(unless (file-exists-p msb-rsp-file)
-	  (let* ((property (msvc-flags:create-project-property db-name))
-			 (project-file (plist-get property :project-file))
+	  (let* ((project-file (plist-get property :project-file))
 			 (platform (plist-get property :platform))
 			 (configuration (plist-get property :configuration))
 
@@ -441,7 +444,7 @@
 
     (list 
 	 (shell-quote-argument msvc-env:invoke-command)
-	 (msvc-env:build-msb-command-args msb-rsp-file log-file))
+	 (msvc-env:build-msb-command-args version msb-rsp-file log-file))
     ))
 
 
@@ -599,7 +602,7 @@
 	 (let* ((project-file (plist-get (msvc-flags:create-project-property db-name) :project-file))
 			(project-path (file-name-directory project-file))
 			(msb-target-file (expand-file-name msvc:flymake-vcx-proj-name project-path)))
-	   (when (or (not (file-exists-p msb-target-file)) (file-newer-than-file-p msvc:flymake-vcx-proj-file msb-target-file))
+	   (when (file-newer-than-file-p msvc:flymake-vcx-proj-file msb-target-file)
 		 (copy-file msvc:flymake-vcx-proj-file msb-target-file t t)))
 	 nil)
 	(disable
@@ -764,6 +767,7 @@
 :configuration
 
 optionals
+:version
 :force-parse-p
 :sync-p
 :allow-cedet-p
@@ -784,15 +788,21 @@ optionals
 
 		 db-names
 		 )
-	;; force delete
-	(setq args (plist-put args :parsing-buffer-delete-p t))
-
 	(unless (or solution-file project-file)
 	  (return-from msvc:activate-projects-after-parse nil))
 
 	(unless (and platform configuration)
 	  (return-from msvc:activate-projects-after-parse nil))
 
+	;; args check & modify
+
+	;; add force delete
+	(setq args (plist-put args :parsing-buffer-delete-p t))
+
+	;; check version
+	(unless (plist-get args :version)
+	  (setq args (plist-put args :version msvc-env:default-use-version)))
+		
 	;; 指定ソリューションorプロジェクトのパース
 	(when (and solution-file (not project-file))
 	  (setq db-names (apply 'msvc-flags:parse-vcx-solution args)))
@@ -840,6 +850,7 @@ optionals
 		 (project-file (plist-get property :project-file))
 		 (platform (plist-get property :platform))
 		 (configuration (plist-get property :configuration))
+		 (version (plist-get property :version))
 
 		 (solution-file (plist-get args :solution-file))
 
@@ -876,6 +887,7 @@ optionals
 								   :project-file ,project-file
 								   :platform ,platform
 								   :configuration ,configuration
+								   :version ,version
 								   :allow-cedet-p ,allow-cedet-p
 								   :allow-ac-clang-p ,allow-ac-clang-p
 								   :allow-flymake-p ,allow-flymake-p
@@ -1073,6 +1085,7 @@ optionals
 			 (solution-file (plist-get details :solution-file)))
 		(if solution-file
 			(let* ((target (or target "Build"))
+				   (version (plist-get details :version))
 				   (platform (plist-get details :platform))
 				   (configuration (plist-get details :configuration))
 				   (db-path (msvc-flags:create-db-path db-name))
@@ -1110,7 +1123,7 @@ optionals
 				   (display-file (if msvc:solution-build-report-realtime-display-p "" log-file))
 
 				   (command (shell-quote-argument msvc-env:invoke-command))
-				   (command-args (msvc-env:build-msb-command-args msb-rsp-file display-file)))
+				   (command-args (msvc-env:build-msb-command-args version msb-rsp-file display-file)))
 
 			  ;; create rsp file(always create)
 			  (msvc-env:create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
@@ -1166,8 +1179,8 @@ optionals
   "MSVC mode key map")
 
 
-(defun msvc:update-mode-line (platform configuration)
-  (setq msvc:mode-line (format " MSVC[%s|%s]" platform configuration))
+(defun msvc:update-mode-line (platform configuration version)
+  (setq msvc:mode-line (format " MSVC%s[%s|%s]" version platform configuration))
   (force-mode-line-update))
 
 
@@ -1181,10 +1194,11 @@ optionals
 		(if (msvc:evaluate-buffer)
 			(let* ((property (msvc-flags:create-project-property msvc:source-code-belonging-db-name))
 				   (platform (plist-get property :platform))
-				   (configuration (plist-get property :configuration)))
-			  (msvc:update-mode-line platform configuration))
+				   (configuration (plist-get property :configuration))
+				   (version (plist-get property :version)))
+			  (msvc:update-mode-line platform configuration version))
 		  (progn
-			(msvc:update-mode-line "-" "-")
+			(msvc:update-mode-line "-" "-" "")
 			(message "This buffer don't belonging to the active projects.")
 			(msvc:mode-off))))
 	(progn

@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Microsoft Visual C/C++ Mode User Manual"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2013-09-29T06:05+0900"/>
+<meta name="generated" content="2014-06-01T00:00+0900"/>
 <meta name="author" content="yaruopooner"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -131,12 +131,13 @@ for the JavaScript code in this tag.
 <li><a href="#sec-1">1 提供される機能</a>
 <ul>
 <li><a href="#sec-1-1">1.1 プロジェクトの管理</a></li>
-<li><a href="#sec-1-2">1.2 IntelliSenseライクな補完機能</a></li>
-<li><a href="#sec-1-3">1.3 flymakeによるシンタックスチェック</a></li>
-<li><a href="#sec-1-4">1.4 定義/宣言へのジャンプ＆リターン</a></li>
-<li><a href="#sec-1-5">1.5 includeファイルへのジャンプ＆リターン</a></li>
-<li><a href="#sec-1-6">1.6 プロジェクトorソリューションのビルド</a></li>
-<li><a href="#sec-1-7">1.7 プロジェクトorソリューションからVisual Studioを起動</a></li>
+<li><a href="#sec-1-2">1.2 バージョンの異なるVisual Studio共存と利用</a></li>
+<li><a href="#sec-1-3">1.3 IntelliSenseライクな補完機能</a></li>
+<li><a href="#sec-1-4">1.4 flymakeによるシンタックスチェック</a></li>
+<li><a href="#sec-1-5">1.5 定義/宣言へのジャンプ＆リターン</a></li>
+<li><a href="#sec-1-6">1.6 includeファイルへのジャンプ＆リターン</a></li>
+<li><a href="#sec-1-7">1.7 プロジェクトorソリューションのビルド</a></li>
+<li><a href="#sec-1-8">1.8 プロジェクトorソリューションからVisual Studioを起動</a></li>
 </ul>
 </li>
 <li><a href="#sec-2">2 必須環境</a></li>
@@ -146,7 +147,7 @@ for the JavaScript code in this tag.
 <li><a href="#sec-6">6 既知の不具合</a>
 <ul>
 <li><a href="#sec-6-1">6.1 補完対象が <b>clang-complete</b> に出力されているのに補完メニューが表示されない</a></li>
-<li><a href="#sec-6-2">6.2 編集したヘッダファイルをセーブしようとすると "basic-save-buffer-2: Opening output file: invalid argument `HEADER-FILE-NAME`" となりセーブできない</a>
+<li><a href="#sec-6-2">6.2 特定ファイルがロックされセーブできなくなる</a>
 <ul>
 <li><a href="#sec-6-2-1">6.2.1 対処方法</a></li>
 <li><a href="#sec-6-2-2">6.2.2 原因（実装上の問題説明、解決案求む）</a></li>
@@ -218,8 +219,21 @@ for the JavaScript code in this tag.
 </div>
 
 <div id="outline-container-1-2" class="outline-3">
-<h3 id="sec-1-2"><span class="section-number-3">1.2</span> IntelliSenseライクな補完機能</h3>
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> バージョンの異なるVisual Studio共存と利用</h3>
 <div class="outline-text-3" id="text-1-2">
+
+<p>   Visual Studio 2008/2010/2012/2013 などバージョンの異なるVisual Studioが複数インストールされている場合でも<br/>
+   msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。<br/>
+   これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。<br/>
+</p>
+<p><br/>
+</p></div>
+
+</div>
+
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> IntelliSenseライクな補完機能</h3>
+<div class="outline-text-3" id="text-1-3">
 
 <p>   auto-completeとlibclangを用いてIntelliSenseライクな補完機能を提供します。<br/>
    プロジェクトのCFLAGSとincludeに基いて補完を行います。<br/>
@@ -233,9 +247,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-1-3" class="outline-3">
-<h3 id="sec-1-3"><span class="section-number-3">1.3</span> flymakeによるシンタックスチェック</h3>
-<div class="outline-text-3" id="text-1-3">
+<div id="outline-container-1-4" class="outline-3">
+<h3 id="sec-1-4"><span class="section-number-3">1.4</span> flymakeによるシンタックスチェック</h3>
+<div class="outline-text-3" id="text-1-4">
 
 <p>   flymakeでプロジェクトのCFLAGSとソースコードに基いてシンタックスチェックを行います。<br/>
    flymakeのバックエンドはMSBuildです。<br/>
@@ -248,9 +262,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-1-4" class="outline-3">
-<h3 id="sec-1-4"><span class="section-number-3">1.4</span> 定義/宣言へのジャンプ＆リターン</h3>
-<div class="outline-text-3" id="text-1-4">
+<div id="outline-container-1-5" class="outline-3">
+<h3 id="sec-1-5"><span class="section-number-3">1.5</span> 定義/宣言へのジャンプ＆リターン</h3>
+<div class="outline-text-3" id="text-1-5">
 
 <p>   プロジェクト管理下にあるバッファではac-clangの機能を使って<br/>
    クラス/メソッド/関数/enumなどが定義/宣言されているソースファイルへジャンプすることが出来ます。<br/>
@@ -261,9 +275,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-1-5" class="outline-3">
-<h3 id="sec-1-5"><span class="section-number-3">1.5</span> includeファイルへのジャンプ＆リターン</h3>
-<div class="outline-text-3" id="text-1-5">
+<div id="outline-container-1-6" class="outline-3">
+<h3 id="sec-1-6"><span class="section-number-3">1.6</span> includeファイルへのジャンプ＆リターン</h3>
+<div class="outline-text-3" id="text-1-6">
 
 <p>   プロジェクト管理下にあるバッファではCEDETの機能を使ってinclude記述されているファイルへジャンプすることが出来ます。<br/>
    また、特定操作によりジャンプ元へ戻る事も可能です。<br/>
@@ -275,9 +289,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-1-6" class="outline-3">
-<h3 id="sec-1-6"><span class="section-number-3">1.6</span> プロジェクトorソリューションのビルド</h3>
-<div class="outline-text-3" id="text-1-6">
+<div id="outline-container-1-7" class="outline-3">
+<h3 id="sec-1-7"><span class="section-number-3">1.7</span> プロジェクトorソリューションのビルド</h3>
+<div class="outline-text-3" id="text-1-7">
 
 <p>   Emacs上でアクティブ化したプロジェクトに対してビルドを実行できます。<br/>
    ビルドログはバッファに表示されます。<br/>
@@ -290,9 +304,9 @@ for the JavaScript code in this tag.
 
 </div>
 
-<div id="outline-container-1-7" class="outline-3">
-<h3 id="sec-1-7"><span class="section-number-3">1.7</span> プロジェクトorソリューションからVisual Studioを起動</h3>
-<div class="outline-text-3" id="text-1-7">
+<div id="outline-container-1-8" class="outline-3">
+<h3 id="sec-1-8"><span class="section-number-3">1.8</span> プロジェクトorソリューションからVisual Studioを起動</h3>
+<div class="outline-text-3" id="text-1-8">
 
 <p>   Emacs上でアクティブ化したプロジェクトをVisual Studioを起動してオープンします。<br/>
    既に同一のプロジェクトがオープンされていても、再度Visual Studioを起動します。<br/>
@@ -320,7 +334,7 @@ for the JavaScript code in this tag.
 <dt>Microsoft Windows 32bit/64bit</dt><dd>
 <p><br/>
 </p></dd>
-<dt>Microsoft Visual Studio Professional 2010/2012?</dt><dd>
+<dt>Microsoft Visual Studio Professional 2010/2012/2013</dt><dd>
 <p><br/>
     CL.exe/MSBuild.exe 等を使います<br/>
 </p></dd>
@@ -397,7 +411,7 @@ for the JavaScript code in this tag.
 <p><br/>
       Professional 64 bit でのみ動作テスト<br/>
 </p></dd>
-<dt>8</dt><dd>
+<dt>8 &amp; 8.1</dt><dd>
 <p><br/>
       Professional 64 bit でのみ動作テスト<br/>
       cygwin動作に難アリ。<br/>
@@ -410,9 +424,9 @@ for the JavaScript code in this tag.
 </dl>
 
 </dd>
-<dt>Microsoft Visual Studio Professional 2010/2012?</dt><dd>
+<dt>Microsoft Visual Studio Professional 2010/2012/2013</dt><dd>
 <p><br/>
-    2010 64 bit でのみ動作テスト<br/>
+    2010/2012/2013 64 bit でのみ動作テスト<br/>
 </p>
 <p><br/>
 </p></dd>
@@ -530,17 +544,18 @@ OK  C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include
 </div>
 
 <div id="outline-container-6-2" class="outline-3">
-<h3 id="sec-6-2"><span class="section-number-3">6.2</span> 編集したヘッダファイルをセーブしようとすると "basic-save-buffer-2: Opening output file: invalid argument `HEADER-FILE-NAME`" となりセーブできない</h3>
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> 特定ファイルがロックされセーブできなくなる</h3>
 <div class="outline-text-3" id="text-6-2">
 
-<p>   必ず発生するわけではなくヘッダファイルサイズが大きいソース？などで発生する。<br/>
-</p>
-<p>   <br/>
+<p>   編集したヘッダファイルをセーブしようとすると "basic-save-buffer-2: Opening output file: invalid argument `HEADER-FILE-NAME`" となりセーブできない。<br/>
+   必ず発生するわけではなく特定の条件を満たしたファイルサイズが16kBを越えるヘッダファイルで発生する。<br/>
+   16kB以下のヘッダファイルではまったく発生しない。<br/>
    libclang の TranslationUnit(以下TU) の問題。<br/>
    libclang の TU がinclude対象のファイルをロックしている。<br/>
-   ※なぜかプロセスがロックしているファイル一覧には出てこない。<br/>
+   ※プロセスがロックしているファイル一覧には出てこない。<br/>
    ac-clang側で暫定対処パッチを施してあるので多少は緩和されているが完全に回避はできない。<br/>
    発生した場合はマニュアル対処する以外ない。<br/>
+   TUの問題なので、おそらくオリジナル版も同様の問題を持っているとおもわれる。<br/>
 </p>
 <p><br/>
 </p>
@@ -555,6 +570,12 @@ OK  C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include
     これによりfoo.hppはセーブ可能になるはずです。<br/>
     これでもセーブできない場合は、foo.cpp以外のソースでfoo.hppをインクルードしており(modified)になっているバッファがあるはずなので<br/>
     それもセーブしましょう。<br/>
+    また、定義へのジャンプ機能で該当ソースがアクティブ化されている場合は、未編集バッファであってもアクティブ化されています。<br/>
+    該当バッファを削除してみるか、そのバッファへスイッチして (ac-clang:deactivate) を実行してください。<br/>
+    これ以外でも16kBを越えるヘッダを編集しようとした際に、そのファイルのcppはオープンしていないのにセーブできない場合、<br/>
+    該当ヘッダファイルを何処か遠いモジュールでインクルードしている場合なども同様の症状になります。<br/>
+    ライブラリモジュールやフレームワークなどを開発している場合は発生しやすいかもしれません。<br/>
+    ※ライブラリ・フレームワークはアプリ側からよくincludeされるため。<br/>
 </p>
 <p><br/>
 </p></div>
@@ -567,18 +588,20 @@ OK  C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include
 
 <p>    foo.cpp(modified)のとき foo.cppのセッションで<br/>
     TUが foo.cpp パース後もincludeされているファイルのロックを保持しつづけている。<br/>
-    この状態で foo.hpp を編集してセーブしようとするとファイルロックでエラーになる。<br/>
-    ファイルロックを解除するには、 foo.cpp のTUをリリースすることにより可能。<br/>
+    この状態で foo.hpp を編集してセーブしようとするとロックでエラーになる。<br/>
+    ロックを解除するには、 foo.cpp のTUをリリースする。<br/>
     なので foo.cpp セーブ時にセッションは保持した状態で TU だけをリリースして、<br/>
     foo.cpp が再び modified になったときに TU を生成するように修正。<br/>
-    これにより foo.cpp セーブ後であればincludeファイルロックが全解除されるので foo.hpp がセーブ可能になる。<br/>
+    これにより foo.cpp セーブ後であればincludeロックでが全解除されるので foo.hpp がセーブ可能になる。<br/>
     当然 foo.cpp 以外に foo.hpp をinclude しているソースでかつ、編集中のバッファがある場合は、<br/>
-    それら全てを保存しないとファイルロックは解除されない。<br/>
-    ファイルロックは ReaderLock ぽい動作。<br/>
-    しかし、小規模のヘッダファイルはまったくロックされていない。<br/>
-    内部キャッシュに載るサイズキャパシティとかあるのかな？詳細不明。<br/>
+    それら全てを保存しないとロックでは解除されない。<br/>
 </p>
-<p>    <br/>
+<p><br/>
+    このロックはopen関数によるロックはではなくWindowsAPIのCreateFileMappingによるロックである。<br/>
+    libclang FileManagerは16kB以上のファイルをメモリマップドファイルとしてアロケーションする。<br/>
+    TUがリリースされるとUnmapViewOfFileによりメモリマップドファイルがリリースされるようになりファイルに対して書き込み可能になる。<br/>
+</p>
+<p><br/>
 </p></div>
 </div>
 </div>
@@ -679,7 +702,9 @@ alias emacs='emacs32-243-1'
    必要最低限の設定が行えるサンプルファイルを添付しているので、<br/>
    パッケージに関する自前設定がない人は添付ファイルをロードするなりコピペするなりしてください。<br/>
    すでに上記パッケージを利用しており自前の設定がある場合は、設定が競合していないかチェックをお勧めします。<br/>
-   msvc/.minimal-config-sample を参照してください。<br/>
+   msvc/.minimal-config-sample/init.el を参照してください。<br/>
+   init.el は ~/.emacs.d/ 以下に配置した場合に動作するよう記述されています。<br/>
+   必要に応じてコードを抜き出してください。<br/>
 </p>
 <p><br/>
 </p></div>
@@ -735,7 +760,7 @@ alias emacs='emacs32-243-1'
    プロジェクトバッファ名は以下のフォーマットに基きます。<br/>
    <b>MSVC Project&lt;`db-name`&gt;</b><br/>
    また、該当プロジェクトに属するソースコードがオープンされていたり、アクティブ中にオープンすると自動的にmsvc-modeが適用されます。<br/>
-   msvc-modeが適用されたバッファはモードラインに MSVC[platform|configuration] と表示されます。<br/>
+   msvc-modeが適用されたバッファはモードラインに MSVC`version`[platform|configuration] と表示されます。<br/>
 </p>
 <p><br/>
    以下の関数でパース＆アクティブ化を行います。<br/>
@@ -821,6 +846,15 @@ alias emacs='emacs32-243-1'
 <div class="outline-text-4" id="text-8-1-2">
 
 <dl>
+<dt>:version</dt><dd>
+<p><br/>
+      プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。<br/>
+      指定は文字列で行う。整数ではないので注意。<br/>
+      "2013" のように指定。<br/>
+      指定しない or nil場合、msvc-env:default-use-versionの値がセットされる。<br/>
+      msvc-env:default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。<br/>
+      msvc::initialize実行後にmsvc-env:default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。<br/>
+</p></dd>
 <dt>:force-parse-p</dt><dd>
 <p><br/>
       nil 推奨<br/>
@@ -937,7 +971,7 @@ alias emacs='emacs32-243-1'
 <p><br/>
    バッファに入るとmsvc:activate-projects-after-parse で指定したパラメーターが確認可能です。<br/>
    また、現在開いているソースコードバッファでプロジェクトに所属しているバッファが :target-buffers に表示されます。<br/>
-   バッファ名をマウスクリックするとバッファへジャンプ可能、カーソル移動未対応。そのうちやります。<br/>
+   バッファ名へカーソルを持っていきEnter入力を行うかマウスクリックを行うとバッファへジャンプ可能。<br/>
 </p>
 <p><br/>
    このバッファを削除すると、関連する全ソースコードバッファのmsvc-modeがoffになります。<br/>
@@ -1288,7 +1322,7 @@ alias emacs='emacs32-243-1'
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2013-09-29T06:05+0900</p>
+<p class="date">Date: 2014-06-01T00:00+0900</p>
 <p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.3f with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
 
