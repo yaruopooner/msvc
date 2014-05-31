@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/05/31.23:59:53
+# last updated : 2014/06/01.00:08:04
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -89,11 +89,12 @@
     Emacs はgnupack emacs onlyでテスト
     http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
-  - Cygwin(MSYS) :: 
+  - Cygwin 32bit/64bit(MSYS) :: 
     $ uname -r
-    1.7.20(0.266/5/3)
-    Cygwin 64bitは未テスト
+    1.7.29(0.272/5/3)					
+	Cygwinは32/64bit動作チェック済み
     MSYSでも動作するがCygwin推奨
+	MSYSは32bitのみ動作チェック済み
 
   - Microsoft Windows 32bit/64bit ::
     - XP ::
