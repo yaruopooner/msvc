@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/06/01.00:11:33
+# last updated : 2014/06/01.00:19:00
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -340,9 +340,9 @@
       プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。
       指定は文字列で行う。整数ではないので注意。
       "2013" のように指定。
-	  指定しない or nil場合、msvc-env:default-use-versionの値がセットされる。
-	  msvc-env:default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。
-	  msvc::initialize実行後にmsvc-env:default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
+      指定しない or nil場合、msvc-env:default-use-versionの値がセットされる。
+      msvc-env:default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。
+      msvc::initialize実行後にmsvc-env:default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
     - :force-parse-p ::
       nil 推奨
       すでにパース済みのプロジェクトであっても強制的にパースする。
