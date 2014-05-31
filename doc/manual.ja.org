@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/06/01.00:08:04
+# last updated : 2014/06/01.00:11:33
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -67,9 +67,9 @@
 * 必須環境
   - GNU Emacs 24.1以上 ::
     24.1以降でのみ動作保証
-  - Cygwin 32bit(or MSYS) ::
+  - Cygwin 32/64bit(or MSYS) ::
     bashが必要
-  - Microsoft Windows 32bit/64bit ::
+  - Microsoft Windows 32/64bit ::
   - Microsoft Visual Studio Professional 2010/2012/2013 ::
     CL.exe/MSBuild.exe 等を使います
 
@@ -91,10 +91,10 @@
 
   - Cygwin 32bit/64bit(MSYS) :: 
     $ uname -r
-    1.7.29(0.272/5/3)					
-	Cygwinは32/64bit動作チェック済み
+    1.7.29(0.272/5/3)
+    Cygwinは32/64bit動作チェック済み
     MSYSでも動作するがCygwin推奨
-	MSYSは32bitのみ動作チェック済み
+    MSYSは32bitのみ動作チェック済み
 
   - Microsoft Windows 32bit/64bit ::
     - XP ::
