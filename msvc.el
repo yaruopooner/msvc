@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/05/31.23:07:39
+;;; last updated : 2014/06/02.03:32:20
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -1085,9 +1085,9 @@ optionals
 			 (solution-file (plist-get details :solution-file)))
 		(if solution-file
 			(let* ((target (or target "Build"))
-				   (version (plist-get details :version))
 				   (platform (plist-get details :platform))
 				   (configuration (plist-get details :configuration))
+				   (version (plist-get details :version))
 				   (db-path (msvc-flags:create-db-path db-name))
 
 				   (dst-file-base-name (file-name-nondirectory solution-file))
