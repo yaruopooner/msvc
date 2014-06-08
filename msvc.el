@@ -1,10 +1,11 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/06/09.01:30:22
+;;; last updated : 2014/06/09.01:42:07
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
 ;; Author          : yaruopooner [https://github.com/yaruopooner]
 ;; Keywords        : languages, completion, syntax check, mode, convenience
+;; Version         : 2014-06-09
 
 ;; This file is part of MSVC.
 
