@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/06/09.01:03:56
+;;; last updated : 2014/06/09.01:30:22
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -32,7 +32,7 @@
 
 
 
-(defconst msvc:version "1.1")
+(defconst msvc:version "2014-06-09")
 
 
 (defconst msvc:project-buffer-name-fmt "*MSVC Project<%s>*")

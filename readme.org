@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/05/31.23:29:52
+# last updated : 2014/06/09.01:39:51
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
@@ -12,12 +12,16 @@
 
 
 * What's New?
-** 2014-05-31 MSVC-1.1 was released
+** MSVC 2014-06-09 was released
+*** new feature
+    - Can jump to error line in the file from the project & solution build report buffer.
+
+** MSVC 2014-05-31 was released
 *** new feature
     - Visual Studio of different versions became able to coexist.
 *** bug fix
 	- small bug fixes.
 
-** 2013-09-30 MSVC-1.0 was released
+** MSVC 2013-09-30 was released
 *** new feature
 	first release
