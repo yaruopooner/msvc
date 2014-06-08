@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/06/02.03:32:20
+;;; last updated : 2014/06/09.01:03:56
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -390,11 +390,15 @@
   '(
 	;; Visual C/C++ 2010/2012/2013
 	msbuild
-	(("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
+	;; (1:file, 2:line, 3:error-text) flymake only support
+	;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
+	;; (1:file, 2:line, 3:error-text, 4:project) flymake & solution build both support
+	(("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
 
 	;; clang 3.3
 	clang
-	(("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4))))
+	(("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
+  "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
 
 
 (defun msvc:flymake-command-generator ()
@@ -1073,8 +1077,135 @@ optionals
   (when (memq (process-status process) '(signal exit))
 	(let* ((exit-status (process-exit-status process))
 		   (bind-buffer (process-buffer process)))
-	  (msvc:split-window bind-buffer))))
+	  ;; プロセスバッファを終了時に表示
+	  (msvc:msvc:parse-solution-build-report bind-buffer)
+	  (when (eq msvc:solution-build-report-display-timing 'after)
+		(msvc:split-window bind-buffer)))))
 	
+
+(defun msvc:mode-feature-solution-goto-prev-error ()
+  (interactive)
+
+  (move-to-column 0)
+  (let ((pos (previous-single-property-change (point) 'error-info)))
+	(unless pos
+	  (setq pos (previous-single-property-change (point-max) 'error-info)))
+	(when pos
+	  (goto-char pos)
+	  (move-to-column 0))))
+
+
+(defun msvc:mode-feature-solution-goto-next-error ()
+  (interactive)
+
+  (move-to-column 0)
+  (when (get-text-property (point) 'error-info)
+	(goto-char (next-single-property-change (point) 'error-info)))
+  (let ((pos (next-single-property-change (point) 'error-info)))
+	(unless pos
+	  (setq pos (next-single-property-change (point-min) 'error-info)))
+	(when pos
+	  (goto-char pos))))
+
+
+(defun msvc:mode-feature-solution-jump-to-error-file ()
+  (interactive)
+
+  (let ((info (get-text-property (point) 'error-info)))
+	(when info
+	  (let* ((file (plist-get info :src-file))
+			 (line (plist-get info :src-line))
+			 (buffer (find-file-noselect file)))
+		(msvc:split-window buffer)
+		(select-window (get-buffer-window buffer))
+		(goto-char (point-min))
+		(forward-line (1- line))))))
+
+
+(defun msvc:mode-feature-solution-view-error-file ()
+  (interactive)
+
+  (let ((info (get-text-property (point) 'error-info)))
+	(when info
+	  (let* ((file (plist-get info :src-file))
+			 (line (plist-get info :src-line))
+			 (buffer (find-file-noselect file)))
+		(msvc:split-window buffer)
+		(with-selected-window (get-buffer-window buffer)
+		  (goto-char (point-min))
+		  (forward-line (1- line)))))))
+
+
+(defun msvc:mode-feature-solution-view-prev-error ()
+  (interactive)
+  (msvc:mode-feature-solution-goto-prev-error)
+  (msvc:mode-feature-solution-view-error-file))
+
+(defun msvc:mode-feature-solution-view-next-error ()
+  (interactive)
+  (msvc:mode-feature-solution-goto-next-error)
+  (msvc:mode-feature-solution-view-error-file))
+
+
+(defun msvc:mode-feature-solution-jump-to-error-file-by-mouse (event)
+  (interactive "e")
+
+  (mouse-set-point event)
+  (msvc:mode-feature-solution-jump-to-error-file))
+
+
+(defun msvc:msvc:parse-solution-build-report (buffer)
+  (let* (
+		 ;; (pattern (concat (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)) "\\[\\(.+\\)\\]"))
+		 (pattern (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)))
+		 src-file
+		 src-line
+		 project-path
+		 msg-start
+		 msg-end
+		 ;; log-line
+		 log-start
+		 log-end
+		 (map (make-sparse-keymap)))
+
+	(define-key map (kbd "[") 'msvc:mode-feature-solution-goto-prev-error)
+	(define-key map (kbd "]") 'msvc:mode-feature-solution-goto-next-error)
+	(define-key map (kbd "C-z") 'msvc:mode-feature-solution-view-error-file)
+	(define-key map (kbd "M-[") 'msvc:mode-feature-solution-view-prev-error)
+	(define-key map (kbd "M-]") 'msvc:mode-feature-solution-view-next-error)
+	(define-key map (kbd "RET") 'msvc:mode-feature-solution-jump-to-error-file)
+	(define-key map [(mouse-1)] 'msvc:mode-feature-solution-jump-to-error-file-by-mouse)
+
+	(with-current-buffer buffer
+	  (use-local-map map)
+
+	  (setq buffer-read-only nil)
+	  (goto-char (point-min))
+
+	  (while (re-search-forward pattern nil t)
+		(setq src-file (match-string 1))
+		(setq src-line (string-to-number (match-string 2)))
+		(setq log-start (match-beginning 1))
+		(setq log-end (match-end 1))
+		(setq msg-start (match-beginning 3))
+		(setq msg-end (match-end 3))
+		(setq project-path (match-string 4))
+
+		;; (setq log-line (line-number-at-pos log-start))
+		(setq src-file (replace-regexp-in-string "[\\\\]+" "/" src-file))
+		;; (setq src-file (replace-regexp-in-string "^\\s-+" "" src-file))
+
+		(unless (file-name-absolute-p src-file)
+		  (setq project-path (replace-regexp-in-string "[\\\\]+" "/" project-path))
+		  (setq project-path (file-name-directory project-path))
+		  (setq src-file (expand-file-name src-file project-path)))
+
+		(set-text-properties (line-beginning-position) (line-end-position) `(mouse-face highlight error-info (:src-file ,src-file :src-line ,src-line)))
+		(add-text-properties log-start log-end `(face dired-directory))
+		(add-text-properties msg-start msg-end `(face font-lock-keyword-face)))
+
+	  (setq buffer-read-only t))))
+
 
 
 (defun msvc:mode-feature-build-solution (&optional target)
@@ -1132,9 +1263,7 @@ optionals
 				(kill-buffer process-bind-buffer))
 
 			  (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-				;; プロセスバッファを終了時に表示
-				(when (eq msvc:solution-build-report-display-timing 'after)
-				  (set-process-sentinel process 'msvc:build-solution-sentinel)))
+				(set-process-sentinel process 'msvc:build-solution-sentinel))
 
 			  ;; プロセスバッファを最初に表示
 			  (when (eq msvc:solution-build-report-display-timing 'before)
