@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/06/09.01:42:07
+;;; last updated : 2014/07/07.11:08:52
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -28,7 +28,7 @@
 (require 'flymake)
 (require 'msvc-env)
 (require 'msvc-flags)
-;; (require 'ac-clang)
+(require 'ac-clang)
 
 
 
