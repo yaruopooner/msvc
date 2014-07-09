@@ -1,12 +1,12 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/07/10.02:19:56
+;;; last updated : 2014/07/10.02:40:47
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
 ;; Author          : yaruopooner [https://github.com/yaruopooner]
 ;; Keywords        : languages, completion, syntax check, mode, convenience
-;; Version         : 2014-06-09
-;; Package-Requires: ((ac-clang "2014-06-09") (yasnippet "20140617.1640") (dropdown-list "20120329.1636"))
+;; Version         : 1.0.0
+;; Package-Requires: ((ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45") (cedet "1.0"))
 
 ;; This file is part of MSVC.
 
@@ -34,7 +34,7 @@
 
 
 
-(defconst msvc:version "2014-06-09")
+(defconst msvc:version "1.0.0")
 
 
 (defconst msvc:project-buffer-name-fmt "*MSVC Project<%s>*")
