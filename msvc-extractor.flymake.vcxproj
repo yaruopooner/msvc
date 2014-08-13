@@ -19,6 +19,7 @@
 		<DebugInformationFormat/>
 		<ProgramDataBaseFileName/>
 		<PrecompiledHeader>NotUsing</PrecompiledHeader>
+		<UseFullPaths>false</UseFullPaths>
 	  </ClCompile>
 
     </ItemGroup>
