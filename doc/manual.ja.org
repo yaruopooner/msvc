@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/06/09.01:26:33
+# last updated : 2014/08/22.21:44:18
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -303,6 +303,7 @@
                                        :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
                                        :platform "x64"
                                        :configuration "Release" 
+                                       :version "2013" 
                                        :force-parse-p nil
                                        :allow-cedet-p t
                                        :allow-ac-clang-p t
@@ -397,7 +398,7 @@
       nil 推奨
       :allow-flymake-p t の時だけ参照される
       flymake のシンタックスチェックを自動起動しない
-	  マニュアルチェックのみ有効
+      マニュアルチェックのみ有効
     - :flymake-manually-back-end ::
       nil 推奨
       :allow-flymake-p t の時だけ参照される
@@ -596,7 +597,7 @@
 
 ** テンポラリファイルの削除
    ac-clang を使用していると /tmp 以下に
-   preamble.pch-*****
+   preamble-*****.pch
    (*****)は適当なナンバーです。
    という名前のファイルが生成されます。
    これらは libclang の TranslationUnit が一時的なPCHファイルとして生成しています。
