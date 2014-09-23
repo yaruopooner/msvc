@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/05/31.20:57:34
+;;; last updated : 2014/09/24.02:34:22
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -23,7 +23,7 @@
 
 
 
-(eval-when-compile (require 'cl))
+(require 'cl-lib)
 (require 'cedet-files)
 (require 'msvc-env)
 
@@ -253,7 +253,7 @@
   )
 
 
-(defun* msvc-flags:parse-vcx-project (&rest args)
+(cl-defun msvc-flags:parse-vcx-project (&rest args)
   "parse *.vcxproj file : Microsoft Visual Studio
 attributes
 :project-file
@@ -272,7 +272,7 @@ optionals
   ;; product not detected MSVC
   (unless msvc-env:product-detected-p
 	(message "msvc-flags : product not detected : Microsoft Visual Studio")
-	(return-from msvc-flags:parse-vcx-project nil))
+	(cl-return-from msvc-flags:parse-vcx-project nil))
 
   ;; get property from args
   (let ((project-file (plist-get args :project-file))
@@ -286,12 +286,12 @@ optionals
 	;; file extension check
 	(unless (eq (compare-strings (file-name-extension project-file) nil nil "vcxproj" nil nil t) t)
 	  (message "msvc-flags : This file is not project file. : %s" project-file)
-	  (return-from msvc-flags:parse-vcx-project nil))
+	  (cl-return-from msvc-flags:parse-vcx-project nil))
 
 	;; project file exist check
 	(unless (file-readable-p project-file)
 	  (message "msvc-flags : Project File Not Found. : %s" project-file)
-	  (return-from msvc-flags:parse-vcx-project nil))
+	  (cl-return-from msvc-flags:parse-vcx-project nil))
 
 	;; create database root directory
 	(unless (file-accessible-directory-p msvc-flags:db-root-path)
@@ -306,12 +306,12 @@ optionals
 	  ;; project file and db-log file compare date check
 	  (unless parse-p
 		(message "msvc-flags : This project is already parsed.")
-		(return-from msvc-flags:parse-vcx-project db-name))
+		(cl-return-from msvc-flags:parse-vcx-project db-name))
 
 	  ;; パース実行中の場合はリクエストリストへ登録
 	  (when msvc-flags:parsing-p
 		(add-to-list 'msvc-flags:parse-requests args t)
-		(return-from msvc-flags:parse-vcx-project db-name))
+		(cl-return-from msvc-flags:parse-vcx-project db-name))
 
 
 	  (message "msvc-flags : Parsing db-name : %s" db-name)
@@ -410,12 +410,12 @@ optionals
 			(set-process-sentinel process 'msvc-flags:process-sentinel)))
 
 
-		(return-from msvc-flags:parse-vcx-project db-name)))))
+		(cl-return-from msvc-flags:parse-vcx-project db-name)))))
 
 
 
 
-(defun* msvc-flags:parse-vcx-solution (&rest args)
+(cl-defun msvc-flags:parse-vcx-solution (&rest args)
   "parse *.sln file : Microsoft Visual Studio
 attributes
 :solution-file
@@ -434,7 +434,7 @@ optionals
   ;; product not detected MSVC
   (unless msvc-env:product-detected-p
 	(message "msvc-flags : product not detected : Microsoft Visual Studio")
-	(return-from msvc-flags:parse-vcx-solution nil))
+	(cl-return-from msvc-flags:parse-vcx-solution nil))
 
   ;; get property from args
   (let ((solution-file (plist-get args :solution-file)))
@@ -442,12 +442,12 @@ optionals
 	;; file extension check
 	(unless (eq (compare-strings (file-name-extension solution-file) nil nil "sln" nil nil t) t)
 	  (message "msvc-flags : This file is not solution file. : %s" solution-file)
-	  (return-from msvc-flags:parse-vcx-solution nil))
+	  (cl-return-from msvc-flags:parse-vcx-solution nil))
 
 	;; solution file exist check
 	(unless (file-readable-p solution-file)
 	  (message "msvc-flags : Solution File Not Found. : %s" solution-file)
-	  (return-from msvc-flags:parse-vcx-solution nil))
+	  (cl-return-from msvc-flags:parse-vcx-solution nil))
 
 	(let* ((sln-directory (file-name-directory solution-file))
 		   (parse-buffer (format msvc-flags:process-buffer-name-fmt solution-file))
@@ -475,15 +475,15 @@ optionals
 			  (add-to-list 'projects project-path) t))
 		  (kill-buffer)))
 
-	  (dolist (path projects)
+	  (cl-dolist (path projects)
 		(let ((db-name (apply 'msvc-flags:parse-vcx-project :project-file path args)))
 		  (when db-name
 			(add-to-list 'db-names db-name t))))
 
-	  (return-from msvc-flags:parse-vcx-solution db-names))))
+	  (cl-return-from msvc-flags:parse-vcx-solution db-names))))
 
 
-(defun* msvc-flags:load-db (&key
+(cl-defun msvc-flags:load-db (&key
 							(parsing-buffer-delete-p nil)
 							(db-name-pattern nil))
   (interactive)
@@ -495,14 +495,14 @@ optionals
 		 (db-dirs (directory-files msvc-flags:db-root-path nil db-name-pattern t))
 		 (count 0))
 
-	(dolist (db-name db-dirs)
+	(cl-dolist (db-name db-dirs)
 	  (when (not (eq ?\. (aref db-name 0)))
 		(msvc-flags:regist-db db-name (msvc-flags:parse-compilation-db db-name))
 		(setq count (1+ count))))
 	count))
 
 
-(defun* msvc-flags:reparse-db (&key
+(cl-defun msvc-flags:reparse-db (&key
 							   (parsing-buffer-delete-p nil)
 							   (db-name-pattern nil)
 							   (force-parse-p nil)
@@ -519,7 +519,7 @@ optionals
 		 (db-dirs (directory-files msvc-flags:db-root-path nil db-name-pattern t))
 		 (count 0))
 
-	(dolist (db-name db-dirs)
+	(cl-dolist (db-name db-dirs)
 	  (when (not (eq ?\. (aref db-name 0)))
 		(let* ((property (msvc-flags:create-project-property db-name))
 			   (project-file (plist-get property :project-file))
@@ -612,7 +612,7 @@ optionals
 
 	;; -isystem <directory>    Add directory to SYSTEM include search path
 	;; -I <directory>          Add directory to include search path
-	(dolist (path system-inc-paths)
+	(cl-dolist (path system-inc-paths)
 	  ;; (unless (assoc-string path exclude-inc-paths)
 	  (add-to-list 'clang-cflags (format "-I%s" path) t)
 	  ;; (add-to-list 'clang-cflags (format "-isystem %s" path) t)
@@ -620,23 +620,23 @@ optionals
 	  ;; )
 	  )
 	;; -I <directory>          Add directory to include search path
-	(dolist (path additional-inc-paths)
+	(cl-dolist (path additional-inc-paths)
 	  ;; (unless (assoc-string path exclude-inc-paths)
 	  (add-to-list 'clang-cflags (format "-I%s" path) t)
 	  ;; )
 	  )
 	;; -include <file>         Include file before parsing
-	(dolist (file force-inc-files)
+	(cl-dolist (file force-inc-files)
 	  (add-to-list 'clang-cflags (format "-include %s" file) t))
 
 	;; -D <macro>              Predefine the specified macro
-	(dolist (def system-ppdefs)
+	(cl-dolist (def system-ppdefs)
 	  (add-to-list 'clang-cflags (format "-D %s" def) t))
 	;; -D <macro>              Predefine the specified macro
-	(dolist (def additional-ppdefs)
+	(cl-dolist (def additional-ppdefs)
 	  (add-to-list 'clang-cflags (format "-D %s" def) t))
 	;; -U <macro>              Undefine the specified macro
-	(dolist (def undef-ppdefs)
+	(cl-dolist (def undef-ppdefs)
 	  (add-to-list 'clang-cflags (format "-U %s" def) t))
 
 	clang-cflags))

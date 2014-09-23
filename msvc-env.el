@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/05/31.18:42:11
+;;; last updated : 2014/09/24.02:53:03
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -23,7 +23,7 @@
 
 
 
-(eval-when-compile (require 'cl))
+(require 'cl-lib)
 
 
 ;; Microsoft Visual C/C++ Product information
@@ -65,7 +65,7 @@
 
 
 (defun msvc-env:detect-product ()
-  (dolist (detail msvc-env:product-details)
+  (cl-dolist (detail msvc-env:product-details)
 	(let ((version (plist-get detail :version))
 		  (path (getenv (plist-get detail :env-var))))
 	  (when path
@@ -87,7 +87,7 @@
 						 (expand-file-name path safe-path)))))
 
 	(if (listp paths)
-		(dolist (path paths)
+		(cl-dolist (path paths)
 		  (add-to-list 'result (funcall converter path safe-path) t))
 	  (setq result (funcall converter paths safe-path)))
 	result))
@@ -101,7 +101,7 @@
 												 path
 												 t))))
 	(if (listp paths)
-		(dolist (path paths)
+		(cl-dolist (path paths)
 		  (add-to-list 'result (funcall converter path) t))
 	  (setq result (funcall converter paths)))
 	result))
@@ -111,7 +111,7 @@
 ;; for MSBuild property flag
 (defun msvc-env:create-msb-flags (switch parameters)
   (let* ((flags switch))
-	(dolist (parameter parameters)
+	(cl-dolist (parameter parameters)
 	  (setq flags (concat flags (format (car parameter) (cdr parameter)) ";")))
 	;; 末尾にparameter-separator ';' があるとエラーになる
 	;; 削除して後続スイッチ用に空白で置き換える
@@ -121,14 +121,14 @@
 (defun msvc-env:create-msb-rsp-file (msb-rsp-file msb-target-file msb-flags)
   (with-temp-file msb-rsp-file
 	(insert msb-target-file "\n")
-	(dolist (flag msb-flags)
+	(cl-dolist (flag msb-flags)
 	  (insert flag "\n")))
   msb-rsp-file)
 
 
 (defun msvc-env:remove-msb-rsp-files (path)
   (let* ((files (directory-files path t "\.rsp$")))
-	(dolist (file files)
+	(cl-dolist (file files)
 	  (delete-file file))))
 
 
@@ -155,10 +155,10 @@
   (setq msvc-env:shell-msvc-arg nil))
 
 
-(defun* msvc-env:initialize ()
+(cl-defun msvc-env:initialize ()
   (unless (msvc-env:detect-product)
 	(message "msvc-env : product not detected : Microsoft Visual Studio")
-	(return-from msvc-env:initialize nil))
+	(cl-return-from msvc-env:initialize nil))
 
   ;; default is latest product
   (setq msvc-env:default-use-version (nth 0 msvc-env:product-version))

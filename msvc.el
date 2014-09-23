@@ -1,12 +1,12 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/07/10.02:40:47
+;;; last updated : 2014/09/24.02:38:13
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
 ;; Author          : yaruopooner [https://github.com/yaruopooner]
 ;; Keywords        : languages, completion, syntax check, mode, convenience
 ;; Version         : 1.0.0
-;; Package-Requires: ((ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45") (cedet "1.0"))
+;; Package-Requires: ((cl-lib "0.3") (ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45") (cedet "1.0"))
 
 ;; This file is part of MSVC.
 
@@ -25,7 +25,7 @@
 
 
 
-(eval-when-compile (require 'cl))
+(require 'cl-lib)
 (require 'flymake)
 (require 'msvc-env)
 (require 'msvc-flags)
@@ -244,7 +244,7 @@
 		 (target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
 							   (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
 
-	(dolist (buffer buffers)
+	(cl-dolist (buffer buffers)
 	  (with-current-buffer buffer
 		;; file belonging check
 		(when (msvc:is-belonging db-name target-files)
@@ -299,12 +299,12 @@
 			(erase-buffer)
 			(goto-char (point-min))
 
-			(dolist (property msvc:display-allow-properties)
+			(cl-dolist (property msvc:display-allow-properties)
 			  (let ((value (plist-get details property)))
 				(cond
 				 ((eq property :target-buffers)
 				  (insert (format "%-30s :\n" property))
-				  (dolist (buffer value)
+				  (cl-dolist (buffer value)
 					(insert
 					 (propertize (format " -%-28s : " "buffer-name")
 								 'buffer buffer
@@ -482,7 +482,7 @@
 							"\n")))))
 
 (defun msvc:flymake-display-current-line-error ()
-  (case msvc:flymake-error-display-style
+  (cl-case msvc:flymake-error-display-style
 	(popup
 	 (msvc:flymake-display-current-line-error-by-popup))
 	(mini-buffer
@@ -491,7 +491,7 @@
 
 
 (defun msvc:setup-project-feature-ac-clang (db-name status)
-  (case status
+  (cl-case status
 	(enable
 	 nil
 	 )
@@ -499,7 +499,7 @@
 	 nil)))
 
 (defun msvc:setup-buffer-feature-ac-clang (db-name status)
-  (case status
+  (cl-case status
 	(enable
 	 ;; backup value
 	 (push ac-sources msvc:ac-sources-backup)
@@ -536,10 +536,10 @@
 		 (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
 		 (additional-inc-rpaths))
 
-	(case status
+	(cl-case status
 	  (enable
 	   ;; generate relative path(CEDET format)
-	   (dolist (path additional-inc-paths)
+	   (cl-dolist (path additional-inc-paths)
 		 (setq path (file-relative-name path cedet-root-path))
 		 ;; All path is relative from cedet-root-path.
 		 ;; And relative path string require starts with "/". (CEDET :include-path format specification)
@@ -574,7 +574,7 @@
 	   nil))))
 
 (defun msvc:setup-buffer-feature-cedet (db-name status)
-  (case status
+  (cl-case status
 	(enable
 	 ;; backup value
 	 (push ac-sources msvc:ac-sources-backup)
@@ -598,7 +598,7 @@
 
 ;; flymake セットアップ関数
 (defun msvc:setup-project-feature-flymake (db-name status)
-  (case status
+  (cl-case status
 	(enable
 	 ;; (unless (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks)
 	 ;;   (add-to-list 'flymake-allowed-file-name-masks `(,msvc:flymake-target-pattern msvc:flymake-command-generator))))
@@ -620,7 +620,7 @@
 		 (manually-p (plist-get details :flymake-manually-p))
 		 (manually-back-end (plist-get details :flymake-manually-back-end)))
 
-	(case status
+	(cl-case status
 	  (enable
 	   (setq msvc:flymake-back-end 'msbuild)
 	   (setq msvc:flymake-manually-back-end (if manually-back-end manually-back-end msvc:flymake-back-end))
@@ -733,15 +733,15 @@
 
 
 ;; バッファ起動時のフックで実行する関数
-(defun* msvc:evaluate-buffer ()
+(cl-defun msvc:evaluate-buffer ()
   (interactive)
 
   (unless msvc:source-code-belonging-db-name
-	(dolist (project msvc:active-projects)
+	(cl-dolist (project msvc:active-projects)
 	  (let* ((db-name (car project)))
 		(when (msvc:is-belonging db-name)
 		  (msvc:attach-to-project db-name)
-		  (return-from msvc:evaluate-buffer t))))))
+		  (cl-return-from msvc:evaluate-buffer t))))))
 
 
 
@@ -750,11 +750,11 @@
   (unless msvc-flags:parsing-p
 	;; (message "parsed-activator")
 	;; (print msvc:activation-requests)
-	(dolist (request msvc:activation-requests)
+	(cl-dolist (request msvc:activation-requests)
 	  ;; (print request)
 	  (let ((db-names (plist-get request :db-names))
 			(args (plist-get request :args)))
-		(dolist (db-name db-names)
+		(cl-dolist (db-name db-names)
 		  (apply 'msvc:activate-project db-name args))))
 	(setq msvc:activation-requests nil)
 
@@ -765,7 +765,7 @@
 
 
 ;; プロジェクトのアクティベーション(アクティブリストへ登録)
-(defun* msvc:activate-projects-after-parse (&rest args)
+(cl-defun msvc:activate-projects-after-parse (&rest args)
   "attributes
 :solution-file
 :project-file
@@ -795,10 +795,10 @@ optionals
 		 db-names
 		 )
 	(unless (or solution-file project-file)
-	  (return-from msvc:activate-projects-after-parse nil))
+	  (cl-return-from msvc:activate-projects-after-parse nil))
 
 	(unless (and platform configuration)
-	  (return-from msvc:activate-projects-after-parse nil))
+	  (cl-return-from msvc:activate-projects-after-parse nil))
 
 	;; args check & modify
 
@@ -827,7 +827,7 @@ optionals
 
 
 
-(defun* msvc:activate-project (db-name &rest args)
+(cl-defun msvc:activate-project (db-name &rest args)
   "attributes
 optionals
 :solution-file
@@ -845,7 +845,7 @@ optionals
 
   (unless db-name
 	(message "msvc : db-name is nil.")
-	(return-from msvc:activate-project nil))
+	(cl-return-from msvc:activate-project nil))
 
   ;; DBリストからプロジェクトマネージャーを生成
   (let* (
@@ -876,7 +876,7 @@ optionals
 	;; CFLAGS exist check
 	(unless (msvc-flags:query-cflags db-name)
 	  (message "msvc : db-name not found in CFLAGS database. : %s" db-name)
-	  (return-from msvc:activate-project nil))
+	  (cl-return-from msvc:activate-project nil))
 
 	;; 既存バッファは削除（削除によって既存プロジェクトの削除も動作するはず）
 	(when (get-buffer project-buffer)
@@ -934,7 +934,7 @@ optionals
 
 	;; target buffer all attach
 	(let ((msvc:display-update-p nil))
-	  (dolist (buffer target-buffers)
+	  (cl-dolist (buffer target-buffers)
 		(with-current-buffer buffer
 		  (msvc:mode-on))))
 	
@@ -958,7 +958,7 @@ optionals
 
 		;; target buffers all detach
 		(let ((msvc:display-update-p nil))
-		  (dolist (buffer target-buffers)
+		  (cl-dolist (buffer target-buffers)
 			(with-current-buffer buffer
 			  (msvc:mode-off))))
 
@@ -991,11 +991,11 @@ optionals
 	;; msvc:activate-projects-after-parseでmsvc:active-projectsに対してadd/removeされるので
 	;; msvc:active-projects を参照しながら msvc:activate-projects-after-parse を実行すると問題がでる可能性がある
 	;; なので一旦対象db-nameだけを集めてから処理する
-	(dolist (project msvc:active-projects)
+	(cl-dolist (project msvc:active-projects)
 	  (let* ((db-name (car project)))
 		(add-to-list 'db-names db-name t)))
 
-	(dolist (db-name db-names)
+	(cl-dolist (db-name db-names)
 	  (apply 'msvc:activate-projects-after-parse (msvc:query-project db-name)))))
 
 
@@ -1033,7 +1033,7 @@ optionals
 
 (defun msvc:mode-feature-manually-flymake ()
   (interactive)
-  (case msvc:flymake-manually-back-end
+  (cl-case msvc:flymake-manually-back-end
 	(msbuild
 	 ;; back end : MSBuild
 	 (flymake-start-syntax-check))
