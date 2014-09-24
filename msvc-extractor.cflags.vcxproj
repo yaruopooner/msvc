@@ -27,6 +27,7 @@
 		<ProgramDataBaseFileName/>
 		<!-- <ProgramDataBaseFileName>$(OutDir)</ProgramDataBaseFileName> -->
 		<PrecompiledHeader>NotUsing</PrecompiledHeader>
+		<UseFullPaths>false</UseFullPaths>
 	  </ClCompile>
 
 	  <!-- <CLTLogReadFiles Remove="@(CLTLogReadFiles)" /> -->
