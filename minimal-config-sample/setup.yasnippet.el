@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2013/09/23.23:27:12
+;;; last updated : 2014/09/25.03:23:08
 
 
 ;;==================================================================================================
@@ -46,8 +46,8 @@
 ;; 同一名を持つ key を展開しようとすると x-window のドロップダウンGUIが表示されるのを削除
 ;; C-n,C-p で操作できるCUIドロップダウンリストにする
 (setq yas-prompt-functions '(yas-dropdown-prompt
-							 yas-ido-prompt
-							 yas-completing-prompt))
+                             yas-ido-prompt
+                             yas-completing-prompt))
 
 
 ;; default snippets directory

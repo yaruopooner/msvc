@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2013/09/23.23:14:30
+;;; last updated : 2014/09/25.03:22:15
 
 
 ;;==================================================================================================
@@ -17,23 +17,23 @@
 ;; ロード前設定が必要な変数, defcustom系変数
 (setq semantic-default-submodes
       '(
-		;; Semanticデータベース
-		global-semanticdb-minor-mode
-		;; アイドルタイムにsemantic-add-system-includeで追加されたパスグループを再解析
-		global-semantic-idle-scheduler-mode
-		;; タグのサマリを表示
-		global-semantic-idle-summary-mode
-		;; タグの補完を表示(plugin auto-completeでac-source-semanticを使うのでdisable)
-		;; global-semantic-idle-completions-mode
-		;; タグを装飾
-		global-semantic-decoration-mode
-		;; 現在カーソルでポイントされているfunctionの宣言をハイライト
-		global-semantic-highlight-func-mode
-		;; ?
-		global-semantic-mru-bookmark-mode
-		;; ?
-		global-semantic-stickyfunc-mode
-		))
+        ;; Semanticデータベース
+        global-semanticdb-minor-mode
+        ;; アイドルタイムにsemantic-add-system-includeで追加されたパスグループを再解析
+        global-semantic-idle-scheduler-mode
+        ;; タグのサマリを表示
+        global-semantic-idle-summary-mode
+        ;; タグの補完を表示(plugin auto-completeでac-source-semanticを使うのでdisable)
+        ;; global-semantic-idle-completions-mode
+        ;; タグを装飾
+        global-semantic-decoration-mode
+        ;; 現在カーソルでポイントされているfunctionの宣言をハイライト
+        global-semantic-highlight-func-mode
+        ;; ?
+        global-semantic-mru-bookmark-mode
+        ;; ?
+        global-semantic-stickyfunc-mode
+        ))
 
 
 ;; アイドルタイムにsemantic-add-system-includeで追加されたパスグループをパースする
@@ -122,14 +122,14 @@
 (custom-set-variables
  '(speedbar-frame-parameters
    '(
-	 (minibuffer)
-	 (width . 50)
-	 (border-width . 0)
-	 (menu-bar-lines . 0)
-	 (tool-bar-lines . 0)
-	 (unsplittable . t)
-	 (left-fringe . 0)
-	 )))
+     (minibuffer)
+     (width . 50)
+     (border-width . 0)
+     (menu-bar-lines . 0)
+     (tool-bar-lines . 0)
+     (unsplittable . t)
+     (left-fringe . 0)
+     )))
 
 
 ;; speedbar automatic update

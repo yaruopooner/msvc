@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/09/24.02:38:13
+;;; last updated : 2014/09/25.03:20:28
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -43,19 +43,19 @@
 (defvar msvc:active-projects nil)
 
 ;; '(db-name . 
-;; 		  (
-;;         (project-buffer	. project-buffer)
-;; 		   (project-file . project-file)
-;; 		   (platform . nil)
-;; 		   (configuration . nil)
-;; 		   (version . nil)
-;; 		   (allow-cedet-p . t)
-;; 		   (allow-ac-clang-p . t)
-;; 		   (allow-flymake-p . t)
-;; 		   (cedet-spp-table . nil)
-;; 		   (target-buffers . ())
-;; 		   )
-;; 		  )
+;;        (
+;;         (project-buffer  . project-buffer)
+;;         (project-file . project-file)
+;;         (platform . nil)
+;;         (configuration . nil)
+;;         (version . nil)
+;;         (allow-cedet-p . t)
+;;         (allow-ac-clang-p . t)
+;;         (allow-flymake-p . t)
+;;         (cedet-spp-table . nil)
+;;         (target-buffers . ())
+;;         )
+;;        )
 
 
 ;; the project name(per MSVC buffer)
@@ -85,21 +85,21 @@
 (defvar msvc:display-update-p t)
 
 (defvar msvc:display-allow-properties '(
-										:project-buffer
-										:solution-file
-										:project-file
-										:platform
-										:configuration
-										:version
-										:allow-cedet-p
-										:allow-ac-clang-p
-										:allow-flymake-p
-										:cedet-root-path
-										:cedet-spp-table
-										:flymake-manually-p
-										:flymake-manually-back-end
-										:target-buffers
-										))
+                                        :project-buffer
+                                        :solution-file
+                                        :project-file
+                                        :platform
+                                        :configuration
+                                        :version
+                                        :allow-cedet-p
+                                        :allow-ac-clang-p
+                                        :allow-flymake-p
+                                        :cedet-root-path
+                                        :cedet-spp-table
+                                        :flymake-manually-p
+                                        :flymake-manually-back-end
+                                        :target-buffers
+                                        ))
 
 
 
@@ -210,16 +210,16 @@
 
 (defsubst msvc:convert-to-target-buffer-style-path (paths)
   (if (eq msvc:target-buffer-path-format 'posix)
-	  (msvc-env:convert-to-posix-style-path paths)
-	paths))
+      (msvc-env:convert-to-posix-style-path paths)
+    paths))
 
 (defsubst msvc:convert-to-cedet-style-path (paths &optional safe-path)
   (when safe-path
-	(setq paths (msvc-env:normalize-path paths safe-path)))
+    (setq paths (msvc-env:normalize-path paths safe-path)))
 
   (if (eq msvc:cedet-path-format 'posix)
-	  (msvc-env:convert-to-posix-style-path paths)
-	paths))
+      (msvc-env:convert-to-posix-style-path paths)
+    paths))
 
 
 
@@ -227,29 +227,29 @@
 (defun msvc:is-belonging (db-name &optional target-files)
   ;; major-mode check
   (when (and (memq major-mode '(c++-mode c-mode)) buffer-file-name)
-	(unless target-files
-	  (setq target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
-								 (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
+    (unless target-files
+      (setq target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
+                                 (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
 
-	(let* ((project-file (plist-get (msvc-flags:create-project-property db-name) :project-file))
-		   (project-root (msvc:convert-to-target-buffer-style-path (file-name-directory project-file)))
-		   (file-rpath (file-relative-name buffer-file-name project-root)))
-	  (when (member file-rpath target-files)
-		file-rpath))))
+    (let* ((project-file (plist-get (msvc-flags:create-project-property db-name) :project-file))
+           (project-root (msvc:convert-to-target-buffer-style-path (file-name-directory project-file)))
+           (file-rpath (file-relative-name buffer-file-name project-root)))
+      (when (member file-rpath target-files)
+        file-rpath))))
 
 ;; すでにオープンされているバッファでプロジェクトに所属しているものを集める
 (defun msvc:gather-target-buffer (db-name)
   (let* ((buffers (buffer-list))
-		 target-buffers
-		 (target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
-							   (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
+         target-buffers
+         (target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
+                               (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
 
-	(cl-dolist (buffer buffers)
-	  (with-current-buffer buffer
-		;; file belonging check
-		(when (msvc:is-belonging db-name target-files)
-		  (add-to-list 'target-buffers buffer))))
-	target-buffers))
+    (cl-dolist (buffer buffers)
+      (with-current-buffer buffer
+        ;; file belonging check
+        (when (msvc:is-belonging db-name target-files)
+          (add-to-list 'target-buffers buffer))))
+    target-buffers))
 
 
 
@@ -257,14 +257,14 @@
 
 (defun msvc:split-window (buffer)
   (unless (get-buffer-window-list buffer)
-	(let ((target-window (if (one-window-p) (split-window-below) (next-window))))
-	  (set-window-buffer target-window buffer))))
+    (let ((target-window (if (one-window-p) (split-window-below) (next-window))))
+      (set-window-buffer target-window buffer))))
 
 (defun msvc:visit-buffer (point switch-function)
   (let* ((target-buffer (get-text-property point 'buffer)))
     (if target-buffer
-		(apply switch-function target-buffer nil)
-	  (error "buffer no present"))))
+        (apply switch-function target-buffer nil)
+      (error "buffer no present"))))
 
 (defun msvc:keyboard-visit-buffer ()
   "Toggle the display status of the filter group on this line."
@@ -280,62 +280,62 @@
   "Toggle the display status of the filter group chosen with the mouse."
   (interactive "e")
   (msvc:visit-buffer (save-excursion
-						 (mouse-set-point event)
-						 (point))
-					   'switch-to-buffer))
+                         (mouse-set-point event)
+                         (point))
+                       'switch-to-buffer))
 
 
 
 ;; プロジェクトディテールをプロジェクトバッファに表示する
 (defun msvc:display-project-details (db-name)
   (when msvc:display-update-p
-	(let* (
-		   (details (msvc:query-project db-name))
-		   (project-buffer (plist-get details :project-buffer))
-		   )
-	  (when project-buffer
-		(with-current-buffer project-buffer
-		  (let ((buffer-read-only nil))
-			(erase-buffer)
-			(goto-char (point-min))
+    (let* (
+           (details (msvc:query-project db-name))
+           (project-buffer (plist-get details :project-buffer))
+           )
+      (when project-buffer
+        (with-current-buffer project-buffer
+          (let ((buffer-read-only nil))
+            (erase-buffer)
+            (goto-char (point-min))
 
-			(cl-dolist (property msvc:display-allow-properties)
-			  (let ((value (plist-get details property)))
-				(cond
-				 ((eq property :target-buffers)
-				  (insert (format "%-30s :\n" property))
-				  (cl-dolist (buffer value)
-					(insert
-					 (propertize (format " -%-28s : " "buffer-name")
-								 'buffer buffer
-								 'keymap msvc:mode-filter-map
-								 'mouse-face 'highlight)
-					 (propertize (format "%-30s : %s" buffer (buffer-file-name buffer))
-								 'buffer buffer
-								 'keymap msvc:mode-filter-map
-								 'face 'font-lock-keyword-face
-								 'mouse-face 'highlight)
-					 (propertize "\n"
-								 'buffer buffer
-								 'keymap msvc:mode-filter-map)
-					 )))
-				 (t
-				  (insert (format "%-30s : %s\n" property value))))))))))))
+            (cl-dolist (property msvc:display-allow-properties)
+              (let ((value (plist-get details property)))
+                (cond
+                 ((eq property :target-buffers)
+                  (insert (format "%-30s :\n" property))
+                  (cl-dolist (buffer value)
+                    (insert
+                     (propertize (format " -%-28s : " "buffer-name")
+                                 'buffer buffer
+                                 'keymap msvc:mode-filter-map
+                                 'mouse-face 'highlight)
+                     (propertize (format "%-30s : %s" buffer (buffer-file-name buffer))
+                                 'buffer buffer
+                                 'keymap msvc:mode-filter-map
+                                 'face 'font-lock-keyword-face
+                                 'mouse-face 'highlight)
+                     (propertize "\n"
+                                 'buffer buffer
+                                 'keymap msvc:mode-filter-map)
+                     )))
+                 (t
+                  (insert (format "%-30s : %s\n" property value))))))))))))
 
 
 
 ;; CEDET Project.ede を生成する
 (defun msvc:create-ede-project-file (ede-proj-file db-name)
   (let* ((proj-name db-name)
-		 (file-name (file-name-nondirectory ede-proj-file)))
-	(with-temp-file ede-proj-file
-	  (insert ";; Object " proj-name "\n"
-			  ";; EDE Project File.\n"
-			  "(ede-proj-project \"" proj-name "\"
-				  :file \"" file-name "\"
-				  :name \"" proj-name "\"
-				  :targets 'nil
-				  )"))))
+         (file-name (file-name-nondirectory ede-proj-file)))
+    (with-temp-file ede-proj-file
+      (insert ";; Object " proj-name "\n"
+              ";; EDE Project File.\n"
+              "(ede-proj-project \"" proj-name "\"
+                  :file \"" file-name "\"
+                  :name \"" proj-name "\"
+                  :targets 'nil
+                  )"))))
 
 
 
@@ -348,10 +348,10 @@
   ;; (print (format "dir = %s" dir))
   (condition-case err
       (let* (;; bind connection type (use pipe)
-			 (process-connection-type nil)
-			 ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
-			 (default-process-coding-system '(utf-8-dos . utf-8-unix))
-			 (process
+             (process-connection-type nil)
+             ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
+             (default-process-coding-system '(utf-8-dos . utf-8-unix))
+             (process
               (let ((default-directory (or dir default-directory)))
                 (when dir
                   (flymake-log 3 "starting process on dir %s" dir))
@@ -382,75 +382,75 @@
 
 (defadvice flymake-start-syntax-check-process (around flymake-start-syntax-check-process-msbuild-custom (cmd args dir) activate)
   (if msvc:flymake-back-end
-	  (msvc:flymake-start-syntax-check-process cmd args dir)
-	ad-do-it))
+      (msvc:flymake-start-syntax-check-process cmd args dir)
+    ad-do-it))
 
 
 (defconst msvc:flymake-allowed-file-name-masks '(("\\.\\(?:[ch]\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" msvc:flymake-command-generator)))
 
 (defconst msvc:flymake-err-line-patterns
   '(
-	;; Visual C/C++ 2010/2012/2013
-	msbuild
-	;; (1:file, 2:line, 3:error-text) flymake only support
-	;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
-	;; (1:file, 2:line, 3:error-text, 4:project) flymake & solution build both support
-	(("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
+    ;; Visual C/C++ 2010/2012/2013
+    msbuild
+    ;; (1:file, 2:line, 3:error-text) flymake only support
+    ;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
+    ;; (1:file, 2:line, 3:error-text, 4:project) flymake & solution build both support
+    (("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
 
-	;; clang 3.3
-	clang
-	(("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
+    ;; clang 3.3
+    clang
+    (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
 
 
 (defun msvc:flymake-command-generator ()
   (interactive)
   (let* ((db-name msvc:source-code-belonging-db-name)
-		 (db-path (msvc-flags:create-db-path db-name))
-		 (compile-file (flymake-init-create-temp-buffer-copy
-						'flymake-create-temp-inplace))
+         (db-path (msvc-flags:create-db-path db-name))
+         (compile-file (flymake-init-create-temp-buffer-copy
+                        'flymake-create-temp-inplace))
 
-		 (cedet-file-name (cedet-directory-name-to-file-name compile-file))
-		 (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags:create-project-path db-name)))
-		 (fix-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
+         (cedet-file-name (cedet-directory-name-to-file-name compile-file))
+         (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags:create-project-path db-name)))
+         (fix-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
 
-		 (property (msvc-flags:create-project-property db-name))
-		 (version (plist-get property :version))
-		 (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
-		 (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
+         (property (msvc-flags:create-project-property db-name))
+         (version (plist-get property :version))
+         (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
+         (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
-	;; create rsp file
-	(unless (file-exists-p msb-rsp-file)
-	  (let* ((project-file (plist-get property :project-file))
-			 (platform (plist-get property :platform))
-			 (configuration (plist-get property :configuration))
+    ;; create rsp file
+    (unless (file-exists-p msb-rsp-file)
+      (let* ((project-file (plist-get property :project-file))
+             (platform (plist-get property :platform))
+             (configuration (plist-get property :configuration))
 
-			 (logger-encoding "UTF-8")
-			 (project-path (file-name-directory project-file))
-			 (msb-target-file (expand-file-name msvc:flymake-vcx-proj-name project-path))
-			 (msb-flags (list
-						 (msvc-env:create-msb-flags "/p:"
-													`(("ImportProjectFile=%S"		.		,project-file)
-													  ("Platform=%S"				.		,platform)
-													  ("Configuration=%S"			.		,configuration)
-													  ("CompileFile=%S"				.		,compile-file)
-													  ;; IntDir,OutDirは末尾にスラッシュが必須(MSBuildの仕様)
-													  ("IntDir=%S"					.		,db-path)
-													  ("OutDir=%S"					.		,db-path)))
-						 (msvc-env:create-msb-flags "/flp:"
-													`(("Verbosity=%s"				.		"normal")
-													  ("LogFile=%S"					.		,log-file)
-													  ("Encoding=%s"				.		,logger-encoding)
-													  ("%s"							.		"NoSummary")))
-						 "/noconsolelogger"
-						 "/nologo")))
+             (logger-encoding "UTF-8")
+             (project-path (file-name-directory project-file))
+             (msb-target-file (expand-file-name msvc:flymake-vcx-proj-name project-path))
+             (msb-flags (list
+                         (msvc-env:create-msb-flags "/p:"
+                                                    `(("ImportProjectFile=%S"       .       ,project-file)
+                                                      ("Platform=%S"                .       ,platform)
+                                                      ("Configuration=%S"           .       ,configuration)
+                                                      ("CompileFile=%S"             .       ,compile-file)
+                                                      ;; IntDir,OutDirは末尾にスラッシュが必須(MSBuildの仕様)
+                                                      ("IntDir=%S"                  .       ,db-path)
+                                                      ("OutDir=%S"                  .       ,db-path)))
+                         (msvc-env:create-msb-flags "/flp:"
+                                                    `(("Verbosity=%s"               .       "normal")
+                                                      ("LogFile=%S"                 .       ,log-file)
+                                                      ("Encoding=%s"                .       ,logger-encoding)
+                                                      ("%s"                         .       "NoSummary")))
+                         "/noconsolelogger"
+                         "/nologo")))
 
-		(msvc-env:create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)))
-	  
+        (msvc-env:create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)))
+      
 
     (list 
-	 (shell-quote-argument msvc-env:invoke-command)
-	 (msvc-env:build-msb-command-args version msb-rsp-file log-file))
+     (shell-quote-argument msvc-env:invoke-command)
+     (msvc-env:build-msb-command-args version msb-rsp-file log-file))
     ))
 
 
@@ -477,170 +477,170 @@
          (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no)))
          (menu-data (flymake-make-err-menu-data line-no line-err-info-list)))
     (when menu-data
-	  (popup-tip (mapconcat (lambda (e) (nth 0 e))
-							(nth 1 menu-data)
-							"\n")))))
+      (popup-tip (mapconcat (lambda (e) (nth 0 e))
+                            (nth 1 menu-data)
+                            "\n")))))
 
 (defun msvc:flymake-display-current-line-error ()
   (cl-case msvc:flymake-error-display-style
-	(popup
-	 (msvc:flymake-display-current-line-error-by-popup))
-	(mini-buffer
-	 (msvc:flymake-display-current-line-error-by-minibuf))))
+    (popup
+     (msvc:flymake-display-current-line-error-by-popup))
+    (mini-buffer
+     (msvc:flymake-display-current-line-error-by-minibuf))))
 
 
 
 (defun msvc:setup-project-feature-ac-clang (db-name status)
   (cl-case status
-	(enable
-	 nil
-	 )
-	(disable
-	 nil)))
+    (enable
+     nil
+     )
+    (disable
+     nil)))
 
 (defun msvc:setup-buffer-feature-ac-clang (db-name status)
   (cl-case status
-	(enable
-	 ;; backup value
-	 (push ac-sources msvc:ac-sources-backup)
-	 (push ac-clang:cflags msvc:ac-clang-cflags-backup)
+    (enable
+     ;; backup value
+     (push ac-sources msvc:ac-sources-backup)
+     (push ac-clang:cflags msvc:ac-clang-cflags-backup)
 
-	 ;; set database value
-	 (setq ac-sources '(ac-source-clang-async))
-	 (setq ac-clang:cflags (msvc-flags:create-ac-clang-cflags db-name))
+     ;; set database value
+     (setq ac-sources '(ac-source-clang-async))
+     (setq ac-clang:cflags (msvc-flags:create-ac-clang-cflags db-name))
 
-	 ;; buffer modified > do activation
-	 ;; buffer not modify > delay activation
-	 (ac-clang:activate-after-modify))
-	(disable
-	 ;; always deactivation
-	 (ac-clang:deactivate)
+     ;; buffer modified > do activation
+     ;; buffer not modify > delay activation
+     (ac-clang:activate-after-modify))
+    (disable
+     ;; always deactivation
+     (ac-clang:deactivate)
 
-	 ;; restore value
-	 (setq ac-sources (pop msvc:ac-sources-backup))
-	 (setq ac-clang:cflags (pop msvc:ac-clang-cflags-backup)))))
+     ;; restore value
+     (setq ac-sources (pop msvc:ac-sources-backup))
+     (setq ac-clang:cflags (pop msvc:ac-clang-cflags-backup)))))
 
 
 ;; CEDET セットアップ関数
 (defun msvc:setup-project-feature-cedet (db-name status)
   (let* ((details (msvc:query-project db-name))
-		 (project-path (file-name-directory (plist-get details :project-file)))
+         (project-path (file-name-directory (plist-get details :project-file)))
 
-		 ;; cedet-root-path が未設定の場合はプロジェクトファイルのパスから生成する
-		 ;; この場合、ディレクトリ構成によっては正常に動作しないケースもある
-		 (cedet-root-path (or (plist-get details :cedet-root-path) project-path))
-		 (cedet-spp-table (plist-get details :cedet-spp-table))
-		 (system-inc-paths (msvc:convert-to-cedet-style-path (msvc-flags:query-cflag db-name "CFLAG_SystemIncludePath")))
-		 (additional-inc-paths (msvc:convert-to-cedet-style-path (msvc-flags:query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
-		 (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
-		 (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
-		 (additional-inc-rpaths))
+         ;; cedet-root-path が未設定の場合はプロジェクトファイルのパスから生成する
+         ;; この場合、ディレクトリ構成によっては正常に動作しないケースもある
+         (cedet-root-path (or (plist-get details :cedet-root-path) project-path))
+         (cedet-spp-table (plist-get details :cedet-spp-table))
+         (system-inc-paths (msvc:convert-to-cedet-style-path (msvc-flags:query-cflag db-name "CFLAG_SystemIncludePath")))
+         (additional-inc-paths (msvc:convert-to-cedet-style-path (msvc-flags:query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
+         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
+         (additional-inc-rpaths))
 
-	(cl-case status
-	  (enable
-	   ;; generate relative path(CEDET format)
-	   (cl-dolist (path additional-inc-paths)
-		 (setq path (file-relative-name path cedet-root-path))
-		 ;; All path is relative from cedet-root-path.
-		 ;; And relative path string require starts with "/". (CEDET :include-path format specification)
-		 (setq path (concat "/" path))
-		 (add-to-list 'additional-inc-rpaths (file-name-as-directory path) t))
+    (cl-case status
+      (enable
+       ;; generate relative path(CEDET format)
+       (cl-dolist (path additional-inc-paths)
+         (setq path (file-relative-name path cedet-root-path))
+         ;; All path is relative from cedet-root-path.
+         ;; And relative path string require starts with "/". (CEDET :include-path format specification)
+         (setq path (concat "/" path))
+         (add-to-list 'additional-inc-rpaths (file-name-as-directory path) t))
 
-	   ;; generate Project.ede file
-	   ;; (print "ede-proj-file")
-	   ;; (print ede-proj-file)
-	   (unless (file-readable-p ede-proj-file)
-		 (msvc:create-ede-project-file ede-proj-file db-name))
+       ;; generate Project.ede file
+       ;; (print "ede-proj-file")
+       ;; (print ede-proj-file)
+       (unless (file-readable-p ede-proj-file)
+         (msvc:create-ede-project-file ede-proj-file db-name))
 
-	   ;; (print "ede-cpp-root-project")
-	   ;; (print ede-proj-file)
-	   ;; (print cedet-root-path)
-	   ;; (print additional-inc-rpaths)
-	   ;; (print system-inc-paths)
-	   ;; (print project-header-match-regexp)
-	   ;; (print cedet-spp-table)
+       ;; (print "ede-cpp-root-project")
+       ;; (print ede-proj-file)
+       ;; (print cedet-root-path)
+       ;; (print additional-inc-rpaths)
+       ;; (print system-inc-paths)
+       ;; (print project-header-match-regexp)
+       ;; (print cedet-spp-table)
 
-	   (ede-cpp-root-project db-name ;ok
-							 :file ede-proj-file ;ok
-							 :directory cedet-root-path ; ok
-							 :include-path additional-inc-rpaths ; :directoryからの相対パスで指定
-							 :system-include-path system-inc-paths ;ok
-							 :header-match-regexp project-header-match-regexp ;ok
-							 :spp-table cedet-spp-table ;ok
-							 :spp-files nil ;ok
-							 :local-variables nil ;ok ede:project-local-variables
-							 ))
-	  (disable
-	   nil))))
+       (ede-cpp-root-project db-name ;ok
+                             :file ede-proj-file ;ok
+                             :directory cedet-root-path ; ok
+                             :include-path additional-inc-rpaths ; :directoryからの相対パスで指定
+                             :system-include-path system-inc-paths ;ok
+                             :header-match-regexp project-header-match-regexp ;ok
+                             :spp-table cedet-spp-table ;ok
+                             :spp-files nil ;ok
+                             :local-variables nil ;ok ede:project-local-variables
+                             ))
+      (disable
+       nil))))
 
 (defun msvc:setup-buffer-feature-cedet (db-name status)
   (cl-case status
-	(enable
-	 ;; backup value
-	 (push ac-sources msvc:ac-sources-backup)
-	 ;; auto-complete ac-sources setup(use semantic)
-	 (setq ac-sources '(
-						;; ac-source-dictionary
-						ac-source-semantic
-						ac-source-semantic-raw
-						ac-source-imenu
-						;; ac-source-words-in-buffer
-						;; ac-source-words-in-same-mode-buffers
-						))
+    (enable
+     ;; backup value
+     (push ac-sources msvc:ac-sources-backup)
+     ;; auto-complete ac-sources setup(use semantic)
+     (setq ac-sources '(
+                        ;; ac-source-dictionary
+                        ac-source-semantic
+                        ac-source-semantic-raw
+                        ac-source-imenu
+                        ;; ac-source-words-in-buffer
+                        ;; ac-source-words-in-same-mode-buffers
+                        ))
 
-	 ;; Force a full refresh of the current buffer's tags.
-	 ;; (semantic-force-refresh)
-	 )
-	(disable
-	 ;; restore value
-	 (setq ac-sources (pop msvc:ac-sources-backup)))))
+     ;; Force a full refresh of the current buffer's tags.
+     ;; (semantic-force-refresh)
+     )
+    (disable
+     ;; restore value
+     (setq ac-sources (pop msvc:ac-sources-backup)))))
 
 
 ;; flymake セットアップ関数
 (defun msvc:setup-project-feature-flymake (db-name status)
   (cl-case status
-	(enable
-	 ;; (unless (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks)
-	 ;;   (add-to-list 'flymake-allowed-file-name-masks `(,msvc:flymake-target-pattern msvc:flymake-command-generator))))
+    (enable
+     ;; (unless (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks)
+     ;;   (add-to-list 'flymake-allowed-file-name-masks `(,msvc:flymake-target-pattern msvc:flymake-command-generator))))
 
-	 ;; プロジェクトファイルと同じ場所にインポートプロジェクトが配置されている必要がある
-	 ;; MSBuild の仕様のため(詳細後述)
-	 (let* ((project-file (plist-get (msvc-flags:create-project-property db-name) :project-file))
-			(project-path (file-name-directory project-file))
-			(msb-target-file (expand-file-name msvc:flymake-vcx-proj-name project-path)))
-	   (when (file-newer-than-file-p msvc:flymake-vcx-proj-file msb-target-file)
-		 (copy-file msvc:flymake-vcx-proj-file msb-target-file t t)))
-	 nil)
-	(disable
-	 ;; (setq flymake-allowed-file-name-masks (delete (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks) flymake-allowed-file-name-masks)))
-	 nil)))
+     ;; プロジェクトファイルと同じ場所にインポートプロジェクトが配置されている必要がある
+     ;; MSBuild の仕様のため(詳細後述)
+     (let* ((project-file (plist-get (msvc-flags:create-project-property db-name) :project-file))
+            (project-path (file-name-directory project-file))
+            (msb-target-file (expand-file-name msvc:flymake-vcx-proj-name project-path)))
+       (when (file-newer-than-file-p msvc:flymake-vcx-proj-file msb-target-file)
+         (copy-file msvc:flymake-vcx-proj-file msb-target-file t t)))
+     nil)
+    (disable
+     ;; (setq flymake-allowed-file-name-masks (delete (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks) flymake-allowed-file-name-masks)))
+     nil)))
 
 (defun msvc:setup-buffer-feature-flymake (db-name status)
   (let* ((details (msvc:query-project db-name))
-		 (manually-p (plist-get details :flymake-manually-p))
-		 (manually-back-end (plist-get details :flymake-manually-back-end)))
+         (manually-p (plist-get details :flymake-manually-p))
+         (manually-back-end (plist-get details :flymake-manually-back-end)))
 
-	(cl-case status
-	  (enable
-	   (setq msvc:flymake-back-end 'msbuild)
-	   (setq msvc:flymake-manually-back-end (if manually-back-end manually-back-end msvc:flymake-back-end))
-	   (set (make-local-variable 'flymake-allowed-file-name-masks) msvc:flymake-allowed-file-name-masks)
-	   (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc:flymake-err-line-patterns msvc:flymake-manually-back-end))
-	   ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
-	   (set (make-local-variable 'flymake-start-syntax-check-on-find-file) nil)
-	   (unless manually-p
-		 (flymake-mode-on)))
-	  ;; (let ((flymake-start-syntax-check-on-find-file nil))
-	  ;;   (flymake-mode-on)))
-	  (disable
-	   (if manually-p
-		   (flymake-delete-own-overlays)
-		 (flymake-mode-off))
-	   (setq msvc:flymake-back-end nil)
-	   (setq msvc:flymake-manually-back-end nil)
-	   (set (make-local-variable 'flymake-allowed-file-name-masks) (default-value 'flymake-allowed-file-name-masks))
-	   (set (make-local-variable 'flymake-err-line-patterns) (default-value 'flymake-err-line-patterns))
-	   (set (make-local-variable 'flymake-start-syntax-check-on-find-file) (default-value 'flymake-start-syntax-check-on-find-file))))))
+    (cl-case status
+      (enable
+       (setq msvc:flymake-back-end 'msbuild)
+       (setq msvc:flymake-manually-back-end (if manually-back-end manually-back-end msvc:flymake-back-end))
+       (set (make-local-variable 'flymake-allowed-file-name-masks) msvc:flymake-allowed-file-name-masks)
+       (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc:flymake-err-line-patterns msvc:flymake-manually-back-end))
+       ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
+       (set (make-local-variable 'flymake-start-syntax-check-on-find-file) nil)
+       (unless manually-p
+         (flymake-mode-on)))
+      ;; (let ((flymake-start-syntax-check-on-find-file nil))
+      ;;   (flymake-mode-on)))
+      (disable
+       (if manually-p
+           (flymake-delete-own-overlays)
+         (flymake-mode-off))
+       (setq msvc:flymake-back-end nil)
+       (setq msvc:flymake-manually-back-end nil)
+       (set (make-local-variable 'flymake-allowed-file-name-masks) (default-value 'flymake-allowed-file-name-masks))
+       (set (make-local-variable 'flymake-err-line-patterns) (default-value 'flymake-err-line-patterns))
+       (set (make-local-variable 'flymake-start-syntax-check-on-find-file) (default-value 'flymake-start-syntax-check-on-find-file))))))
 
 
 
@@ -650,44 +650,44 @@
   (interactive)
 
   (let* ((details (msvc:query-project db-name))
-		 (allow-cedet-p (plist-get details :allow-cedet-p))
-		 (allow-ac-clang-p (plist-get details :allow-ac-clang-p))
-		 (allow-flymake-p (plist-get details :allow-flymake-p))
-		 (target-buffers (plist-get details :target-buffers)))
-	;; (print db-name)
-	;; (print details)
-	;; (print target-buffers)
+         (allow-cedet-p (plist-get details :allow-cedet-p))
+         (allow-ac-clang-p (plist-get details :allow-ac-clang-p))
+         (allow-flymake-p (plist-get details :allow-flymake-p))
+         (target-buffers (plist-get details :target-buffers)))
+    ;; (print db-name)
+    ;; (print details)
+    ;; (print target-buffers)
 
-	(unless msvc:source-code-belonging-db-name
-	  ;; db-name set to local-var for project target buffer.
-	  (setq msvc:source-code-belonging-db-name db-name)
+    (unless msvc:source-code-belonging-db-name
+      ;; db-name set to local-var for project target buffer.
+      (setq msvc:source-code-belonging-db-name db-name)
 
-	  ;; attach to project
-	  (add-to-list 'target-buffers (current-buffer) t)
-	  (setq details (plist-put details :target-buffers target-buffers))
-	  ;; (print target-buffers)
+      ;; attach to project
+      (add-to-list 'target-buffers (current-buffer) t)
+      (setq details (plist-put details :target-buffers target-buffers))
+      ;; (print target-buffers)
 
-	  ;; (add-hook 'kill-buffer-hook 'msvc:detach-from-project nil t)
-	  ;; (add-hook 'before-revert-hook 'msvc:detach-from-project nil t)
-	  (add-hook 'kill-buffer-hook 'msvc:mode-off nil t)
-	  (add-hook 'before-revert-hook 'msvc:mode-off nil t)
+      ;; (add-hook 'kill-buffer-hook 'msvc:detach-from-project nil t)
+      ;; (add-hook 'before-revert-hook 'msvc:detach-from-project nil t)
+      (add-hook 'kill-buffer-hook 'msvc:mode-off nil t)
+      (add-hook 'before-revert-hook 'msvc:mode-off nil t)
 
-	  ;; launch allow features(launch order low > high)
+      ;; launch allow features(launch order low > high)
 
-	  ;; ---- CEDET ----
-	  (when allow-cedet-p
-		(msvc:setup-buffer-feature-cedet db-name 'enable))
-	  ;; ---- ac-clang ----
-	  (when allow-ac-clang-p
-		(msvc:setup-buffer-feature-ac-clang db-name 'enable))
-	  ;; ---- flymake ----
-	  (when allow-flymake-p
-		(msvc:setup-buffer-feature-flymake db-name 'enable))
+      ;; ---- CEDET ----
+      (when allow-cedet-p
+        (msvc:setup-buffer-feature-cedet db-name 'enable))
+      ;; ---- ac-clang ----
+      (when allow-ac-clang-p
+        (msvc:setup-buffer-feature-ac-clang db-name 'enable))
+      ;; ---- flymake ----
+      (when allow-flymake-p
+        (msvc:setup-buffer-feature-flymake db-name 'enable))
 
-	  ;; プロジェクト状態をバッファへ表示
-	  (msvc:display-project-details db-name)
+      ;; プロジェクト状態をバッファへ表示
+      (msvc:display-project-details db-name)
 
-	  t)))
+      t)))
 
 
 
@@ -696,39 +696,39 @@
   (interactive)
 
   (when msvc:source-code-belonging-db-name
-	(let* ((db-name msvc:source-code-belonging-db-name)
-		   (details (msvc:query-project db-name))
-		   (allow-cedet-p (plist-get details :allow-cedet-p))
-		   (allow-ac-clang-p (plist-get details :allow-ac-clang-p))
-		   (allow-flymake-p (plist-get details :allow-flymake-p))
-		   (target-buffers (plist-get details :target-buffers)))
+    (let* ((db-name msvc:source-code-belonging-db-name)
+           (details (msvc:query-project db-name))
+           (allow-cedet-p (plist-get details :allow-cedet-p))
+           (allow-ac-clang-p (plist-get details :allow-ac-clang-p))
+           (allow-flymake-p (plist-get details :allow-flymake-p))
+           (target-buffers (plist-get details :target-buffers)))
 
-	  ;; clear beglonging db-name
-	  (setq msvc:source-code-belonging-db-name nil)
+      ;; clear beglonging db-name
+      (setq msvc:source-code-belonging-db-name nil)
 
-	  ;; detach from project
-	  (setq target-buffers (delete (current-buffer) target-buffers))
-	  (setq details (plist-put details :target-buffers target-buffers))
+      ;; detach from project
+      (setq target-buffers (delete (current-buffer) target-buffers))
+      (setq details (plist-put details :target-buffers target-buffers))
 
-	  (remove-hook 'kill-buffer-hook 'msvc:mode-off t)
-	  (remove-hook 'before-revert-hook 'msvc:mode-off t)
+      (remove-hook 'kill-buffer-hook 'msvc:mode-off t)
+      (remove-hook 'before-revert-hook 'msvc:mode-off t)
 
-	  ;; shutdown allow features(order hight > low)
+      ;; shutdown allow features(order hight > low)
 
-	  ;; ---- flymake ----
-	  (when allow-flymake-p
-		(msvc:setup-buffer-feature-flymake db-name 'disable))
-	  ;; ---- ac-clang ----
-	  (when allow-ac-clang-p
-		(msvc:setup-buffer-feature-ac-clang db-name 'disable))
-	  ;; ---- CEDET ----
-	  (when allow-cedet-p
-		(msvc:setup-buffer-feature-cedet db-name 'disable))
+      ;; ---- flymake ----
+      (when allow-flymake-p
+        (msvc:setup-buffer-feature-flymake db-name 'disable))
+      ;; ---- ac-clang ----
+      (when allow-ac-clang-p
+        (msvc:setup-buffer-feature-ac-clang db-name 'disable))
+      ;; ---- CEDET ----
+      (when allow-cedet-p
+        (msvc:setup-buffer-feature-cedet db-name 'disable))
 
-	  ;; プロジェクト状態をバッファへ表示
-	  (msvc:display-project-details db-name)
+      ;; プロジェクト状態をバッファへ表示
+      (msvc:display-project-details db-name)
 
-	  t)))
+      t)))
 
 
 
@@ -737,30 +737,30 @@
   (interactive)
 
   (unless msvc:source-code-belonging-db-name
-	(cl-dolist (project msvc:active-projects)
-	  (let* ((db-name (car project)))
-		(when (msvc:is-belonging db-name)
-		  (msvc:attach-to-project db-name)
-		  (cl-return-from msvc:evaluate-buffer t))))))
+    (cl-dolist (project msvc:active-projects)
+      (let* ((db-name (car project)))
+        (when (msvc:is-belonging db-name)
+          (msvc:attach-to-project db-name)
+          (cl-return-from msvc:evaluate-buffer t))))))
 
 
 
 
 (defun msvc:parsed-activator ()
   (unless msvc-flags:parsing-p
-	;; (message "parsed-activator")
-	;; (print msvc:activation-requests)
-	(cl-dolist (request msvc:activation-requests)
-	  ;; (print request)
-	  (let ((db-names (plist-get request :db-names))
-			(args (plist-get request :args)))
-		(cl-dolist (db-name db-names)
-		  (apply 'msvc:activate-project db-name args))))
-	(setq msvc:activation-requests nil)
+    ;; (message "parsed-activator")
+    ;; (print msvc:activation-requests)
+    (cl-dolist (request msvc:activation-requests)
+      ;; (print request)
+      (let ((db-names (plist-get request :db-names))
+            (args (plist-get request :args)))
+        (cl-dolist (db-name db-names)
+          (apply 'msvc:activate-project db-name args))))
+    (setq msvc:activation-requests nil)
 
-	(when msvc:activation-timer
-	  (cancel-timer msvc:activation-timer)
-	  (setq msvc:activation-timer nil))))
+    (when msvc:activation-timer
+      (cancel-timer msvc:activation-timer)
+      (setq msvc:activation-timer nil))))
 
 
 
@@ -787,42 +787,42 @@ optionals
   (interactive)
 
   (let* (
-		 (solution-file (plist-get args :solution-file))
-		 (project-file (plist-get args :project-file))
-		 (platform (plist-get args :platform))
-		 (configuration (plist-get args :configuration))
+         (solution-file (plist-get args :solution-file))
+         (project-file (plist-get args :project-file))
+         (platform (plist-get args :platform))
+         (configuration (plist-get args :configuration))
 
-		 db-names
-		 )
-	(unless (or solution-file project-file)
-	  (cl-return-from msvc:activate-projects-after-parse nil))
+         db-names
+         )
+    (unless (or solution-file project-file)
+      (cl-return-from msvc:activate-projects-after-parse nil))
 
-	(unless (and platform configuration)
-	  (cl-return-from msvc:activate-projects-after-parse nil))
+    (unless (and platform configuration)
+      (cl-return-from msvc:activate-projects-after-parse nil))
 
-	;; args check & modify
+    ;; args check & modify
 
-	;; add force delete
-	(setq args (plist-put args :parsing-buffer-delete-p t))
+    ;; add force delete
+    (setq args (plist-put args :parsing-buffer-delete-p t))
 
-	;; check version
-	(unless (plist-get args :version)
-	  (setq args (plist-put args :version msvc-env:default-use-version)))
-		
-	;; 指定ソリューションorプロジェクトのパース
-	(when (and solution-file (not project-file))
-	  (setq db-names (apply 'msvc-flags:parse-vcx-solution args)))
+    ;; check version
+    (unless (plist-get args :version)
+      (setq args (plist-put args :version msvc-env:default-use-version)))
+        
+    ;; 指定ソリューションorプロジェクトのパース
+    (when (and solution-file (not project-file))
+      (setq db-names (apply 'msvc-flags:parse-vcx-solution args)))
 
-	(when project-file
-	  (setq db-names (apply 'msvc-flags:parse-vcx-project args))
-	  (setq db-names (when db-names (list db-names))))
+    (when project-file
+      (setq db-names (apply 'msvc-flags:parse-vcx-project args))
+      (setq db-names (when db-names (list db-names))))
 
-	(when db-names
-	  (add-to-list 'msvc:activation-requests `(:db-names ,db-names :args ,args) t)
-	  (unless msvc:activation-timer
-		(setq msvc:activation-timer (run-at-time nil 1 'msvc:parsed-activator))))
+    (when db-names
+      (add-to-list 'msvc:activation-requests `(:db-names ,db-names :args ,args) t)
+      (unless msvc:activation-timer
+        (setq msvc:activation-timer (run-at-time nil 1 'msvc:parsed-activator))))
 
-	db-names))
+    db-names))
 
 
 
@@ -844,104 +844,104 @@ optionals
   ;; (message (format "allow-ac-clang-p = %s, allow-cedet-p = %s, allow-flymake-p = %s\n" allow-ac-clang-p allow-cedet-p allow-flymake-p))
 
   (unless db-name
-	(message "msvc : db-name is nil.")
-	(cl-return-from msvc:activate-project nil))
+    (message "msvc : db-name is nil.")
+    (cl-return-from msvc:activate-project nil))
 
   ;; DBリストからプロジェクトマネージャーを生成
   (let* (
-		 (property (msvc-flags:create-project-property db-name))
+         (property (msvc-flags:create-project-property db-name))
 
-		 ;; project basic information
-		 (project-buffer (format msvc:project-buffer-name-fmt db-name))
-		 (project-file (plist-get property :project-file))
-		 (platform (plist-get property :platform))
-		 (configuration (plist-get property :configuration))
-		 (version (plist-get property :version))
+         ;; project basic information
+         (project-buffer (format msvc:project-buffer-name-fmt db-name))
+         (project-file (plist-get property :project-file))
+         (platform (plist-get property :platform))
+         (configuration (plist-get property :configuration))
+         (version (plist-get property :version))
 
-		 (solution-file (plist-get args :solution-file))
+         (solution-file (plist-get args :solution-file))
 
-		 ;; project allow feature
-		 (allow-cedet-p (plist-get args :allow-cedet-p))
-		 (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
-		 (allow-flymake-p (plist-get args :allow-flymake-p))
-		 (cedet-root-path (plist-get args :cedet-root-path))
-		 (cedet-spp-table (plist-get args :cedet-spp-table))
-		 (flymake-manually-p (plist-get args :flymake-manually-p))
-		 (flymake-manually-back-end (plist-get args :flymake-manually-back-end))
+         ;; project allow feature
+         (allow-cedet-p (plist-get args :allow-cedet-p))
+         (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
+         (allow-flymake-p (plist-get args :allow-flymake-p))
+         (cedet-root-path (plist-get args :cedet-root-path))
+         (cedet-spp-table (plist-get args :cedet-spp-table))
+         (flymake-manually-p (plist-get args :flymake-manually-p))
+         (flymake-manually-back-end (plist-get args :flymake-manually-back-end))
 
-		 (target-buffers nil)
-		 ;; details
-		 )
+         (target-buffers nil)
+         ;; details
+         )
 
-	;; CFLAGS exist check
-	(unless (msvc-flags:query-cflags db-name)
-	  (message "msvc : db-name not found in CFLAGS database. : %s" db-name)
-	  (cl-return-from msvc:activate-project nil))
+    ;; CFLAGS exist check
+    (unless (msvc-flags:query-cflags db-name)
+      (message "msvc : db-name not found in CFLAGS database. : %s" db-name)
+      (cl-return-from msvc:activate-project nil))
 
-	;; 既存バッファは削除（削除によって既存プロジェクトの削除も動作するはず）
-	(when (get-buffer project-buffer)
-	  (kill-buffer project-buffer))
+    ;; 既存バッファは削除（削除によって既存プロジェクトの削除も動作するはず）
+    (when (get-buffer project-buffer)
+      (kill-buffer project-buffer))
 
-	(get-buffer-create project-buffer)
+    (get-buffer-create project-buffer)
 
-	;; dbへ登録のみ
-	;; value が最初はnilだとわかっていても変数を入れておかないと評価時におかしくなる・・
-	;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
-	(msvc:regist-project db-name `(
-								   :project-buffer ,project-buffer
-								   :solution-file ,solution-file
-								   :project-file ,project-file
-								   :platform ,platform
-								   :configuration ,configuration
-								   :version ,version
-								   :allow-cedet-p ,allow-cedet-p
-								   :allow-ac-clang-p ,allow-ac-clang-p
-								   :allow-flymake-p ,allow-flymake-p
-								   :cedet-root-path ,cedet-root-path
-								   :cedet-spp-table ,cedet-spp-table
-								   :flymake-manually-p ,flymake-manually-p
-								   :flymake-manually-back-end ,flymake-manually-back-end
-								   :target-buffers ,target-buffers
-								   ))
+    ;; dbへ登録のみ
+    ;; value が最初はnilだとわかっていても変数を入れておかないと評価時におかしくなる・・
+    ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
+    (msvc:regist-project db-name `(
+                                   :project-buffer ,project-buffer
+                                   :solution-file ,solution-file
+                                   :project-file ,project-file
+                                   :platform ,platform
+                                   :configuration ,configuration
+                                   :version ,version
+                                   :allow-cedet-p ,allow-cedet-p
+                                   :allow-ac-clang-p ,allow-ac-clang-p
+                                   :allow-flymake-p ,allow-flymake-p
+                                   :cedet-root-path ,cedet-root-path
+                                   :cedet-spp-table ,cedet-spp-table
+                                   :flymake-manually-p ,flymake-manually-p
+                                   :flymake-manually-back-end ,flymake-manually-back-end
+                                   :target-buffers ,target-buffers
+                                   ))
 
-	;; setup project buffer
-	(with-current-buffer project-buffer
-	  ;; db-name set local-var for MSVC buffer
-	  (setq msvc:db-name db-name)
+    ;; setup project buffer
+    (with-current-buffer project-buffer
+      ;; db-name set local-var for MSVC buffer
+      (setq msvc:db-name db-name)
 
-	  ;; (add-to-list 'msvc:active-projects project-buffer)
-	  ;; 該当バッファが消されたらマネージャーから外す
-	  (add-hook 'kill-buffer-hook `(lambda () (msvc:deactivate-project ,db-name)) nil t)
+      ;; (add-to-list 'msvc:active-projects project-buffer)
+      ;; 該当バッファが消されたらマネージャーから外す
+      (add-hook 'kill-buffer-hook `(lambda () (msvc:deactivate-project ,db-name)) nil t)
 
-	  ;; launch features (per project)
+      ;; launch features (per project)
 
-	  ;; ---- CEDET ----
-	  (when allow-cedet-p
-		(msvc:setup-project-feature-cedet db-name 'enable))
-	  ;; ---- ac-clang ----
-	  (when allow-ac-clang-p
-		(msvc:setup-project-feature-ac-clang db-name 'enable))
-	  ;; ---- flymake ----
-	  (when allow-flymake-p
-		(msvc:setup-project-feature-flymake db-name 'enable))
+      ;; ---- CEDET ----
+      (when allow-cedet-p
+        (msvc:setup-project-feature-cedet db-name 'enable))
+      ;; ---- ac-clang ----
+      (when allow-ac-clang-p
+        (msvc:setup-project-feature-ac-clang db-name 'enable))
+      ;; ---- flymake ----
+      (when allow-flymake-p
+        (msvc:setup-project-feature-flymake db-name 'enable))
 
-	  ;; 編集させない
-	  (setq buffer-read-only t))
+      ;; 編集させない
+      (setq buffer-read-only t))
 
-	;; 以下プロジェクトのセットアップが終わってから行う(CEDETなどのプロジェクト付機能のセットアップも終わっていないとだめ)
-	;; オープン済みで所属バッファを収集
-	(setq target-buffers (msvc:gather-target-buffer db-name))
+    ;; 以下プロジェクトのセットアップが終わってから行う(CEDETなどのプロジェクト付機能のセットアップも終わっていないとだめ)
+    ;; オープン済みで所属バッファを収集
+    (setq target-buffers (msvc:gather-target-buffer db-name))
 
-	;; target buffer all attach
-	(let ((msvc:display-update-p nil))
-	  (cl-dolist (buffer target-buffers)
-		(with-current-buffer buffer
-		  (msvc:mode-on))))
-	
-	;; プロジェクト状態をバッファへ表示
-	(msvc:display-project-details db-name)
+    ;; target buffer all attach
+    (let ((msvc:display-update-p nil))
+      (cl-dolist (buffer target-buffers)
+        (with-current-buffer buffer
+          (msvc:mode-on))))
+    
+    ;; プロジェクト状態をバッファへ表示
+    (msvc:display-project-details db-name)
 
-	t))
+    t))
 
 
 ;; プロジェクトのデアクティベーション
@@ -949,38 +949,38 @@ optionals
   (interactive)
 
   (let ((details (msvc:query-project db-name)))
-	(when details
-	  (let* ((project-buffer (format msvc:project-buffer-name-fmt db-name))
-			 (allow-cedet-p (plist-get details :allow-cedet-p))
-			 (allow-ac-clang-p (plist-get details :allow-ac-clang-p))
-			 (allow-flymake-p (plist-get details :allow-flymake-p))
-			 (target-buffers (plist-get details :target-buffers)))
+    (when details
+      (let* ((project-buffer (format msvc:project-buffer-name-fmt db-name))
+             (allow-cedet-p (plist-get details :allow-cedet-p))
+             (allow-ac-clang-p (plist-get details :allow-ac-clang-p))
+             (allow-flymake-p (plist-get details :allow-flymake-p))
+             (target-buffers (plist-get details :target-buffers)))
 
-		;; target buffers all detach
-		(let ((msvc:display-update-p nil))
-		  (cl-dolist (buffer target-buffers)
-			(with-current-buffer buffer
-			  (msvc:mode-off))))
-
-
-		;; shutdown features (per project)
-		;; allowed features are necessary to shutdown.
-		(with-current-buffer project-buffer
-		  ;; ---- flymake ----
-		  (when allow-flymake-p
-			(msvc:setup-project-feature-flymake db-name 'disable))
-		  ;; ---- ac-clang ----
-		  (when allow-ac-clang-p
-			(msvc:setup-project-feature-ac-clang db-name 'disable))
-		  ;; ---- CEDET ----
-		  (when allow-cedet-p
-			(msvc:setup-project-feature-cedet db-name 'disable))))
+        ;; target buffers all detach
+        (let ((msvc:display-update-p nil))
+          (cl-dolist (buffer target-buffers)
+            (with-current-buffer buffer
+              (msvc:mode-off))))
 
 
-	  ;; a project is removed from database.
-	  ;; (print (format "msvc:deactivate-project %s" db-name))
-	  (msvc:unregist-project db-name)
-	  t)))
+        ;; shutdown features (per project)
+        ;; allowed features are necessary to shutdown.
+        (with-current-buffer project-buffer
+          ;; ---- flymake ----
+          (when allow-flymake-p
+            (msvc:setup-project-feature-flymake db-name 'disable))
+          ;; ---- ac-clang ----
+          (when allow-ac-clang-p
+            (msvc:setup-project-feature-ac-clang db-name 'disable))
+          ;; ---- CEDET ----
+          (when allow-cedet-p
+            (msvc:setup-project-feature-cedet db-name 'disable))))
+
+
+      ;; a project is removed from database.
+      ;; (print (format "msvc:deactivate-project %s" db-name))
+      (msvc:unregist-project db-name)
+      t)))
 
 
 ;; 現在アクティブなプロジェクトを再パース
@@ -988,15 +988,15 @@ optionals
   (interactive)
 
   (let* (db-names)
-	;; msvc:activate-projects-after-parseでmsvc:active-projectsに対してadd/removeされるので
-	;; msvc:active-projects を参照しながら msvc:activate-projects-after-parse を実行すると問題がでる可能性がある
-	;; なので一旦対象db-nameだけを集めてから処理する
-	(cl-dolist (project msvc:active-projects)
-	  (let* ((db-name (car project)))
-		(add-to-list 'db-names db-name t)))
+    ;; msvc:activate-projects-after-parseでmsvc:active-projectsに対してadd/removeされるので
+    ;; msvc:active-projects を参照しながら msvc:activate-projects-after-parse を実行すると問題がでる可能性がある
+    ;; なので一旦対象db-nameだけを集めてから処理する
+    (cl-dolist (project msvc:active-projects)
+      (let* ((db-name (car project)))
+        (add-to-list 'db-names db-name t)))
 
-	(cl-dolist (db-name db-names)
-	  (apply 'msvc:activate-projects-after-parse (msvc:query-project db-name)))))
+    (cl-dolist (db-name db-names)
+      (apply 'msvc:activate-projects-after-parse (msvc:query-project db-name)))))
 
 
 
@@ -1010,8 +1010,8 @@ optionals
 (defun msvc:mode-feature-return-from-include ()
   (interactive)
   (let ((buffer (pop msvc:mode-feature-include-visit-stack)))
-	(when (buffer-live-p buffer)
-	  (set-window-buffer nil buffer))))
+    (when (buffer-live-p buffer)
+      (set-window-buffer nil buffer))))
 
 (defun msvc:mode-feature-manually-ac-clang-complete ()
   (interactive)
@@ -1034,67 +1034,67 @@ optionals
 (defun msvc:mode-feature-manually-flymake ()
   (interactive)
   (cl-case msvc:flymake-manually-back-end
-	(msbuild
-	 ;; back end : MSBuild
-	 (flymake-start-syntax-check))
-	(clang
-	 ;; back end : clang
-	 (ac-clang:syntax-check))))
+    (msbuild
+     ;; back end : MSBuild
+     (flymake-start-syntax-check))
+    (clang
+     ;; back end : clang
+     (ac-clang:syntax-check))))
 
 (defun msvc:mode-feature-jump-to-project-buffer ()
   (interactive)
   (when msvc:source-code-belonging-db-name
-	(switch-to-buffer (format msvc:project-buffer-name-fmt msvc:source-code-belonging-db-name))
-	;; (switch-to-buffer-other-window (format msvc:project-buffer-name-fmt msvc:source-code-belonging-db-name))
-	))
+    (switch-to-buffer (format msvc:project-buffer-name-fmt msvc:source-code-belonging-db-name))
+    ;; (switch-to-buffer-other-window (format msvc:project-buffer-name-fmt msvc:source-code-belonging-db-name))
+    ))
 
 (defun msvc:mode-feature-reparse-project ()
   (interactive)
   (let* ((details (msvc:query-current-project)))
-	(apply 'msvc:activate-projects-after-parse details)))
+    (apply 'msvc:activate-projects-after-parse details)))
 
 
 (defun msvc:mode-feature-launch-msvs-by-project ()
   (interactive)
   (let* ((details (msvc:query-current-project))
-		 (project-file (plist-get details :project-file)))
-	(w32-shell-execute "open" project-file)))
+         (project-file (plist-get details :project-file)))
+    (w32-shell-execute "open" project-file)))
 
 (defun msvc:mode-feature-launch-msvs-by-solution ()
   (interactive)
   (let* ((details (msvc:query-current-project))
-		 (solution-file (plist-get details :solution-file)))
-	(when solution-file
-	  (w32-shell-execute "open" solution-file))))
+         (solution-file (plist-get details :solution-file)))
+    (when solution-file
+      (w32-shell-execute "open" solution-file))))
 
 (defun msvc:mode-feature-launch-msvs ()
   (interactive)
   (let* ((details (msvc:query-current-project))
-		 (target-file (or (plist-get details :solution-file) (plist-get details :project-file))))
-	(when target-file
-	  (w32-shell-execute "open" target-file))))
+         (target-file (or (plist-get details :solution-file) (plist-get details :project-file))))
+    (when target-file
+      (w32-shell-execute "open" target-file))))
 
 
 (defun msvc:build-solution-sentinel (process _event)
   (when (memq (process-status process) '(signal exit))
-	(let* ((exit-status (process-exit-status process))
-		   (bind-buffer (process-buffer process)))
-	  ;; プロセスバッファを終了時に表示
-	  (msvc:msvc:parse-solution-build-report bind-buffer)
-	  (when (eq msvc:solution-build-report-display-timing 'after)
-		(msvc:split-window bind-buffer)))))
-	
+    (let* ((exit-status (process-exit-status process))
+           (bind-buffer (process-buffer process)))
+      ;; プロセスバッファを終了時に表示
+      (msvc:msvc:parse-solution-build-report bind-buffer)
+      (when (eq msvc:solution-build-report-display-timing 'after)
+        (msvc:split-window bind-buffer)))))
+    
 
 (defun msvc:mode-feature-solution-goto-prev-error ()
   (interactive)
 
   (move-to-column 0)
   (let ((pos (previous-single-property-change (point) 'error-info)))
-	(unless pos
-	  (setq pos (previous-single-property-change (point-max) 'error-info)))
-	(when pos
-	  (goto-char pos)
-	  (move-to-column 0))))
+    (unless pos
+      (setq pos (previous-single-property-change (point-max) 'error-info)))
+    (when pos
+      (goto-char pos)
+      (move-to-column 0))))
 
 
 (defun msvc:mode-feature-solution-goto-next-error ()
@@ -1102,40 +1102,40 @@ optionals
 
   (move-to-column 0)
   (when (get-text-property (point) 'error-info)
-	(goto-char (next-single-property-change (point) 'error-info)))
+    (goto-char (next-single-property-change (point) 'error-info)))
   (let ((pos (next-single-property-change (point) 'error-info)))
-	(unless pos
-	  (setq pos (next-single-property-change (point-min) 'error-info)))
-	(when pos
-	  (goto-char pos))))
+    (unless pos
+      (setq pos (next-single-property-change (point-min) 'error-info)))
+    (when pos
+      (goto-char pos))))
 
 
 (defun msvc:mode-feature-solution-jump-to-error-file ()
   (interactive)
 
   (let ((info (get-text-property (point) 'error-info)))
-	(when info
-	  (let* ((file (plist-get info :src-file))
-			 (line (plist-get info :src-line))
-			 (buffer (find-file-noselect file)))
-		(msvc:split-window buffer)
-		(select-window (get-buffer-window buffer))
-		(goto-char (point-min))
-		(forward-line (1- line))))))
+    (when info
+      (let* ((file (plist-get info :src-file))
+             (line (plist-get info :src-line))
+             (buffer (find-file-noselect file)))
+        (msvc:split-window buffer)
+        (select-window (get-buffer-window buffer))
+        (goto-char (point-min))
+        (forward-line (1- line))))))
 
 
 (defun msvc:mode-feature-solution-view-error-file ()
   (interactive)
 
   (let ((info (get-text-property (point) 'error-info)))
-	(when info
-	  (let* ((file (plist-get info :src-file))
-			 (line (plist-get info :src-line))
-			 (buffer (find-file-noselect file)))
-		(msvc:split-window buffer)
-		(with-selected-window (get-buffer-window buffer)
-		  (goto-char (point-min))
-		  (forward-line (1- line)))))))
+    (when info
+      (let* ((file (plist-get info :src-file))
+             (line (plist-get info :src-line))
+             (buffer (find-file-noselect file)))
+        (msvc:split-window buffer)
+        (with-selected-window (get-buffer-window buffer)
+          (goto-char (point-min))
+          (forward-line (1- line)))))))
 
 
 (defun msvc:mode-feature-solution-view-prev-error ()
@@ -1158,124 +1158,124 @@ optionals
 
 (defun msvc:msvc:parse-solution-build-report (buffer)
   (let* (
-		 ;; (pattern (concat (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)) "\\[\\(.+\\)\\]"))
-		 (pattern (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)))
-		 src-file
-		 src-line
-		 project-path
-		 msg-start
-		 msg-end
-		 ;; log-line
-		 log-start
-		 log-end
-		 (map (make-sparse-keymap)))
+         ;; (pattern (concat (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)) "\\[\\(.+\\)\\]"))
+         (pattern (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)))
+         src-file
+         src-line
+         project-path
+         msg-start
+         msg-end
+         ;; log-line
+         log-start
+         log-end
+         (map (make-sparse-keymap)))
 
-	(define-key map (kbd "[") 'msvc:mode-feature-solution-goto-prev-error)
-	(define-key map (kbd "]") 'msvc:mode-feature-solution-goto-next-error)
-	(define-key map (kbd "C-z") 'msvc:mode-feature-solution-view-error-file)
-	(define-key map (kbd "M-[") 'msvc:mode-feature-solution-view-prev-error)
-	(define-key map (kbd "M-]") 'msvc:mode-feature-solution-view-next-error)
-	(define-key map (kbd "RET") 'msvc:mode-feature-solution-jump-to-error-file)
-	(define-key map [(mouse-1)] 'msvc:mode-feature-solution-jump-to-error-file-by-mouse)
+    (define-key map (kbd "[") 'msvc:mode-feature-solution-goto-prev-error)
+    (define-key map (kbd "]") 'msvc:mode-feature-solution-goto-next-error)
+    (define-key map (kbd "C-z") 'msvc:mode-feature-solution-view-error-file)
+    (define-key map (kbd "M-[") 'msvc:mode-feature-solution-view-prev-error)
+    (define-key map (kbd "M-]") 'msvc:mode-feature-solution-view-next-error)
+    (define-key map (kbd "RET") 'msvc:mode-feature-solution-jump-to-error-file)
+    (define-key map [(mouse-1)] 'msvc:mode-feature-solution-jump-to-error-file-by-mouse)
 
-	(with-current-buffer buffer
-	  (use-local-map map)
+    (with-current-buffer buffer
+      (use-local-map map)
 
-	  (setq buffer-read-only nil)
-	  (goto-char (point-min))
+      (setq buffer-read-only nil)
+      (goto-char (point-min))
 
-	  (while (re-search-forward pattern nil t)
-		(setq src-file (match-string 1))
-		(setq src-line (string-to-number (match-string 2)))
-		(setq log-start (match-beginning 1))
-		(setq log-end (match-end 1))
-		(setq msg-start (match-beginning 3))
-		(setq msg-end (match-end 3))
-		(setq project-path (match-string 4))
+      (while (re-search-forward pattern nil t)
+        (setq src-file (match-string 1))
+        (setq src-line (string-to-number (match-string 2)))
+        (setq log-start (match-beginning 1))
+        (setq log-end (match-end 1))
+        (setq msg-start (match-beginning 3))
+        (setq msg-end (match-end 3))
+        (setq project-path (match-string 4))
 
-		;; (setq log-line (line-number-at-pos log-start))
-		(setq src-file (replace-regexp-in-string "[\\\\]+" "/" src-file))
-		;; (setq src-file (replace-regexp-in-string "^\\s-+" "" src-file))
+        ;; (setq log-line (line-number-at-pos log-start))
+        (setq src-file (replace-regexp-in-string "[\\\\]+" "/" src-file))
+        ;; (setq src-file (replace-regexp-in-string "^\\s-+" "" src-file))
 
-		(unless (file-name-absolute-p src-file)
-		  (setq project-path (replace-regexp-in-string "[\\\\]+" "/" project-path))
-		  (setq project-path (file-name-directory project-path))
-		  (setq src-file (expand-file-name src-file project-path)))
+        (unless (file-name-absolute-p src-file)
+          (setq project-path (replace-regexp-in-string "[\\\\]+" "/" project-path))
+          (setq project-path (file-name-directory project-path))
+          (setq src-file (expand-file-name src-file project-path)))
 
-		(set-text-properties (line-beginning-position) (line-end-position) `(mouse-face highlight error-info (:src-file ,src-file :src-line ,src-line)))
-		(add-text-properties log-start log-end `(face dired-directory))
-		(add-text-properties msg-start msg-end `(face font-lock-keyword-face)))
+        (set-text-properties (line-beginning-position) (line-end-position) `(mouse-face highlight error-info (:src-file ,src-file :src-line ,src-line)))
+        (add-text-properties log-start log-end `(face dired-directory))
+        (add-text-properties msg-start msg-end `(face font-lock-keyword-face)))
 
-	  (setq buffer-read-only t))))
+      (setq buffer-read-only t))))
 
 
 
 (defun msvc:mode-feature-build-solution (&optional target)
   (interactive)
   (let ((db-name (or msvc:db-name msvc:source-code-belonging-db-name)))
-	(when db-name
-	  (let* ((details (msvc:query-project db-name))
-			 (solution-file (plist-get details :solution-file)))
-		(if solution-file
-			(let* ((target (or target "Build"))
-				   (platform (plist-get details :platform))
-				   (configuration (plist-get details :configuration))
-				   (version (plist-get details :version))
-				   (db-path (msvc-flags:create-db-path db-name))
+    (when db-name
+      (let* ((details (msvc:query-project db-name))
+             (solution-file (plist-get details :solution-file)))
+        (if solution-file
+            (let* ((target (or target "Build"))
+                   (platform (plist-get details :platform))
+                   (configuration (plist-get details :configuration))
+                   (version (plist-get details :version))
+                   (db-path (msvc-flags:create-db-path db-name))
 
-				   (dst-file-base-name (file-name-nondirectory solution-file))
-				   (log-file (expand-file-name (concat dst-file-base-name ".build.log") db-path))
-				   (logger-encoding "UTF-8")
+                   (dst-file-base-name (file-name-nondirectory solution-file))
+                   (log-file (expand-file-name (concat dst-file-base-name ".build.log") db-path))
+                   (logger-encoding "UTF-8")
 
-				   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp") db-path))
-				   (msb-target-file (format "%S" solution-file))
-				   (msb-flags (list
-							   (msvc-env:create-msb-flags "/t:"
-														  `(("%s"				.		,target)))
-							   (msvc-env:create-msb-flags "/p:"
-														  `(("Platform=%S"		.		,platform)
-															("Configuration=%S"	.		,configuration)))
-							   (msvc-env:create-msb-flags "/flp:"
-														  `(("Verbosity=%s"		.		,(symbol-name msvc:solution-build-report-verbosity))
-															("LogFile=%S"		.		,log-file)
-															("Encoding=%s"		.		,logger-encoding)
-															("%s"				.		"NoSummary")))
-							   (if msvc:solution-build-report-realtime-display-p
-								   (msvc-env:create-msb-flags "/clp:"
-															  `(("Verbosity=%s"	.		,(symbol-name msvc:solution-build-report-verbosity))))
-								 "/noconsolelogger")
-							   "/nologo"
-							   "/maxcpucount"))
+                   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp") db-path))
+                   (msb-target-file (format "%S" solution-file))
+                   (msb-flags (list
+                               (msvc-env:create-msb-flags "/t:"
+                                                          `(("%s"               .       ,target)))
+                               (msvc-env:create-msb-flags "/p:"
+                                                          `(("Platform=%S"      .       ,platform)
+                                                            ("Configuration=%S" .       ,configuration)))
+                               (msvc-env:create-msb-flags "/flp:"
+                                                          `(("Verbosity=%s"     .       ,(symbol-name msvc:solution-build-report-verbosity))
+                                                            ("LogFile=%S"       .       ,log-file)
+                                                            ("Encoding=%s"      .       ,logger-encoding)
+                                                            ("%s"               .       "NoSummary")))
+                               (if msvc:solution-build-report-realtime-display-p
+                                   (msvc-env:create-msb-flags "/clp:"
+                                                              `(("Verbosity=%s" .       ,(symbol-name msvc:solution-build-report-verbosity))))
+                                 "/noconsolelogger")
+                               "/nologo"
+                               "/maxcpucount"))
 
-				   (process-name "msvc-build")
-				   (process-bind-buffer (format "*MSVC Build<%s>*" db-name))
-				   ;; bind connection type (use pipe)
-				   (process-connection-type nil)
-				   ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
-				   (default-process-coding-system (if msvc:solution-build-report-realtime-display-p default-process-coding-system '(utf-8-dos . utf-8-unix)))
-				   (display-file (if msvc:solution-build-report-realtime-display-p "" log-file))
+                   (process-name "msvc-build")
+                   (process-bind-buffer (format "*MSVC Build<%s>*" db-name))
+                   ;; bind connection type (use pipe)
+                   (process-connection-type nil)
+                   ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
+                   (default-process-coding-system (if msvc:solution-build-report-realtime-display-p default-process-coding-system '(utf-8-dos . utf-8-unix)))
+                   (display-file (if msvc:solution-build-report-realtime-display-p "" log-file))
 
-				   (command (shell-quote-argument msvc-env:invoke-command))
-				   (command-args (msvc-env:build-msb-command-args version msb-rsp-file display-file)))
+                   (command (shell-quote-argument msvc-env:invoke-command))
+                   (command-args (msvc-env:build-msb-command-args version msb-rsp-file display-file)))
 
-			  ;; create rsp file(always create)
-			  (msvc-env:create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
+              ;; create rsp file(always create)
+              (msvc-env:create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
 
-			  (when (get-buffer process-bind-buffer)
-				(kill-buffer process-bind-buffer))
+              (when (get-buffer process-bind-buffer)
+                (kill-buffer process-bind-buffer))
 
-			  (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-				(set-process-sentinel process 'msvc:build-solution-sentinel))
+              (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
+                (set-process-sentinel process 'msvc:build-solution-sentinel))
 
-			  ;; プロセスバッファを最初に表示
-			  (when (eq msvc:solution-build-report-display-timing 'before)
-				(msvc:split-window process-bind-buffer))
+              ;; プロセスバッファを最初に表示
+              (when (eq msvc:solution-build-report-display-timing 'before)
+                (msvc:split-window process-bind-buffer))
 
-			  (with-current-buffer process-bind-buffer
-				;; buffer sentinelで終了検知後に、文字列propertize & read-only化が望ましい
-				(setq buffer-read-only t))
-			  t)
-		  (message "solution name not found on active project."))))))
+              (with-current-buffer process-bind-buffer
+                ;; buffer sentinelで終了検知後に、文字列propertize & read-only化が望ましい
+                (setq buffer-read-only t))
+              t)
+          (message "solution name not found on active project."))))))
 
 
 (defun msvc:mode-feature-rebuild-solution ()
@@ -1296,17 +1296,17 @@ optionals
 
 (defvar msvc:mode-key-map 
   (let ((map (make-sparse-keymap)))
-	(define-key map (kbd "M-i") 'msvc:mode-feature-visit-to-include)
-	(define-key map (kbd "M-I") 'msvc:mode-feature-return-from-include)
-	(define-key map (kbd "M-[") 'msvc:mode-feature-flymake-goto-prev-error)
-	(define-key map (kbd "M-]") 'msvc:mode-feature-flymake-goto-next-error)
-	(define-key map (kbd "<f5>") 'msvc:mode-feature-manually-flymake)
-	(define-key map (kbd "<C-f5>") 'msvc:mode-feature-build-solution)
-	;; (define-key map (kbd "<f6>") 'msvc:mode-feature-manually-ac-clang-complete)
-	;; (define-key map (kbd "<f7>") 'semantic-force-refresh)
-	;; (define-key map (kbd "C-j") 'msvc:mode-feature-jump-to-project-buffer)
-	;; (define-key map (kbd "C-j") 'msvc:mode-feature-launch-msvs)
-	map)
+    (define-key map (kbd "M-i") 'msvc:mode-feature-visit-to-include)
+    (define-key map (kbd "M-I") 'msvc:mode-feature-return-from-include)
+    (define-key map (kbd "M-[") 'msvc:mode-feature-flymake-goto-prev-error)
+    (define-key map (kbd "M-]") 'msvc:mode-feature-flymake-goto-next-error)
+    (define-key map (kbd "<f5>") 'msvc:mode-feature-manually-flymake)
+    (define-key map (kbd "<C-f5>") 'msvc:mode-feature-build-solution)
+    ;; (define-key map (kbd "<f6>") 'msvc:mode-feature-manually-ac-clang-complete)
+    ;; (define-key map (kbd "<f7>") 'semantic-force-refresh)
+    ;; (define-key map (kbd "C-j") 'msvc:mode-feature-jump-to-project-buffer)
+    ;; (define-key map (kbd "C-j") 'msvc:mode-feature-launch-msvs)
+    map)
   "MSVC mode key map")
 
 
@@ -1321,19 +1321,19 @@ optionals
   :keymap msvc:mode-key-map
   :group 'msvc
   (if msvc-mode
-	  (progn
-		(if (msvc:evaluate-buffer)
-			(let* ((property (msvc-flags:create-project-property msvc:source-code-belonging-db-name))
-				   (platform (plist-get property :platform))
-				   (configuration (plist-get property :configuration))
-				   (version (plist-get property :version)))
-			  (msvc:update-mode-line platform configuration version))
-		  (progn
-			(msvc:update-mode-line "-" "-" "")
-			(message "This buffer don't belonging to the active projects.")
-			(msvc:mode-off))))
-	(progn
-	  (msvc:detach-from-project))))
+      (progn
+        (if (msvc:evaluate-buffer)
+            (let* ((property (msvc-flags:create-project-property msvc:source-code-belonging-db-name))
+                   (platform (plist-get property :platform))
+                   (configuration (plist-get property :configuration))
+                   (version (plist-get property :version)))
+              (msvc:update-mode-line platform configuration version))
+          (progn
+            (msvc:update-mode-line "-" "-" "")
+            (message "This buffer don't belonging to the active projects.")
+            (msvc:mode-off))))
+    (progn
+      (msvc:detach-from-project))))
 
 
 (defun msvc:mode-on ()
@@ -1348,13 +1348,13 @@ optionals
 
 (defun msvc:initialize ()
   (when (msvc-env:initialize)
-	(msvc-flags:initialize)
+    (msvc-flags:initialize)
 
-	(add-hook 'after-init-hook
-			  '(lambda ()
-				 (when (file-readable-p msvc:after-init-file)
-				   (load-library msvc:after-init-file)))
-			  t)))
+    (add-hook 'after-init-hook
+              '(lambda ()
+                 (when (file-readable-p msvc:after-init-file)
+                   (load-library msvc:after-init-file)))
+              t)))
 
 
 

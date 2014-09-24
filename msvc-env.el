@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/09/24.02:53:03
+;;; last updated : 2014/09/25.03:19:51
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -32,9 +32,9 @@
 (defvar msvc-env:default-use-version nil)
 
 (defconst msvc-env:product-details '((:version "2013" :env-var "VS120COMNTOOLS")
-									 (:version "2012" :env-var "VS110COMNTOOLS")
-									 (:version "2010" :env-var "VS100COMNTOOLS")
-									 (:version "2008" :env-var "VS90COMNTOOLS")))
+                                     (:version "2012" :env-var "VS110COMNTOOLS")
+                                     (:version "2010" :env-var "VS100COMNTOOLS")
+                                     (:version "2008" :env-var "VS90COMNTOOLS")))
 
 
 ;; Microsoft Visual C/C++ Command Prompt 
@@ -66,14 +66,14 @@
 
 (defun msvc-env:detect-product ()
   (cl-dolist (detail msvc-env:product-details)
-	(let ((version (plist-get detail :version))
-		  (path (getenv (plist-get detail :env-var))))
-	  (when path
-		(setq path (expand-file-name "../../VC/vcvarsall.bat" path))
-		(when (file-exists-p path)
-		  (setq msvc-env:product-detected-p t)
-		  (add-to-list 'msvc-env:product-version version t)
-		  (setq msvc-env:shell-msvc (plist-put msvc-env:shell-msvc (intern (concat ":" version)) path))))))
+    (let ((version (plist-get detail :version))
+          (path (getenv (plist-get detail :env-var))))
+      (when path
+        (setq path (expand-file-name "../../VC/vcvarsall.bat" path))
+        (when (file-exists-p path)
+          (setq msvc-env:product-detected-p t)
+          (add-to-list 'msvc-env:product-version version t)
+          (setq msvc-env:shell-msvc (plist-put msvc-env:shell-msvc (intern (concat ":" version)) path))))))
   msvc-env:product-detected-p)
 
 
@@ -81,55 +81,55 @@
 ;; utilities
 (defun msvc-env:normalize-path (paths safe-path)
   (let* (result
-		 (converter '(lambda (path safe-path)
-					   (if (file-name-absolute-p path)
-						   path
-						 (expand-file-name path safe-path)))))
+         (converter '(lambda (path safe-path)
+                       (if (file-name-absolute-p path)
+                           path
+                         (expand-file-name path safe-path)))))
 
-	(if (listp paths)
-		(cl-dolist (path paths)
-		  (add-to-list 'result (funcall converter path safe-path) t))
-	  (setq result (funcall converter paths safe-path)))
-	result))
+    (if (listp paths)
+        (cl-dolist (path paths)
+          (add-to-list 'result (funcall converter path safe-path) t))
+      (setq result (funcall converter paths safe-path)))
+    result))
 
 
 (defun msvc-env:convert-to-posix-style-path (paths)
   (let* (result
-		 (converter '(lambda (path)
-					   (replace-regexp-in-string "^\\([a-zA-Z]\\):" 
-												 (lambda (match) (downcase (format "/cygdrive/%s" (match-string 1 path))))
-												 path
-												 t))))
-	(if (listp paths)
-		(cl-dolist (path paths)
-		  (add-to-list 'result (funcall converter path) t))
-	  (setq result (funcall converter paths)))
-	result))
+         (converter '(lambda (path)
+                       (replace-regexp-in-string "^\\([a-zA-Z]\\):" 
+                                                 (lambda (match) (downcase (format "/cygdrive/%s" (match-string 1 path))))
+                                                 path
+                                                 t))))
+    (if (listp paths)
+        (cl-dolist (path paths)
+          (add-to-list 'result (funcall converter path) t))
+      (setq result (funcall converter paths)))
+    result))
 
 
 
 ;; for MSBuild property flag
 (defun msvc-env:create-msb-flags (switch parameters)
   (let* ((flags switch))
-	(cl-dolist (parameter parameters)
-	  (setq flags (concat flags (format (car parameter) (cdr parameter)) ";")))
-	;; 末尾にparameter-separator ';' があるとエラーになる
-	;; 削除して後続スイッチ用に空白で置き換える
-	(replace-regexp-in-string ";$" " " flags)))
+    (cl-dolist (parameter parameters)
+      (setq flags (concat flags (format (car parameter) (cdr parameter)) ";")))
+    ;; 末尾にparameter-separator ';' があるとエラーになる
+    ;; 削除して後続スイッチ用に空白で置き換える
+    (replace-regexp-in-string ";$" " " flags)))
 
 
 (defun msvc-env:create-msb-rsp-file (msb-rsp-file msb-target-file msb-flags)
   (with-temp-file msb-rsp-file
-	(insert msb-target-file "\n")
-	(cl-dolist (flag msb-flags)
-	  (insert flag "\n")))
+    (insert msb-target-file "\n")
+    (cl-dolist (flag msb-flags)
+      (insert flag "\n")))
   msb-rsp-file)
 
 
 (defun msvc-env:remove-msb-rsp-files (path)
   (let* ((files (directory-files path t "\.rsp$")))
-	(cl-dolist (file files)
-	  (delete-file file))))
+    (cl-dolist (file files)
+      (delete-file file))))
 
 
 
@@ -157,8 +157,8 @@
 
 (cl-defun msvc-env:initialize ()
   (unless (msvc-env:detect-product)
-	(message "msvc-env : product not detected : Microsoft Visual Studio")
-	(cl-return-from msvc-env:initialize nil))
+    (message "msvc-env : product not detected : Microsoft Visual Studio")
+    (cl-return-from msvc-env:initialize nil))
 
   ;; default is latest product
   (setq msvc-env:default-use-version (nth 0 msvc-env:product-version))

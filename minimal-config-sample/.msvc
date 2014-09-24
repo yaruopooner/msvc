@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2014/05/31.23:05:28
+;;; last updated : 2014/09/25.03:22:08
 
 
 ;; (setq msvc:solution-build-report-display-timing 'after)
@@ -11,26 +11,26 @@
 ;; 複数のプロジェクトを同時にアクティブ化
 
 ;; (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
-;; 									:project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
-;; 									:platform "x64" :configuration "Release" 
-;; 									:force-parse-p nil
-;; 									:allow-cedet-p t
-;; 									:allow-ac-clang-p t
-;; 									:allow-flymake-p t
-;; 									:cedet-root-path "d:/DirectXSamples/SubD11"
-;; 									:cedet-spp-table nil
-;; 									:flymake-manually-p nil
-;; 									:flymake-manually-back-end nil)
+;;                                  :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
+;;                                  :platform "x64" :configuration "Release" 
+;;                                  :force-parse-p nil
+;;                                  :allow-cedet-p t
+;;                                  :allow-ac-clang-p t
+;;                                  :allow-flymake-p t
+;;                                  :cedet-root-path "d:/DirectXSamples/SubD11"
+;;                                  :cedet-spp-table nil
+;;                                  :flymake-manually-p nil
+;;                                  :flymake-manually-back-end nil)
 
 ;; (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.sln.sln"
-;; 									:project-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.vcxproj"
-;; 									:platform "x64" :configuration "Release" 
-;; 									:force-parse-p nil
-;; 									:allow-cedet-p t
-;; 									:allow-ac-clang-p t
-;; 									:allow-flymake-p t
-;; 									:cedet-root-path "d:/DirectXSamples/DecalTessellation11"
-;; 									:cedet-spp-table nil
-;; 									:flymake-manually-p nil
-;; 									:flymake-manually-back-end nil)
+;;                                  :project-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.vcxproj"
+;;                                  :platform "x64" :configuration "Release" 
+;;                                  :force-parse-p nil
+;;                                  :allow-cedet-p t
+;;                                  :allow-ac-clang-p t
+;;                                  :allow-flymake-p t
+;;                                  :cedet-root-path "d:/DirectXSamples/DecalTessellation11"
+;;                                  :cedet-spp-table nil
+;;                                  :flymake-manually-p nil
+;;                                  :flymake-manually-back-end nil)
 

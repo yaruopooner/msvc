@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2013/09/23.23:26:39
+;;; last updated : 2014/09/25.03:22:43
 
 
 ;;==================================================================================================
@@ -36,7 +36,7 @@
 
   (setq ac-auto-show-menu show-menu-delay)
   (when quick-help-delay-from-show-menu
-	(setq ac-quick-help-delay-from-show-menu quick-help-delay-from-show-menu))
+    (setq ac-quick-help-delay-from-show-menu quick-help-delay-from-show-menu))
   (setq ac-quick-help-delay (+ ac-auto-show-menu ac-quick-help-delay-from-show-menu)))
 
 
@@ -88,9 +88,9 @@
 
 
 ;; face-name
-;; ac-completion-face 	インライン補完の文字色
-;; ac-candidate-face 	補完メニューの背景色
-;; ac-selection-face 	補完メニューの選択色
+;; ac-completion-face   インライン補完の文字色
+;; ac-candidate-face    補完メニューの背景色
+;; ac-selection-face    補完メニューの選択色
 
 ;; インライン補完の文字色
 (set-face-foreground 'ac-completion-face "darkgray")
@@ -143,17 +143,17 @@
 
 ;; C/C++ Mode 時の補完ソース拡張
 (add-hook 'c-mode-common-hook
-		  '(lambda ()
-			 (setq ac-sources '(
-								;; ac-source-dictionary
-								ac-source-semantic
-								ac-source-semantic-raw
-								ac-source-imenu
-								;; ac-source-words-in-buffer
-								;; ac-source-words-in-same-mode-buffers
-								)))
-		  ;; add to hook list end
-		  t)
+          '(lambda ()
+             (setq ac-sources '(
+                                ;; ac-source-dictionary
+                                ac-source-semantic
+                                ac-source-semantic-raw
+                                ac-source-imenu
+                                ;; ac-source-words-in-buffer
+                                ;; ac-source-words-in-same-mode-buffers
+                                )))
+          ;; add to hook list end
+          t)
 
 
 
