@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/09/25.03:20:28
+;;; last updated : 2014/11/01.04:38:58
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -363,7 +363,7 @@
 
         (setq flymake-is-running t)
         (setq flymake-last-change-time nil)
-        (setq flymake-check-start-time (flymake-float-time))
+        (setq flymake-check-start-time (float-time))
 
         (flymake-report-status nil "*")
         (flymake-log 2 "started process %d, command=%s, dir=%s"
