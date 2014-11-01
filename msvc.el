@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/01.04:38:58
+;;; last updated : 2014/11/01.18:49:10
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -458,7 +458,7 @@
 (defun msvc:flymake-display-current-line-error-by-minibuf ()
   "Displays the error/warning for the current line in the minibuffer"
 
-  (let* ((line-no (flymake-current-line-no))
+  (let* ((line-no (line-number-at-pos))
          (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no)))
          (count (length line-err-info-list)))
     (while (> count 0)
@@ -473,13 +473,11 @@
 (defun msvc:flymake-display-current-line-error-by-popup ()
   "Display a menu with errors/warnings for current line if it has errors and/or warnings."
 
-  (let* ((line-no (flymake-current-line-no))
-         (line-err-info-list (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (menu-data (flymake-make-err-menu-data line-no line-err-info-list)))
-    (when menu-data
-      (popup-tip (mapconcat (lambda (e) (nth 0 e))
-                            (nth 1 menu-data)
-                            "\n")))))
+  (let* ((line-no (line-number-at-pos))
+         (errors (nth 0 (flymake-find-err-info flymake-err-info line-no)))
+         (texts (mapconcat (lambda (x) (flymake-ler-text x)) errors "\n")))
+    (when texts
+      (popup-tip texts))))
 
 (defun msvc:flymake-display-current-line-error ()
   (cl-case msvc:flymake-error-display-style
