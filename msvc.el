@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/01.18:49:10
+;;; last updated : 2014/11/06.15:52:16
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -59,23 +59,19 @@
 
 
 ;; the project name(per MSVC buffer)
-(defvar msvc:db-name nil)
-(make-variable-buffer-local 'msvc:db-name)
+(defvar-local msvc:db-name nil)
 
 
 ;; source code buffer belonging to the project name(per source code buffer)
-(defvar msvc:source-code-belonging-db-name nil)
-(make-variable-buffer-local 'msvc:source-code-belonging-db-name)
+(defvar-local msvc:source-code-belonging-db-name nil)
 
 
 
 ;; auto-complete ac-sources backup
-(defvar msvc:ac-sources-backup nil)
-(make-variable-buffer-local 'msvc:ac-sources-backup)
+(defvar-local msvc:ac-sources-backup nil)
 
 ;; ac-clang cflags backup
-(defvar msvc:ac-clang-cflags-backup nil)
-(make-variable-buffer-local 'msvc:ac-clang-cflags-backup)
+(defvar-local msvc:ac-clang-cflags-backup nil)
 
 
 
@@ -130,19 +126,17 @@
 `nil'         : user default style")
 
 
-(defvar msvc:flymake-back-end nil
+(defvar-local msvc:flymake-back-end nil
   "flymake back-end symbols
 `msbuild'     : MSBuild
 `clang'       : clang
 `nil'         : native back-end")
-(make-variable-buffer-local 'msvc:flymake-back-end)
 
-(defvar msvc:flymake-manually-back-end nil
+(defvar-local msvc:flymake-manually-back-end nil
   "flymake manually mode back-end symbols
 `msbuild'     : MSBuild
 `clang'       : clang
 `nil'         : inherit msvc:flymake-back-end value")
-(make-variable-buffer-local 'msvc:flymake-manually-back-end)
 
 
 
@@ -1288,8 +1282,7 @@ optionals
 
 
 ;; mode definitions
-(defvar msvc:mode-line nil)
-(make-variable-buffer-local 'msvc:mode-line)
+(defvar-local msvc:mode-line nil)
 
 
 (defvar msvc:mode-key-map 
