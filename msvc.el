@@ -1,12 +1,15 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/15.14:44:27
+;;; last updated : 2014/11/17.14:18:06
+
+;;; msvc.el --- Microsoft Visual C/C++ mode
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
-;; Author          : yaruopooner [https://github.com/yaruopooner]
-;; Keywords        : languages, completion, syntax check, mode, convenience
-;; Version         : 1.0.0
-;; Package-Requires: ((emacs "24") (cl-lib "0.3") (cedet "1.0") (ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45"))
+;; Author: yaruopooner [https://github.com/yaruopooner]
+;; URL: https://github.com/yaruopooner/msvc
+;; Keywords: languages, completion, syntax check, mode, convenience
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45"))
 
 ;; This file is part of MSVC.
 
@@ -22,6 +25,19 @@
 ;; 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+;;; Commentary:
+;; 
+;;;; Features:
+;; 
+;;;; Install:
+;; 
+
+;; Usage:
+;; https://github.com/yaruopooner/msvc
+
+;;; Code:
 
 
 
