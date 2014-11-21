@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/21.18:14:25
+;;; last updated : 2014/11/21.19:16:19
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -30,9 +30,39 @@
 
 ;;; Commentary:
 ;; 
-;;;; Features:
+;; * FEATURES:
+;;   - Visual Studio project file manager
+;;     backend: ede
+;;   - coexistence of different versions
+;;     2013/2012/2010
+;;   - code completion
+;;     backend: ac-clang
+;;     ac-sources: ac-clang or semantic
+;;   - syntax check
+;;     backend: msbuild or ac-clang
+;;   - jump to declaration or definition. return from jumped location
+;;     backend: ac-clang
+;;   - jump to include file. return from jumped file
+;;     backend: semantic
+;;   - build Solution or Project on Emacs
+;;     backend: msbuild
+;;   - launch Visual Studio from Solution or Project
 ;; 
-;;;; Install:
+;; * REQUIRE ENVIRONMENT
+;;   - Microsoft Windows 64/32bit
+;;     Vista/7/8
+;;   - Microsoft Visual Studio Professional
+;;     2013/2012/2010
+;;   - Cygwin 64/32bit(or MSYS)
+;;     must be used bash
+;; 
+;; * TESTED SDK:
+;;   completion test, syntax check test
+;;   - Windows SDK 7.0A/7.1
+;;   - Direct X SDK(June 2010)
+;;   - STL,std::tr1
+;; 
+;; * INSTALL:
 ;; 
 
 

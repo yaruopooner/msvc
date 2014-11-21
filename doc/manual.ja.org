@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/11/21.18:20:27
+# last updated : 2014/11/21.19:03:54
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -25,7 +25,7 @@
    [[./sample-pic-project-buffers.png]]
 
 ** バージョンの異なるVisual Studio共存と利用
-   Visual Studio 2008/2010/2012/2013 などバージョンの異なるVisual Studioが複数インストールされている場合でも
+   Visual Studio 2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも
    msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。
    これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。
 
@@ -68,10 +68,10 @@
 * 必須環境
   - GNU Emacs 24.1以上 ::
     24.1以降でのみ動作保証
-  - Cygwin 32/64bit(or MSYS) ::
+  - Cygwin 64/32bit(or MSYS) ::
     bashが必要
-  - Microsoft Windows 32/64bit ::
-  - Microsoft Visual Studio Professional 2010/2012/2013 ::
+  - Microsoft Windows 64/32bit ::
+  - Microsoft Visual Studio Professional 2013/2012/2010 ::
     CL.exe/MSBuild.exe 等を使います
 
 * 必須パッケージ
@@ -87,13 +87,14 @@
   - Emacs ::
     CEDETが標準built-inになったバージョン以降で動作
 
-    Emacs はgnupack emacs onlyでテスト
+    Emacs は以下でテスト
+    https://github.com/chuntaro/NTEmacs64
     http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
   - Cygwin 32bit/64bit(MSYS) :: 
     $ uname -r
     1.7.29(0.272/5/3)
-    Cygwinは32/64bit動作チェック済み
+    Cygwinは64/32bit動作チェック済み
     MSYSでも動作するがCygwin推奨
     MSYSは32bitのみ動作チェック済み
 
@@ -111,8 +112,8 @@
       msvcはbashしか使わないので動作に問題はないでしょうが、 
       grepなど他のツールを使ったりするでしょうから、8ではcygwinがまともに動く方のみ使用するとよいでしょう。
 
-  - Microsoft Visual Studio Professional 2010/2012/2013 ::
-    2010/2012/2013 64 bit でのみ動作テスト
+  - Microsoft Visual Studio Professional 2013/2012/2010 ::
+    2013/2012/2010 64 bit でのみ動作テスト
 
   - SDK ::
     下記SDKのサンプルプロジェクトでテスト。
@@ -157,55 +158,6 @@
 
      Visual Studio のPCHは使用できません。
      PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。
-
-* 既知の不具合
-** 補完対象が *clang-complete* に出力されているのに補完メニューが表示されない
-   CEDET semantic-mode が影響している場合があります。
-   =(setq semantic-idle-scheduler-idle-time TIME)=
-   TIMEの時間を多めにするか semantic-mode を off にしてテストしてみてください。
-
-   semantic-mode の idle-parsing などが影響？
-   同様に idle-parsing が異常終了してbacktraceなどが出力されているような場合でも正常動作しないケースがある。
-   semantic のバッファパース処理で save-excursion されていないポイント操作などがあるのではと推測。
-
-** 特定ファイルがロックされセーブできなくなる
-   編集したヘッダファイルをセーブしようとすると "basic-save-buffer-2: Opening output file: invalid argument `HEADER-FILE-NAME`" となりセーブできない。
-   必ず発生するわけではなく特定の条件を満たしたファイルサイズが16kBを越えるヘッダファイルで発生する。
-   16kB以下のヘッダファイルではまったく発生しない。
-   libclang の TranslationUnit(以下TU) の問題。
-   libclang の TU がinclude対象のファイルをロックしている。
-   ※プロセスがロックしているファイル一覧には出てこない。
-   ac-clang側で暫定対処パッチを施してあるので多少は緩和されているが完全に回避はできない。
-   発生した場合はマニュアル対処する以外ない。
-   TUの問題なので、おそらくオリジナル版も同様の問題を持っているとおもわれる。
-
-*** 対処方法
-    include対象なので大抵は foo.cpp/foo.hpp という構成だとおもわれます。
-    foo.hpp(modified)がセーブできない場合、大抵foo.cppが(modified)になっているのでfoo.cppをセーブしましょう。
-    これによりfoo.hppはセーブ可能になるはずです。
-    これでもセーブできない場合は、foo.cpp以外のソースでfoo.hppをインクルードしており(modified)になっているバッファがあるはずなので
-    それもセーブしましょう。
-    また、定義へのジャンプ機能で該当ソースがアクティブ化されている場合は、未編集バッファであってもアクティブ化されています。
-    該当バッファを削除してみるか、そのバッファへスイッチして (ac-clang:deactivate) を実行してください。
-    これ以外でも16kBを越えるヘッダを編集しようとした際に、そのファイルのcppはオープンしていないのにセーブできない場合、
-    該当ヘッダファイルを何処か遠いモジュールでインクルードしている場合なども同様の症状になります。
-    ライブラリモジュールやフレームワークなどを開発している場合は発生しやすいかもしれません。
-    ※ライブラリ・フレームワークはアプリ側からよくincludeされるため。
-
-*** 原因（実装上の問題説明、解決案求む）
-    foo.cpp(modified)のとき foo.cppのセッションで
-    TUが foo.cpp パース後もincludeされているファイルのロックを保持しつづけている。
-    この状態で foo.hpp を編集してセーブしようとするとロックでエラーになる。
-    ロックを解除するには、 foo.cpp のTUをリリースする。
-    なので foo.cpp セーブ時にセッションは保持した状態で TU だけをリリースして、
-    foo.cpp が再び modified になったときに TU を生成するように修正。
-    これにより foo.cpp セーブ後であればincludeロックでが全解除されるので foo.hpp がセーブ可能になる。
-    当然 foo.cpp 以外に foo.hpp をinclude しているソースでかつ、編集中のバッファがある場合は、
-    それら全てを保存しないとロックでは解除されない。
-
-    このロックはopen関数によるロックはではなくWindowsAPIのCreateFileMappingによるロックである。
-    libclang FileManagerは16kB以上のファイルをメモリマップドファイルとしてアロケーションする。
-    TUがリリースされるとUnmapViewOfFileによりメモリマップドファイルがリリースされるようになりファイルに対して書き込み可能になる。
 
 * インストール
 ** Emacsの起動設定
@@ -285,7 +237,7 @@
    プロジェクトバッファ名は以下のフォーマットに基きます。
    *MSVC Project<`db-name`>*
    また、該当プロジェクトに属するソースコードがオープンされていたり、アクティブ中にオープンすると自動的にmsvc-modeが適用されます。
-   msvc-modeが適用されたバッファはモードラインに =MSVC`version`[platform|configuration]= と表示されます。
+   msvc-modeが適用されたバッファはモードラインに *MSVC`version`[platform|configuration]* と表示されます。
 
    以下の関数でパース＆アクティブ化を行います。
    =(msvc:activate-projects-after-parse &rest args)=
@@ -588,12 +540,12 @@
    該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。
    ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。
    
-   - =(msvc:mode-feature-launch-msvs)= ::
+   - (msvc:mode-feature-launch-msvs) ::
      バッファにソリューションが関連付けされていればソリューションで起動。
      プロジェクトのみの場合はプロジェクトで起動。
-   - =(msvc:mode-feature-launch-msvs-by-project)= ::
+   - (msvc:mode-feature-launch-msvs-by-project) ::
      プロジェクトで起動。
-   - =(msvc:mode-feature-launch-msvs-by-solution)= ::
+   - (msvc:mode-feature-launch-msvs-by-solution) ::
      ソリューションで起動。
 
 ** テンポラリファイルの削除
