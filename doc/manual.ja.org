@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/09/25.03:21:20
+# last updated : 2014/11/21.18:20:27
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -161,7 +161,7 @@
 * 既知の不具合
 ** 補完対象が *clang-complete* に出力されているのに補完メニューが表示されない
    CEDET semantic-mode が影響している場合があります。
-   (setq semantic-idle-scheduler-idle-time TIME)
+   =(setq semantic-idle-scheduler-idle-time TIME)=
    TIMEの時間を多めにするか semantic-mode を off にしてテストしてみてください。
 
    semantic-mode の idle-parsing などが影響？
@@ -285,10 +285,10 @@
    プロジェクトバッファ名は以下のフォーマットに基きます。
    *MSVC Project<`db-name`>*
    また、該当プロジェクトに属するソースコードがオープンされていたり、アクティブ中にオープンすると自動的にmsvc-modeが適用されます。
-   msvc-modeが適用されたバッファはモードラインに MSVC`version`[platform|configuration] と表示されます。
+   msvc-modeが適用されたバッファはモードラインに =MSVC`version`[platform|configuration]= と表示されます。
 
    以下の関数でパース＆アクティブ化を行います。
-   (msvc:activate-projects-after-parse &rest args)
+   =(msvc:activate-projects-after-parse &rest args)=
 
    異なるプロジェクトを複数同時にアクティブ化可能です。
    個数制限は特に無いです。
@@ -413,13 +413,13 @@
    に
    .msvc
    というファイルを作成しておくと初期化時に実行されます。
-   msvc:activate-projects-after-parse などはこのファイルに記述しておくとよいでしょう。
+   =msvc:activate-projects-after-parse= などはこのファイルに記述しておくとよいでしょう。
 
 ** アクティブプロジェクトバッファ
    アクティブなプロジェクトは以下のバッファ名が与えられます。
    *MSVC Project<`db-name`>*
 
-   バッファに入るとmsvc:activate-projects-after-parse で指定したパラメーターが確認可能です。
+   バッファに入ると =msvc:activate-projects-after-parse= で指定したパラメーターが確認可能です。
    また、現在開いているソースコードバッファでプロジェクトに所属しているバッファが :target-buffers に表示されます。
    バッファ名へカーソルを持っていきEnter入力を行うかマウスクリックを行うとバッファへジャンプ可能。
 
@@ -444,7 +444,7 @@
    :allow-flymake-p tであれば:flymake-manually-p nilであってもオート・マニュアル併用が可能です。
 
    エラー表示スタイルは以下の変数にシンボルをセットすることにより変更が可能です。
-   (setq msvc:flymake-error-display-style DISPLAY-STYLE-SYMBOL)
+   =(setq msvc:flymake-error-display-style DISPLAY-STYLE-SYMBOL)=
 
    - DISPLAY-STYLE-SYMBOL
      - 'popup ::
@@ -494,9 +494,10 @@
    ※制限事項：プロジェクトで管理されていないインクルードファイルへジャンプするとM-Iで戻れません。
      マニュアルで戻ってください・・。たとえば標準ライブラリ stdio.h, vectorやその他SDKのincludeなど。
 
-   またジャンプできず以下のメッセージが表示される場合は
-   *semantic-decoration-include-visit: Point is not on an include tag*
-   "C-c , ," という操作を行い semantic に該当バッファの reparse を行わせます。
+   またジャンプできず
+   =semantic-decoration-include-visit: Point is not on an include tag=
+   というメッセージが表示される場合は
+   ="C-c , ,"= という操作を行い semantic に該当バッファの reparse を行わせます。
    これによりジャンプ可能になるはずです。
 
    - 操作
@@ -514,11 +515,11 @@
 
    C-f5 でプロジェクト・ソリューションのビルドが起動します。
    コマンドからの呼び出しは
-   (msvc:mode-feature-build-solution)
+   =(msvc:mode-feature-build-solution)=
    
    コマンドのみで提供されている機能
-   (msvc:mode-feature-rebuild-solution)
-   (msvc:mode-feature-clean-solution)
+   =(msvc:mode-feature-rebuild-solution)=
+   =(msvc:mode-feature-clean-solution)=
 
    - 操作
      - プロジェクト・ソリューションのビルド ::
@@ -528,7 +529,7 @@
 
    ビルドログ報告スタイルを設定可能
    以下の変数にシンボルをセットすることにより変更が可能です。(.msvcあたりで記述しておく)
-   (setq msvc:solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)
+   =(setq msvc:solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)=
 
    - DISPLAY-TIMING-SYMBOL ::
      ビルドログバッファのウィンドウ表示タイミングを指定
@@ -541,7 +542,7 @@
 
 
    ビルドログバッファ内での表示方法を指定
-   (msvc:solution-build-report-realtime-display-p BOOLEAN)
+   =(msvc:solution-build-report-realtime-display-p BOOLEAN)=
 
    - BOOLEAN ::
      - t :: 
@@ -579,7 +580,7 @@
    Visual Studio上でプロジェクトファイルを編集したり、
    バージョンコントロールによるアップデートでプロジェクトファイルが更新された場合に使用します。
    現在Emacs上でアクティブになっている全てのプロジェクトを再パース・再アクティブ化します。
-   (msvc:reparse-active-projects)
+   =(msvc:reparse-active-projects)=
 
 ** Visual Studio の起動
    利用可能な場所：アクティブなプロジェクトバッファ・msvc-mode onのソースコードバッファ上
@@ -587,12 +588,12 @@
    該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。
    ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。
    
-   - (msvc:mode-feature-launch-msvs) ::
+   - =(msvc:mode-feature-launch-msvs)= ::
      バッファにソリューションが関連付けされていればソリューションで起動。
      プロジェクトのみの場合はプロジェクトで起動。
-   - (msvc:mode-feature-launch-msvs-by-project) ::
+   - =(msvc:mode-feature-launch-msvs-by-project)= ::
      プロジェクトで起動。
-   - (msvc:mode-feature-launch-msvs-by-solution) ::
+   - =(msvc:mode-feature-launch-msvs-by-solution)= ::
      ソリューションで起動。
 
 ** テンポラリファイルの削除

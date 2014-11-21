@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/17.14:18:06
+;;; last updated : 2014/11/21.18:14:25
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -12,6 +12,7 @@
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45"))
 
 ;; This file is part of MSVC.
+
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -34,8 +35,19 @@
 ;;;; Install:
 ;; 
 
+
 ;; Usage:
-;; https://github.com/yaruopooner/msvc
+;; * DETAILED MANUAL:
+;;   For more information and detailed usage, refer to the project page:
+;;   https://github.com/yaruopooner/msvc
+;; 
+;; * SETUP:
+;;   (require 'msvc)
+;; 
+;;   (msvc:initialize)
+;;   (msvc-flags:load-db :parsing-buffer-delete-p t)
+;;   (add-hook 'c-mode-common-hook 'msvc:mode-on t)
+
 
 ;;; Code:
 
