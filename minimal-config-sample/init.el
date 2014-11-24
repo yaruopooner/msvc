@@ -1,5 +1,5 @@
 ;;; -*- Mode: Emacs-Lisp ; Coding: utf-8-unix -*-
-;;; last updated : 2014/09/25.03:22:29
+;;; last updated : 2014/11/23.03:06:13
 
 
 ;;==============================================================================
@@ -17,8 +17,10 @@
 
 (require 'package)
 
-(add-to-list 'package-archives '("melpa"     . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("melpa"     . "http://melpa.milkbox.net/packages/"))
+
+;; signature test pass(for gnu)
+(setq package-check-signature nil)
 
 (package-initialize)
 
@@ -40,7 +42,9 @@
 (defconst msvc-dependency-package-list '(auto-complete
                                          fuzzy
                                          yasnippet
-                                         dropdown-list))
+                                         dropdown-list
+                                         ;; ac-clang
+                                         ))
 
 
 (package-installer msvc-dependency-package-list)

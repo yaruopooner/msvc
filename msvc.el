@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/21.19:16:19
+;;; last updated : 2014/11/24.06:23:04
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -9,7 +9,7 @@
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, convenience
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0") (yasnippet "0.8.0") (dropdown-list "1.45"))
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0"))
 
 ;; This file is part of MSVC.
 
@@ -32,7 +32,7 @@
 ;; 
 ;; * FEATURES:
 ;;   - Visual Studio project file manager
-;;     backend: ede
+;;     backend: msvc + ede
 ;;   - coexistence of different versions
 ;;     2013/2012/2010
 ;;   - code completion
@@ -40,9 +40,9 @@
 ;;     ac-sources: ac-clang or semantic
 ;;   - syntax check
 ;;     backend: msbuild or ac-clang
-;;   - jump to declaration or definition. return from jumped location
+;;   - jump to declaration or definition. return from jumped location.
 ;;     backend: ac-clang
-;;   - jump to include file. return from jumped file
+;;   - jump to include file. return from jumped include file.
 ;;     backend: semantic
 ;;   - build Solution or Project on Emacs
 ;;     backend: msbuild
@@ -63,7 +63,8 @@
 ;;   - STL,std::tr1
 ;; 
 ;; * INSTALL:
-;; 
+;;   please more information, look at the file in msvc/minimal-config-sample directory.
+;;   
 
 
 ;; Usage:
@@ -74,6 +75,7 @@
 ;; * SETUP:
 ;;   (require 'msvc)
 ;; 
+;;   (setq w32-pipe-read-delay 0)
 ;;   (msvc:initialize)
 ;;   (msvc-flags:load-db :parsing-buffer-delete-p t)
 ;;   (add-hook 'c-mode-common-hook 'msvc:mode-on t)
