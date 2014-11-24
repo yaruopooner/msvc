@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/17.14:03:35
+;;; last updated : 2014/11/24.06:07:51
 
 ;; Copyright (C) 2013-2014  yaruopooner
 ;; 
@@ -158,8 +158,14 @@
 
 
 (cl-defun msvc-env:initialize ()
+  (if (eq system-type 'windows-nt)
+      (when (and (boundp 'w32-pipe-read-delay) (> w32-pipe-read-delay 0))
+        (display-warning 'msvc "Please set the appropriate value for `w32-pipe-read-delay'. Because a pipe delay value is large value."))
+    
+    (display-warning 'msvc "This environment is not a Microsoft Windows."))
+
   (unless (msvc-env:detect-product)
-    (message "msvc-env : product not detected : Microsoft Visual Studio")
+    (display-warning 'msvc "msvc-env : product not detected : Microsoft Visual Studio")
     (cl-return-from msvc-env:initialize nil))
 
   ;; default is latest product
