@@ -1,13 +1,16 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2014/09/25.03:21:46
+;;; last updated : 2014/11/25.03:23:35
 
 
 ;;--------------------------------------------------------------------------------------------------
 ;; org document convert to html project file
 ;;--------------------------------------------------------------------------------------------------
 
+(require 'ox-publish)
 
-(let ((style))
+
+(let* ((link "<link rel=\"stylesheet\" type=\"text/css\" href=\"./common.css\">")
+       (org-html-style-default (concat org-html-style-default link)))
   ;; 全ファイル強制更新
   (shell-command "find . -type f -regex \".*\\.\\(org\\)$\" -print0 | xargs -0 -e touch")
 
@@ -15,6 +18,7 @@
 
   (setq org-publish-project-alist
         `(("MSVC-document-establish"
+           :publishing-function org-html-publish-to-html
            :base-directory ,(expand-file-name "./" default-directory)
            :base-extension "org$"
            :publishing-directory ,(expand-file-name "./" default-directory)
@@ -33,10 +37,10 @@
            :tables t
            :preserve-breaks t
            :sub-superscript nil
-           :style ,(concat
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"./common.css\">"
-                    ""
-                    )
+           ;; :style ,(concat
+           ;;          "<link rel=\"stylesheet\" type=\"text/css\" href=\"./common.css\">"
+           ;;          ""
+           ;;          )
            )))
 
   ;;(org-publish-current-project)
