@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/11/21.19:03:54
+# last updated : 2014/12/16.18:13:53
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -548,11 +548,3 @@
    - (msvc:mode-feature-launch-msvs-by-solution) ::
      ソリューションで起動。
 
-** テンポラリファイルの削除
-   ac-clang を使用していると /tmp 以下に
-   preamble-*****.pch
-   (*****)は適当なナンバーです。
-   という名前のファイルが生成されます。
-   これらは libclang の TranslationUnit が一時的なPCHファイルとして生成しています。
-   過去のものは使われていないで、
-   このテンポラリファイルが溜まってきたら削除してかまいません。
