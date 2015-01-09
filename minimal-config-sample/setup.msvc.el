@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2014/11/24.06:08:51
+;;; last updated : 2015/01/10.05:44:22
 
 
 ;;==================================================================================================
@@ -32,13 +32,9 @@
 (setq w32-pipe-read-delay 0)
 
 
-(msvc:initialize)
-
-
-(msvc-flags:load-db :parsing-buffer-delete-p t)
-
-
-(add-hook 'c-mode-common-hook 'msvc:mode-on t)
+(when (msvc:initialize)
+  (msvc-flags:load-db :parsing-buffer-delete-p t)
+  (add-hook 'c-mode-common-hook 'msvc:mode-on t))
 
 
 
