@@ -1,7 +1,7 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/24.06:07:51
+;;; last updated : 2015/01/22.23:38:48
 
-;; Copyright (C) 2013-2014  yaruopooner
+;; Copyright (C) 2013-2015  yaruopooner
 ;; 
 ;; Author          : yaruopooner [https://github.com/yaruopooner]
 ;; Keywords        : languages, completion, syntax check, mode, convenience
@@ -33,7 +33,8 @@
 (defvar msvc-env:product-version nil)
 (defvar msvc-env:default-use-version nil)
 
-(defconst msvc-env:product-details '((:version "2013" :env-var "VS120COMNTOOLS")
+(defconst msvc-env:product-details '((:version "2015" :env-var "VS130COMNTOOLS")
+                                     (:version "2013" :env-var "VS120COMNTOOLS")
                                      (:version "2012" :env-var "VS110COMNTOOLS")
                                      (:version "2010" :env-var "VS100COMNTOOLS")
                                      (:version "2008" :env-var "VS90COMNTOOLS")))

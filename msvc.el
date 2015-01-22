@@ -1,9 +1,9 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2014/11/24.06:23:04
+;;; last updated : 2015/01/22.23:40:27
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
-;; Copyright (C) 2013-2014  yaruopooner
+;; Copyright (C) 2013-2015  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
@@ -34,7 +34,7 @@
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
-;;     2013/2012/2010
+;;     2015/2013/2012/2010
 ;;   - code completion
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
@@ -50,9 +50,9 @@
 ;; 
 ;; * REQUIRE ENVIRONMENT
 ;;   - Microsoft Windows 64/32bit
-;;     Vista/7/8
+;;     8/7/Vista
 ;;   - Microsoft Visual Studio Professional
-;;     2013/2012/2010
+;;     2015/2013/2012/2010
 ;;   - Cygwin 64/32bit(or MSYS)
 ;;     must be used bash
 ;; 
