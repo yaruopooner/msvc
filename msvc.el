@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/22.23:40:27
+;;; last updated : 2015/01/28.12:20:03
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -292,7 +292,7 @@
         file-rpath))))
 
 ;; すでにオープンされているバッファでプロジェクトに所属しているものを集める
-(defun msvc:gather-target-buffer (db-name)
+(defun msvc:collect-target-buffer (db-name)
   (let* ((buffers (buffer-list))
          target-buffers
          (target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
@@ -982,7 +982,7 @@ optionals
 
     ;; 以下プロジェクトのセットアップが終わってから行う(CEDETなどのプロジェクト付機能のセットアップも終わっていないとだめ)
     ;; オープン済みで所属バッファを収集
-    (setq target-buffers (msvc:gather-target-buffer db-name))
+    (setq target-buffers (msvc:collect-target-buffer db-name))
 
     ;; target buffer all attach
     (let ((msvc:display-update-p nil))

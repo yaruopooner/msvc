@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/22.23:39:21
+;;; last updated : 2015/01/28.12:20:03
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -51,8 +51,8 @@
 
 
 ;; search keywords
-(defconst msvc-flags:gather-pattern "#CFLAG#:\\([^:]*\\):\\(.*\\)$")
-(defconst msvc-flags:gather-keys '(
+(defconst msvc-flags:collect-pattern "#CFLAG#:\\([^:]*\\):\\(.*\\)$")
+(defconst msvc-flags:collect-keys '(
                                    "CFLAG_TargetMachine"
                                    "CFLAG_SystemPreprocessorDefinitions"
                                    "CFLAG_AdditionalPreprocessorDefinitions"
@@ -152,8 +152,8 @@
 ;; 必要があればバッファを削除
 ;; これは set-process-sentinel に登録された msvc-flags:process-sentinel からも呼び出される
 (defun msvc-flags:parse-compilation-buffer (buffer)
-  (let* ((pattern msvc-flags:gather-pattern)
-         (gather-keys msvc-flags:gather-keys)
+  (let* ((pattern msvc-flags:collect-pattern)
+         (collect-keys msvc-flags:collect-keys)
          key
          value
          cflags)
@@ -163,7 +163,7 @@
       (while (re-search-forward pattern nil t)
         (setq key (match-string 1))
         (setq value (match-string 2))
-        (when (assoc-string key gather-keys)
+        (when (assoc-string key collect-keys)
           ;; パスのバックスラッシュ等は再置換
           (setq value (replace-regexp-in-string "[\\\\]+" "/" value))
           ;; セパレーター';' で分割して格納
