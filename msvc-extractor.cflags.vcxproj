@@ -7,6 +7,13 @@
       <CFLAG_TargetSourceFiles Include="@(ClCompile)"/>
       <CFLAG_TargetHeaderFiles Include="@(ClInclude)"/>
 
+      <!-- all target files combine -->
+      <CFLAG_TargetFiles Include="@(CFLAG_TargetSourceFiles)"/>
+      <CFLAG_TargetFiles Include="@(CFLAG_TargetHeaderFiles)"/>
+
+      <!-- definition and clear after store -->
+      <CFLAG_TargetFilesAbs Remove="@(CFLAG_TargetFilesAbs)"/>
+      
       <!-- remove all reference -->
       <ProjectReference Remove="@(ProjectReference)"/>
 
@@ -109,7 +116,13 @@
       <CFLAG_ExcludePath Include="$(ExcludePath)"/>
       <CFLAG_ForceIncludeFiles Include="%(ClCompile.ForcedIncludeFiles)"/>
 
+      <!-- <CFLAG_TargetFiles Include="@(CFLAG_ForceIncludeFiles)"/> -->
     </ItemGroup>
+    
+    <!-- convert to absolute paths -->
+    <ConvertToAbsolutePath Paths="@(CFLAG_TargetFiles)">
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_TargetFilesAbs"/>
+    </ConvertToAbsolutePath>
 
 
     <!-- output message to STDOUT for msvc-flags's parser -->
@@ -171,9 +184,10 @@
     <Message Text="#CFLAG#:CFLAG_AdditionalIncludePath:@(CFLAG_AdditionalIncludePath)"/>
     <Message Text="#CFLAG#:CFLAG_ExcludePath:@(CFLAG_ExcludePath)"/>
     <Message Text="#CFLAG#:CFLAG_ForceIncludeFiles:@(CFLAG_ForceIncludeFiles)"/>
-
     <Message Text="#CFLAG#:CFLAG_TargetSourceFiles:@(CFLAG_TargetSourceFiles)"/>
     <Message Text="#CFLAG#:CFLAG_TargetHeaderFiles:@(CFLAG_TargetHeaderFiles)"/>
+    <Message Text="#CFLAG#:CFLAG_TargetFilesAbs:@(CFLAG_TargetFilesAbs)"/>
+
     <!-- CFLAG_* key end -->
     
   </Target>

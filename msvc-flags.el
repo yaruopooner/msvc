@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/28.12:20:03
+;;; last updated : 2015/01/31.18:59:47
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -61,8 +61,9 @@
                                    "CFLAG_AdditionalIncludePath"
                                    "CFLAG_ExcludePath"
                                    "CFLAG_ForceIncludeFiles"
-                                   "CFLAG_TargetSourceFiles"
-                                   "CFLAG_TargetHeaderFiles"
+                                   ;; "CFLAG_TargetSourceFiles"
+                                   ;; "CFLAG_TargetHeaderFiles"
+                                   "CFLAG_TargetFilesAbs"
 
                                    "ClCompile.DisableLanguageExtensions"
                                    "ClCompile.ExceptionHandling"

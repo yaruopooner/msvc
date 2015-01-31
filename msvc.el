@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/28.12:20:03
+;;; last updated : 2015/01/31.23:22:22
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -278,30 +278,25 @@
 
 
 ;; カレントバッファが指定プロジェクトに属しているかチェックする
-(defun msvc:is-belonging (db-name &optional target-files)
+(defun msvc:target-buffer-p (db-name &optional target-files)
   ;; major-mode check
   (when (and (memq major-mode '(c++-mode c-mode)) buffer-file-name)
     (unless target-files
-      (setq target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
-                                 (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
+      (setq target-files (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetFilesAbs"))))
 
-    (let* ((project-file (plist-get (msvc-flags:create-project-property db-name) :project-file))
-           (project-root (msvc:convert-to-target-buffer-style-path (file-name-directory project-file)))
-           (file-rpath (file-relative-name buffer-file-name project-root)))
-      (when (member file-rpath target-files)
-        file-rpath))))
+    (when (member-ignore-case buffer-file-name target-files)
+      buffer-file-name)))
 
 ;; すでにオープンされているバッファでプロジェクトに所属しているものを集める
 (defun msvc:collect-target-buffer (db-name)
   (let* ((buffers (buffer-list))
          target-buffers
-         (target-files (append (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles"))
-                               (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))))
+         (target-files (msvc:convert-to-target-buffer-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetFilesAbs"))))
 
     (cl-dolist (buffer buffers)
       (with-current-buffer buffer
         ;; file belonging check
-        (when (msvc:is-belonging db-name target-files)
+        (when (msvc:target-buffer-p db-name target-files)
           (add-to-list 'target-buffers buffer))))
     target-buffers))
 
@@ -791,7 +786,7 @@
   (unless msvc:source-code-belonging-db-name
     (cl-dolist (project msvc:active-projects)
       (let* ((db-name (car project)))
-        (when (msvc:is-belonging db-name)
+        (when (msvc:target-buffer-p db-name)
           (msvc:attach-to-project db-name)
           (cl-return-from msvc:evaluate-buffer t))))))
 
