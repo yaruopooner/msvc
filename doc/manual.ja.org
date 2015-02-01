@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2014/12/16.18:13:53
+# last updated : 2015/02/02.02:13:06
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -66,12 +66,12 @@
    ※Visual Studioのプロセスチェック等は行っていません。powershell経由でできないかテスト中。
 
 * 必須環境
-  - GNU Emacs 24.1以上 ::
+  - GNU Emacs 24.1以上
     24.1以降でのみ動作保証
-  - Cygwin 64/32bit(or MSYS) ::
+  - Cygwin 64/32bit(or MSYS)
     bashが必要
-  - Microsoft Windows 64/32bit ::
-  - Microsoft Visual Studio Professional 2013/2012/2010 ::
+  - Microsoft Windows 64/32bit
+  - Microsoft Visual Studio Professional 2013/2012/2010
     CL.exe/MSBuild.exe 等を使います
 
 * 必須パッケージ
@@ -84,46 +84,46 @@
   - ac-clang
 
 * 対応範囲
-  - Emacs ::
+  - Emacs
     CEDETが標準built-inになったバージョン以降で動作
 
     Emacs は以下でテスト
     https://github.com/chuntaro/NTEmacs64
     http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
-  - Cygwin 32bit/64bit(MSYS) :: 
+  - Cygwin 32bit/64bit(MSYS) 
     $ uname -r
     1.7.29(0.272/5/3)
     Cygwinは64/32bit動作チェック済み
     MSYSでも動作するがCygwin推奨
     MSYSは32bitのみ動作チェック済み
 
-  - Microsoft Windows 32bit/64bit ::
-    - XP ::
+  - Microsoft Windows 32bit/64bit
+    - XP
       え？
-    - Vista ::
+    - Vista
       動くんじゃないかな・・？
-    - 7 ::
+    - 7
       Professional 64 bit でのみ動作テスト
-    - 8 & 8.1 ::
+    - 8 & 8.1
       Professional 64 bit でのみ動作テスト
       cygwin動作に難アリ。
       私の環境ではmakeやその他ツールが実行するたびにcoredumpしまくっていたので動作状況が芳しくありません。
       msvcはbashしか使わないので動作に問題はないでしょうが、 
       grepなど他のツールを使ったりするでしょうから、8ではcygwinがまともに動く方のみ使用するとよいでしょう。
 
-  - Microsoft Visual Studio Professional 2013/2012/2010 ::
+  - Microsoft Visual Studio Professional 2013/2012/2010
     2013/2012/2010 64 bit でのみ動作テスト
 
-  - SDK ::
+  - SDK
     下記SDKのサンプルプロジェクトでテスト。
     対象SDKのAPIがac-clangにより補完されることを確認。
     
-    - Windows SDK 7.0A/7.1 ::
+    - Windows SDK 7.0A/7.1
       Visual Studio 2008のプロジェクトは2010に変換してテスト
-    - Direct X SDK(June 2010) ::
+    - Direct X SDK(June 2010)
       いくつかのサンプルでビルドテスト
-    - STL,std::tr1 ::
+    - STL,std::tr1
       テンプレートの展開などをテスト
       boostは未テスト
 
@@ -168,13 +168,13 @@
    c:/emacs/32/emacs-24.3-20130503
    とします
 
-   - Cygwin ::
+   - Cygwin
      #+begin_src shell-script
      alias emacs32-243-1='/cygdrive/c/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
      alias emacs='emacs32-243-1'
      #+end_src
 
-   - MSYS ::
+   - MSYS
      #+begin_src shell-script
      alias emacs32-243-1='c:/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
      alias emacs='emacs32-243-1'
@@ -184,13 +184,13 @@
    以下のパッケージの設定が必要です。
    設定が実行される順番も下記の順番が望ましいです。
 
-   - CEDET(built-in) ::
-   - flymake(built-in) ::
-   - auto-complete ::
+   - CEDET(built-in)
+   - flymake(built-in)
+   - auto-complete
      M-x list-packages で入手
-   - yasnippet ::
+   - yasnippet
      M-x list-packages で入手
-   - ac-clang ::
+   - ac-clang
      https://github.com/yaruopooner/ac-clang
 
      emacs-clang-complete-asyncからforkして独自拡張したもの。
@@ -249,7 +249,7 @@
    ※対象となるソースバッファが１つしか存在ないことが理由。
      バッファ自身はどのプロジェクトで、どんな platform|configuration で動作するのかを保持しているため。
 
-   - 登録サンプル ::
+   - 登録サンプル
    #+begin_src emacs-lisp
    (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
                                        :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
@@ -267,7 +267,7 @@
    #+end_src
 
 *** 必須パラメーター
-    - :solution-file or :project-file ::
+    - :solution-file or :project-file
       いずれかが設定されていればOKです。
       :solution-file のみを指定した場合
       ソリューションに含まれる全てのプロジェクトがパースされ、アクティブ化されます。
@@ -282,53 +282,53 @@
       ソリューションのみの場合は所属全プロジェクトがパース＆アクティブ化されるのに対し
       こちらは指定したプロジェクトのみがパース＆アクティブ化されます。
       ソリューションに登録されているプロジェクトが膨大な場合は、必要なプロジェクトだけをこのスタイルで記述するのがよいでしょう。
-    - :platform ::
+    - :platform
       パース・アクティブ化するプラットフォームを指定します。
       プロジェクトファイルに存在するプラットフォームでなければなりません。
-    - :configuration ::
+    - :configuration
       パース・アクティブ化するコンフィグを指定します。
       プロジェクトファイルに存在するコンフィグでなければなりません。
 
 *** オプションパラメーター
-    - :version ::
+    - :version
       プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。
       指定は文字列で行う。整数ではないので注意。
       "2013" のように指定。
       指定しない or nil場合、msvc-env:default-use-versionの値がセットされる。
       msvc-env:default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。
       msvc::initialize実行後にmsvc-env:default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
-    - :force-parse-p ::
+    - :force-parse-p
       nil 推奨
       すでにパース済みのプロジェクトであっても強制的にパースする。
       主にデバッグ用途です。
-    - :sync-p ::
+    - :sync-p
       nil 推奨
       同期パースします。
       ですので、プロジェクトファイルが多い場合は関数から戻るまで時間がかかります。
       通常使用する分にはまず使用する必要は無いと思います。
       主にデバッグ用途です。
-    - :allow-cedet-p ::
+    - :allow-cedet-p
       t 推奨
       CEDET機能を利用する
       CEDETのプロジェクト管理に登録されsemanticが有効化されます。
       nil の場合はincludeファイルへのジャンプが利用できなくなります。
-    - :allow-ac-clang-p ::
+    - :allow-ac-clang-p
       t 推奨  
       ac-clang機能を利用する
       libclangによるコード補完と宣言/定義へのジャンプが可能になります。
       nil の場合はジャンプは利用不可になり、補完は情報源としてsemanticを利用するようになります。
-    - :allow-flymake-p ::
+    - :allow-flymake-p
       t 推奨
       flymake機能を利用する
       MSBuildによるシンタックスチェックを利用します。
-    - :cedet-root-path ::
+    - :cedet-root-path
       :allow-cedet-p t の時だけ参照される
       CEDET edeプロジェクト基準ディレクトリを指定する
       指定したディレクトリに*.edeファイルが生成される
       大抵はプロジェクトファイルが配置されているディレクトリで問題ないです。
       ただ、ソースコードの配置場所がプロジェクトファイル配置ディレクトリと同階層か子孫で無い場合は注意が必要になります。
       この場合は同階層か子孫になるような共通の親ディレクトリを指定する必要があります。
-    - :cedet-spp-table ::
+    - :cedet-spp-table
       nil 推奨
       :allow-cedet-p t の時だけ参照される
       semanticがソースをパースする際にリプレースさせたいワードの連想テーブル
@@ -346,12 +346,12 @@
                          ("RESTRICT"           . ""))
       #+end_src
       詳細はCEDETマニュアル参照。
-    - :flymake-manually-p ::
+    - :flymake-manually-p
       nil 推奨
       :allow-flymake-p t の時だけ参照される
       flymake のシンタックスチェックを自動起動しない
       マニュアルチェックのみ有効
-    - :flymake-manually-back-end ::
+    - :flymake-manually-back-end
       nil 推奨
       :allow-flymake-p t の時だけ参照される
       MSBuild 以外を使用する場合のみ指定する
@@ -383,7 +383,7 @@
    :allow-ac-clang-p tの場合補完可能になります。
 
    - 操作
-     - 補完 ::
+     - 補完
        キー : `::`, `.`, `->`
        説明 : 補完が自動起動します。
 
@@ -399,23 +399,23 @@
    =(setq msvc:flymake-error-display-style DISPLAY-STYLE-SYMBOL)=
 
    - DISPLAY-STYLE-SYMBOL
-     - 'popup ::
+     - 'popup
        初期値です。
        auto-completeパッケージ付属のpopup.elを使用してエラー表示をします
-     - 'mini-buffer ::
+     - 'mini-buffer
        ミニバッファにエラー表示をします
-     - nil ::
+     - nil
        msvcはエラー表示を行いません
        エラー表示手法は各個人のflymake設定に依存します
 
    - 操作
-     - マニュアルシンタックスチェック ::
+     - マニュアルシンタックスチェック
        キー : F5
        説明 : マニュアルでflymakeを実行します
-     - エラー行へジャンプ(prev-error) ::
+     - エラー行へジャンプ(prev-error)
        キー : M-[
        説明 : エラー行へジャンプしてエラー内容をポップアップ表示します
-     - エラー行へジャンプ(next-error) ::
+     - エラー行へジャンプ(next-error)
        キー : M-]
        説明 : エラー行へジャンプしてエラー内容をポップアップ表示します
 
@@ -429,11 +429,11 @@
    ですので、 luaなどその他スクリプト言語も使用しており GTAGS + CTAGS を利用するような場合はそれらと併用するのがよいでしょう。
 
    - 操作
-     - 定義/宣言へジャンプ ::
+     - 定義/宣言へジャンプ
        キー : M-.
        説明 : ジャンプしたいワード上にカーソルをポイントしてキー操作をすると
               定義/宣言がされているソースファイルをオープンし該当バッファの定義/宣言場所へカーソルをポイントします
-     - ジャンプ元へリターン ::
+     - ジャンプ元へリターン
        キー : M-,
        説明 : 一つ前のジャンプ元へリターンします
               この操作を繰り返す事によりジャンプ履歴をさかのぼれます
@@ -453,11 +453,11 @@
    これによりジャンプ可能になるはずです。
 
    - 操作
-     - includeファイルへジャンプ ::
+     - includeファイルへジャンプ
        キー : M-i
        説明 : ジャンプしたいincludeファイル上にカーソルをポイントしてキー操作をすると
               includeファイルをオープンして該当バッファへジャンプします
-     - ジャンプ元へリターン ::
+     - ジャンプ元へリターン
        キー : M-I
        説明 : 一つ前のジャンプ元へリターンします
               この操作を繰り返す事によりジャンプ履歴をさかのぼれます
@@ -474,7 +474,7 @@
    =(msvc:mode-feature-clean-solution)=
 
    - 操作
-     - プロジェクト・ソリューションのビルド ::
+     - プロジェクト・ソリューションのビルド
        キー : C-f5
        説明 : プロジェクト・ソリューションのビルドが起動します
 
@@ -483,45 +483,45 @@
    以下の変数にシンボルをセットすることにより変更が可能です。(.msvcあたりで記述しておく)
    =(setq msvc:solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)=
 
-   - DISPLAY-TIMING-SYMBOL ::
+   - DISPLAY-TIMING-SYMBOL
      ビルドログバッファのウィンドウ表示タイミングを指定
-     - 'before ::
+     - 'before
        ビルドを開始した時点でウィンドウを分割して表示します。
-     - 'after ::
+     - 'after
        ビルドが完了した時点でウィンドウを分割して表示します。
-     - nil ::
+     - nil
        ログバッファは生成するがビルド完了後もフォアグラウンドにしない。
 
 
    ビルドログバッファ内での表示方法を指定
    =(msvc:solution-build-report-realtime-display-p BOOLEAN)=
 
-   - BOOLEAN ::
-     - t :: 
+   - BOOLEAN
+     - t 
        ビルドログをリアルタイム表示
-     - nil ::
+     - nil
        ビルド完了後に一括表示
    
 ** プロジェクト・ソリューションのビルドログからのエラーファイルへのジャンプ
    利用可能な場所：プロジェクト・ソリューションのビルドログバッファ上
 
    - 操作
-     - 一つ前のエラー行へのジャンプ ::
+     - 一つ前のエラー行へのジャンプ
        キー : [
        説明 : ビルドログで一つ前のエラー行へジャンプします
-     - 一つ先のエラー行へのジャンプ ::
+     - 一つ先のエラー行へのジャンプ
        キー : ]
        説明 : ビルドログで一つ先のエラー行へジャンプします
-     - 一つ前のエラー行へのジャンプ＆該当エラーのファイル行を他ウィンドウへ表示 ::
+     - 一つ前のエラー行へのジャンプ＆該当エラーのファイル行を他ウィンドウへ表示
        キー : M-[
        説明 : ビルドログで一つ前のエラー行へジャンプして他ウィンドウへ該当ファイルのエラー行を表示します
-     - 一つ先のエラー行へのジャンプ＆該当エラーのファイル行を他ウィンドウへ表示 ::
+     - 一つ先のエラー行へのジャンプ＆該当エラーのファイル行を他ウィンドウへ表示
        キー : M-[
        説明 : ビルドログで一つ先のエラー行へジャンプして他ウィンドウへ該当ファイルのエラー行を表示します
-     - エラーファイル行を表示 ::
+     - エラーファイル行を表示
        キー : C-z
        説明 : 他ウィンドウを開きエラーファイル行を表示します
-     - エラーファイルへのジャンプ ::
+     - エラーファイルへのジャンプ
        キー : RET, mouseクリック
        説明 : 他ウィンドウを開きエラーファイル行へジャンプします
 
@@ -540,11 +540,11 @@
    該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。
    ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。
    
-   - (msvc:mode-feature-launch-msvs) ::
+   - (msvc:mode-feature-launch-msvs)
      バッファにソリューションが関連付けされていればソリューションで起動。
      プロジェクトのみの場合はプロジェクトで起動。
-   - (msvc:mode-feature-launch-msvs-by-project) ::
+   - (msvc:mode-feature-launch-msvs-by-project)
      プロジェクトで起動。
-   - (msvc:mode-feature-launch-msvs-by-solution) ::
+   - (msvc:mode-feature-launch-msvs-by-solution)
      ソリューションで起動。
 
