@@ -563,7 +563,7 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
         ログバッファは生成するがビルド完了後もフォアグラウンドにしない。
 
 ビルドログバッファ内での表示方法を指定  
-`(msvc:solution-build-report-realtime-display-p BOOLEAN)`  
+`(setq msvc:solution-build-report-realtime-display-p BOOLEAN)`  
 
 -   BOOLEAN  
     -   t  
@@ -612,10 +612,10 @@ Visual Studio上でプロジェクトファイルを編集したり、
 該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。  
 ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。  
 
--   (msvc:mode-feature-launch-msvs)  
+-   `(msvc:mode-feature-launch-msvs)`  
     バッファにソリューションが関連付けされていればソリューションで起動。  
     プロジェクトのみの場合はプロジェクトで起動。
--   (msvc:mode-feature-launch-msvs-by-project)  
-    プロジェクトで起動。
--   (msvc:mode-feature-launch-msvs-by-solution)  
-    ソリューションで起動。
+-   `(msvc:mode-feature-launch-msvs-by-project)`  
+         プロジェクトで起動。
+-   `(msvc:mode-feature-launch-msvs-by-solution)`  
+         ソリューションで起動。

@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/02.02:13:06
+# last updated : 2015/02/03.02:28:04
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -494,7 +494,7 @@
 
 
    ビルドログバッファ内での表示方法を指定
-   =(msvc:solution-build-report-realtime-display-p BOOLEAN)=
+   =(setq msvc:solution-build-report-realtime-display-p BOOLEAN)=
 
    - BOOLEAN
      - t 
@@ -540,11 +540,11 @@
    該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。
    ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。
    
-   - (msvc:mode-feature-launch-msvs)
+   - =(msvc:mode-feature-launch-msvs)=
      バッファにソリューションが関連付けされていればソリューションで起動。
      プロジェクトのみの場合はプロジェクトで起動。
-   - (msvc:mode-feature-launch-msvs-by-project)
+   - =(msvc:mode-feature-launch-msvs-by-project)=
      プロジェクトで起動。
-   - (msvc:mode-feature-launch-msvs-by-solution)
+   - =(msvc:mode-feature-launch-msvs-by-solution)=
      ソリューションで起動。
 
