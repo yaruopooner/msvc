@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/03.02:28:04
+# last updated : 2015/02/04.01:19:40
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -165,18 +165,18 @@
    .bashrc あたりに以下を記述しておくとよいでしょう。
 
    Emacsが配置されているパスを
-   c:/emacs/32/emacs-24.3-20130503
+   c:/emacs/64/emacs-24.3-20130503
    とします
 
    - Cygwin
      #+begin_src shell-script
-     alias emacs32-243-1='/cygdrive/c/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+     alias emacs32-243-1='/cygdrive/c/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
      alias emacs='emacs32-243-1'
      #+end_src
 
    - MSYS
      #+begin_src shell-script
-     alias emacs32-243-1='c:/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+     alias emacs32-243-1='c:/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
      alias emacs='emacs32-243-1'
      #+end_src
 
@@ -249,22 +249,22 @@
    ※対象となるソースバッファが１つしか存在ないことが理由。
      バッファ自身はどのプロジェクトで、どんな platform|configuration で動作するのかを保持しているため。
 
-   - 登録サンプル
-   #+begin_src emacs-lisp
-   (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
-                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
-                                       :platform "x64"
-                                       :configuration "Release" 
-                                       :version "2013" 
-                                       :force-parse-p nil
-                                       :allow-cedet-p t
-                                       :allow-ac-clang-p t
-                                       :allow-flymake-p t
-                                       :cedet-root-path "d:/DirectXSamples/SubD11"
-                                       :cedet-spp-table nil
-                                       :flymake-manually-p nil
-                                       :flymake-manually-back-end nil)
-   #+end_src
+*** 登録サンプル
+    #+begin_src emacs-lisp
+    (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
+                                        :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
+                                        :platform "x64"
+                                        :configuration "Release" 
+                                        :version "2013" 
+                                        :force-parse-p nil
+                                        :allow-cedet-p t
+                                        :allow-ac-clang-p t
+                                        :allow-flymake-p t
+                                        :cedet-root-path "d:/DirectXSamples/SubD11"
+                                        :cedet-spp-table nil
+                                        :flymake-manually-p nil
+                                        :flymake-manually-back-end nil)
+    #+end_src
 
 *** 必須パラメーター
     - :solution-file or :project-file

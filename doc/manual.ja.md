@@ -29,8 +29,9 @@
 <ul>
 <li><a href="#sec-7-1">7.1. プロジェクトのパースと登録1</a>
 <ul>
-<li><a href="#sec-7-1-1">7.1.1. 必須パラメーター</a></li>
-<li><a href="#sec-7-1-2">7.1.2. オプションパラメーター</a></li>
+<li><a href="#sec-7-1-1">7.1.1. 登録サンプル</a></li>
+<li><a href="#sec-7-1-2">7.1.2. 必須パラメーター</a></li>
+<li><a href="#sec-7-1-3">7.1.3. オプションパラメーター</a></li>
 </ul>
 </li>
 <li><a href="#sec-7-2">7.2. プロジェクトのパースと登録2</a></li>
@@ -220,17 +221,17 @@ GNU Emacs を cygwin(or msys)から起動できるようにします。
 .bashrc あたりに以下を記述しておくとよいでしょう。  
 
 Emacsが配置されているパスを  
-c:/emacs/32/emacs-24.3-20130503  
+c:/emacs/64/emacs-24.3-20130503  
 とします  
 
 -   Cygwin  
     
-        alias emacs32-243-1='/cygdrive/c/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+        alias emacs32-243-1='/cygdrive/c/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
         alias emacs='emacs32-243-1'
 
 -   MSYS  
     
-        alias emacs32-243-1='c:/emacs/32/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+        alias emacs32-243-1='c:/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
         alias emacs='emacs32-243-1'
 
 ## Emacsパッケージの設定<a id="sec-6-2" name="sec-6-2"></a>
@@ -304,7 +305,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 ※対象となるソースバッファが１つしか存在ないことが理由。  
   バッファ自身はどのプロジェクトで、どんな platform|configuration で動作するのかを保持しているため。  
 
--   登録サンプル
+### 登録サンプル<a id="sec-7-1-1" name="sec-7-1-1"></a>
 
     (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
                                         :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
@@ -320,7 +321,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                                         :flymake-manually-p nil
                                         :flymake-manually-back-end nil)
 
-### 必須パラメーター<a id="sec-7-1-1" name="sec-7-1-1"></a>
+### 必須パラメーター<a id="sec-7-1-2" name="sec-7-1-2"></a>
 
 -   :solution-file or :project-file  
     いずれかが設定されていればOKです。  
@@ -347,7 +348,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     パース・アクティブ化するコンフィグを指定します。  
     プロジェクトファイルに存在するコンフィグでなければなりません。
 
-### オプションパラメーター<a id="sec-7-1-2" name="sec-7-1-2"></a>
+### オプションパラメーター<a id="sec-7-1-3" name="sec-7-1-3"></a>
 
 -   :version  
     プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。  
