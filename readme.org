@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/03.02:30:31
+# last updated : 2015/02/06.02:38:41
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
@@ -8,7 +8,8 @@
 #+OPTIONS:   author:nil timestamp:t |:t \n:t ^:nil
 
 
-[[./doc/manual.ja.org][main document]]
+* Main Document
+  [[./doc/manual.ja.org][MSVC User Manual]]
 
 
 * What's New?
