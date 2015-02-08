@@ -58,8 +58,9 @@
       <CFLAG_SystemPreprocessorDefinitions Include="_ATL_VER=0x1000"/>
       <!-- <CFLAG_SystemPreprocessorDefinitions Include="_CHAR_UNSIGNED"/> -->
       <CFLAG_SystemPreprocessorDefinitions Include="__CLR_VER=0" Condition="('%(ClCompile.CompileAsManaged)' != 'false')"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus_cli=200406" Condition="('%(ClCompile.CompileAsManaged)' == 'true') OR ('%(ClCompile.CompileAsManaged)' == 'Pure') OR ('%(ClCompile.CompileAsManaged)' == 'Safe')"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus" Condition="('%(ClCompile.CompileAs)' == 'Default') OR ('%(ClCompile.CompileAs)' == 'CompileAsCpp')"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus_cli=200406L" Condition="('%(ClCompile.CompileAsManaged)' == 'true') OR ('%(ClCompile.CompileAsManaged)' == 'Pure') OR ('%(ClCompile.CompileAsManaged)' == 'Safe')"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus_winrt=201009L" Condition="('%(ClCompile.CompileAsWinRT)' == 'true')"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus=201103L" Condition="('%(ClCompile.CompileAs)' == 'Default') OR ('%(ClCompile.CompileAs)' == 'CompileAsCpp')"/>
 
       <CFLAG_SystemPreprocessorDefinitions Include="_MT" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreaded') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebug') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDLL') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_DLL" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDLL') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
