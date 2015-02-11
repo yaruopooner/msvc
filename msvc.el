@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/31.23:22:22
+;;; last updated : 2015/02/11.23:24:06
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -338,10 +338,8 @@
 ;; プロジェクトディテールをプロジェクトバッファに表示する
 (defun msvc:display-project-details (db-name)
   (when msvc:display-update-p
-    (let* (
-           (details (msvc:query-project db-name))
-           (project-buffer (plist-get details :project-buffer))
-           )
+    (let* ((details (msvc:query-project db-name))
+           (project-buffer (plist-get details :project-buffer)))
       (when project-buffer
         (with-current-buffer project-buffer
           (let ((buffer-read-only nil))
@@ -423,7 +421,7 @@
      (let* ((err-str (format "Failed to launch syntax check process '%s' with args %s: %s"
                              cmd args (error-message-string err)))
             (source-file-name buffer-file-name)
-            (cleanup-f        (flymake-get-cleanup-function source-file-name)))
+            (cleanup-f (flymake-get-cleanup-function source-file-name)))
        (flymake-log 0 err-str)
        (funcall cleanup-f)
        (flymake-report-fatal-status "PROCERR" err-str)))))
@@ -581,7 +579,7 @@
          (additional-inc-paths (msvc:convert-to-cedet-style-path (msvc-flags:query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
          (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
          (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
-         (additional-inc-rpaths))
+         additional-inc-rpaths)
 
     (cl-case status
       (enable
@@ -833,14 +831,12 @@ optionals
 "
   (interactive)
 
-  (let* (
-         (solution-file (plist-get args :solution-file))
+  (let* ((solution-file (plist-get args :solution-file))
          (project-file (plist-get args :project-file))
          (platform (plist-get args :platform))
          (configuration (plist-get args :configuration))
+         db-names)
 
-         db-names
-         )
     (unless (or solution-file project-file)
       (cl-return-from msvc:activate-projects-after-parse nil))
 
@@ -895,8 +891,7 @@ optionals
     (cl-return-from msvc:activate-project nil))
 
   ;; DBリストからプロジェクトマネージャーを生成
-  (let* (
-         (property (msvc-flags:create-project-property db-name))
+  (let* ((property (msvc-flags:create-project-property db-name))
 
          ;; project basic information
          (project-buffer (format msvc:project-buffer-name-fmt db-name))
