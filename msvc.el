@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/02/11.23:24:06
+;;; last updated : 2015/02/15.21:45:53
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -1122,7 +1122,7 @@ optionals
     (let* ((exit-status (process-exit-status process))
            (bind-buffer (process-buffer process)))
       ;; プロセスバッファを終了時に表示
-      (msvc:msvc:parse-solution-build-report bind-buffer)
+      (msvc:parse-solution-build-report bind-buffer)
       (when (eq msvc:solution-build-report-display-timing 'after)
         (msvc:split-window bind-buffer)))))
     
@@ -1198,7 +1198,7 @@ optionals
   (msvc:mode-feature-solution-jump-to-error-file))
 
 
-(defun msvc:msvc:parse-solution-build-report (buffer)
+(defun msvc:parse-solution-build-report (buffer)
   (let* (
          ;; (pattern (concat (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)) "\\[\\(.+\\)\\]"))
          (pattern (caar (plist-get msvc:flymake-err-line-patterns 'msbuild)))
