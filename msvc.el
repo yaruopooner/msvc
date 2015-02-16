@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/02/15.21:45:53
+;;; last updated : 2015/02/16.11:23:40
 
 ;;; msvc.el --- Microsoft Visual C/C++ mode
 
@@ -548,22 +548,22 @@
     (enable
      ;; backup value
      (push ac-sources msvc:ac-sources-backup)
-     (push ac-clang:cflags msvc:ac-clang-cflags-backup)
+     (push ac-clang-cflags msvc:ac-clang-cflags-backup)
 
      ;; set database value
      (setq ac-sources '(ac-source-clang-async))
-     (setq ac-clang:cflags (msvc-flags:create-ac-clang-cflags db-name))
+     (setq ac-clang-cflags (msvc-flags:create-ac-clang-cflags db-name))
 
      ;; buffer modified > do activation
      ;; buffer not modify > delay activation
-     (ac-clang:activate-after-modify))
+     (ac-clang-activate-after-modify))
     (disable
      ;; always deactivation
-     (ac-clang:deactivate)
+     (ac-clang-deactivate)
 
      ;; restore value
      (setq ac-sources (pop msvc:ac-sources-backup))
-     (setq ac-clang:cflags (pop msvc:ac-clang-cflags-backup)))))
+     (setq ac-clang-cflags (pop msvc:ac-clang-cflags-backup)))))
 
 
 ;; CEDET セットアップ関数
@@ -1081,7 +1081,7 @@ optionals
      (flymake-start-syntax-check))
     (clang
      ;; back end : clang
-     (ac-clang:syntax-check))))
+     (ac-clang-syntax-check))))
 
 (defun msvc:mode-feature-jump-to-project-buffer ()
   (interactive)
