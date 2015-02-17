@@ -1,6 +1,6 @@
-;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: nil; -*-
+;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/17.11:31:52
+;;; last updated : 2015/02/18.02:55:05
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -81,31 +81,22 @@
 
 ;; utilities
 (defun msvc-env:normalize-path (paths safe-path)
-  (let* (result
-         (converter '(lambda (path safe-path)
-                       (if (file-name-absolute-p path)
-                           path
-                         (expand-file-name path safe-path)))))
-
-    (if (listp paths)
-        (cl-dolist (path paths)
-          (add-to-list 'result (funcall converter path safe-path) t))
-      (setq result (funcall converter paths safe-path)))
-    result))
+  (unless (listp paths)
+    (setq paths (list paths)))
+  (mapcar (lambda (path)
+            (if (file-name-absolute-p path)
+                path
+              (expand-file-name path safe-path))) paths))
 
 
 (defun msvc-env:convert-to-posix-style-path (paths)
-  (let* (result
-         (converter '(lambda (path)
-                       (replace-regexp-in-string "^\\([a-zA-Z]\\):" 
-                                                 (lambda (match) (downcase (format "/cygdrive/%s" (match-string 1 path))))
-                                                 path
-                                                 t))))
-    (if (listp paths)
-        (cl-dolist (path paths)
-          (add-to-list 'result (funcall converter path) t))
-      (setq result (funcall converter paths)))
-    result))
+  (unless (listp paths)
+    (setq paths (list paths)))
+  (mapcar (lambda (path)
+            (replace-regexp-in-string "^\\([a-zA-Z]\\):"
+                                      (lambda (match) (downcase (format "/cygdrive/%s" (match-string 1 match))))
+                                      path
+                                      t)) paths))
 
 
 
