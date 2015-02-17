@@ -1,11 +1,9 @@
-;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/31.18:59:47
+;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: nil; -*-
+
+;;; last updated : 2015/02/17.11:17:35
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
-;; Author          : yaruopooner [https://github.com/yaruopooner]
-;; Keywords        : languages, completion, syntax check, mode, convenience
-
 ;; This file is part of MSVC.
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -703,5 +701,10 @@ optionals
 
 
 (provide 'msvc-flags)
-;;--------------------------------------------------------------------------------------------------
-;; EOF
+
+;; Local Variables:
+;; coding: utf-8-unix
+;; indent-tabs-mode: nil
+;; End:
+
+;;; msvc-flags.el ends here

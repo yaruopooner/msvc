@@ -1,11 +1,9 @@
-;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/22.23:38:48
+;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: nil; -*-
+
+;;; last updated : 2015/02/17.11:17:23
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
-;; Author          : yaruopooner [https://github.com/yaruopooner]
-;; Keywords        : languages, completion, syntax check, mode, convenience
-
 ;; This file is part of MSVC.
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -181,5 +179,10 @@
 
 
 (provide 'msvc-env)
-;;--------------------------------------------------------------------------------------------------
-;; EOF
+
+;; Local Variables:
+;; coding: utf-8-unix
+;; indent-tabs-mode: nil
+;; End:
+
+;;; msvc-env.el ends here
