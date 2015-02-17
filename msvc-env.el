@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: nil; -*-
 
-;;; last updated : 2015/02/17.11:17:23
+;;; last updated : 2015/02/17.11:31:52
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -181,7 +181,7 @@
 (provide 'msvc-env)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; indent-tabs-mode: nil
 ;; End:
 

@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: nil; -*-
 
-;;; last updated : 2015/02/17.11:17:35
+;;; last updated : 2015/02/17.11:31:52
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -703,7 +703,7 @@ optionals
 (provide 'msvc-flags)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; indent-tabs-mode: nil
 ;; End:
 
