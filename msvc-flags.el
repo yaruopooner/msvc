@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/18.21:10:00
+;;; last updated : 2015/02/18.23:33:26
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -169,7 +169,7 @@
           (setq value (split-string value ";" t))
           (when value
             (setq value (delete-dups value))
-            (msvc-env:add-to-list cflags `(,key . ,value) t))))
+            (push `(,key . ,value) cflags))))
 
       ;; パース後はリードオンリーとして残す
       (setq buffer-read-only t)
@@ -177,7 +177,8 @@
       (when msvc-flags:parsing-buffer-delete-p
         (kill-buffer)))
 
-    cflags))
+    ;; it is sorted by added order.
+    (nreverse cflags)))
 
 
 ;; for async parse
@@ -597,13 +598,13 @@ optionals
     (when (and opt-msc-extensions-disable (string-match "false" opt-msc-extensions-disable))
       (setq clang-cflags (append clang-cflags '("-fms-compatibility" "-fms-extensions" "-fmsc-version=1600"))))
     (unless (and opt-exception-handling-enable (string-match "false" opt-exception-handling-enable))
-      (msvc-env:add-to-list clang-cflags "-fcxx-exceptions" t))
+      (push "-fcxx-exceptions" clang-cflags))
     (when (and opt-rtti-enable (string-match "false" opt-rtti-enable))
-      (msvc-env:add-to-list clang-cflags "-fno-rtti" t))
+      (push "-fno-rtti" clang-cflags))
 
     ;; (unless (and opt-pch-enable (string-match "NotUsing" opt-pch-enable))
     ;;   (when opt-pch-file
-    ;;  (msvc-env:add-to-list clang-cflags (format "-include-pch %s" opt-pch-file) t)
+    ;;  (push (format "-include-pch %s" opt-pch-file) clang-cflags)
     ;;  )
     ;;   )
 
@@ -616,32 +617,36 @@ optionals
     ;; -I <directory>          Add directory to include search path
     (cl-dolist (path system-inc-paths)
       ;; (unless (assoc-string path exclude-inc-paths)
-      (msvc-env:add-to-list clang-cflags (format "-I%s" path) t)
-      ;; (msvc-env:add-to-list clang-cflags (format "-isystem %s" path) t)
-      ;; (msvc-env:add-to-list clang-cflags (format "-cxx-isystem %s" path) t)
+      (push (format "-I%s" path) clang-cflags)
+      ;; (push (format "-isystem %s" path) clang-cflags)
+      ;; (push (format "-cxx-isystem %s" path) clang-cflags)
       ;; )
       )
     ;; -I <directory>          Add directory to include search path
     (cl-dolist (path additional-inc-paths)
       ;; (unless (assoc-string path exclude-inc-paths)
-      (msvc-env:add-to-list clang-cflags (format "-I%s" path) t)
+      (push (format "-I%s" path) clang-cflags)
       ;; )
       )
     ;; -include <file>         Include file before parsing
     (cl-dolist (file force-inc-files)
-      (msvc-env:add-to-list clang-cflags (format "-include %s" file) t))
+      (push (format "-include %s" file) clang-cflags))
 
     ;; -D <macro>              Predefine the specified macro
     (cl-dolist (def system-ppdefs)
-      (msvc-env:add-to-list clang-cflags (format "-D %s" def) t))
+      (push (format "-D %s" def) clang-cflags))
     ;; -D <macro>              Predefine the specified macro
     (cl-dolist (def additional-ppdefs)
-      (msvc-env:add-to-list clang-cflags (format "-D %s" def) t))
+      (push (format "-D %s" def) clang-cflags))
     ;; -U <macro>              Undefine the specified macro
     (cl-dolist (def undef-ppdefs)
-      (msvc-env:add-to-list clang-cflags (format "-U %s" def) t))
+      (push (format "-U %s" def) clang-cflags))
 
-    clang-cflags))
+    ;; it is sorted by added order. 
+    ;; NOTICE: process for list
+    ;; OK: nreverse -> delete-dups
+    ;; NG: delete-dups -> nreverse
+    (delete-dups (nreverse clang-cflags))))
 
 
 (defun msvc-flags:create-ac-clang-cflags (db-name &optional additional-options)
