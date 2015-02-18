@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/18.02:55:05
+;;; last updated : 2015/02/18.15:49:44
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -62,6 +62,15 @@
 (defconst msvc-env:shell-msbuild-name "invoke-msbuild.bat")
 (defconst msvc-env:shell-msbuild (expand-file-name msvc-env:shell-msbuild-name msvc-env:package-directory))
 
+
+
+;; for lexical-binding 
+(defmacro msvc-env:add-to-list (list-var element &optional append)
+  `(if (member ,element ,list-var)
+       ,list-var
+     (if ,append
+         (setq ,list-var (append ,list-var (list ,element)))
+       (push ,element ,list-var))))
 
 
 

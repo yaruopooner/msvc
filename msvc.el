@@ -1,6 +1,6 @@
-;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: nil; -*-
+;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/17.11:31:52
+;;; last updated : 2015/02/18.16:25:36
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -297,7 +297,7 @@
       (with-current-buffer buffer
         ;; file belonging check
         (when (msvc:target-buffer-p db-name target-files)
-          (add-to-list 'target-buffers buffer))))
+          (msvc-env:add-to-list target-buffers buffer))))
     target-buffers))
 
 
@@ -589,7 +589,7 @@
          ;; All path is relative from cedet-root-path.
          ;; And relative path string require starts with "/". (CEDET :include-path format specification)
          (setq path (concat "/" path))
-         (add-to-list 'additional-inc-rpaths (file-name-as-directory path) t))
+         (msvc-env:add-to-list additional-inc-rpaths (file-name-as-directory path) t))
 
        ;; generate Project.ede file
        ;; (print "ede-proj-file")
@@ -646,7 +646,7 @@
   (cl-case status
     (enable
      ;; (unless (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks)
-     ;;   (add-to-list 'flymake-allowed-file-name-masks `(,msvc:flymake-target-pattern msvc:flymake-command-generator))))
+     ;;   (msvc-env:add-to-list flymake-allowed-file-name-masks `(,msvc:flymake-target-pattern msvc:flymake-command-generator))))
 
      ;; プロジェクトファイルと同じ場所にインポートプロジェクトが配置されている必要がある
      ;; MSBuild の仕様のため(詳細後述)
@@ -708,7 +708,7 @@
       (setq msvc:source-code-belonging-db-name db-name)
 
       ;; attach to project
-      (add-to-list 'target-buffers (current-buffer) t)
+      (msvc-env:add-to-list target-buffers (current-buffer) t)
       (setq details (plist-put details :target-buffers target-buffers))
       ;; (print target-buffers)
 
@@ -1035,7 +1035,7 @@ optionals
     ;; なので一旦対象db-nameだけを集めてから処理する
     (cl-dolist (project msvc:active-projects)
       (let* ((db-name (car project)))
-        (add-to-list 'db-names db-name t)))
+        (msvc-env:add-to-list db-names db-name t)))
 
     (cl-dolist (db-name db-names)
       (apply 'msvc:activate-projects-after-parse (msvc:query-project db-name)))))
