@@ -1,13 +1,13 @@
-;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/02/16.11:23:40
+;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; msvc.el --- Microsoft Visual C/C++ mode
+;;; last updated : 2015/02/19.00:24:09
+
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
-;; Keywords: languages, completion, syntax check, mode, convenience
+;; Keywords: languages, completion, syntax check, mode, intellisense
 ;; Version: 1.0.0
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0"))
 
@@ -261,6 +261,10 @@
   (msvc:query-project (or msvc:db-name msvc:source-code-belonging-db-name)))
 
 
+(defsubst msvc:query-project-db-name (project)
+  (car project))
+
+
 
 (defsubst msvc:convert-to-target-buffer-style-path (paths)
   (if (eq msvc:target-buffer-path-format 'posix)
@@ -297,7 +301,7 @@
       (with-current-buffer buffer
         ;; file belonging check
         (when (msvc:target-buffer-p db-name target-files)
-          (add-to-list 'target-buffers buffer))))
+          (push buffer target-buffers))))
     target-buffers))
 
 
@@ -589,7 +593,7 @@
          ;; All path is relative from cedet-root-path.
          ;; And relative path string require starts with "/". (CEDET :include-path format specification)
          (setq path (concat "/" path))
-         (add-to-list 'additional-inc-rpaths (file-name-as-directory path) t))
+         (msvc-env:add-to-list additional-inc-rpaths (file-name-as-directory path) t))
 
        ;; generate Project.ede file
        ;; (print "ede-proj-file")
@@ -646,7 +650,7 @@
   (cl-case status
     (enable
      ;; (unless (rassoc '(msvc:flymake-command-generator) flymake-allowed-file-name-masks)
-     ;;   (add-to-list 'flymake-allowed-file-name-masks `(,msvc:flymake-target-pattern msvc:flymake-command-generator))))
+     ;;   (push `(,msvc:flymake-target-pattern msvc:flymake-command-generator) flymake-allowed-file-name-masks)))
 
      ;; プロジェクトファイルと同じ場所にインポートプロジェクトが配置されている必要がある
      ;; MSBuild の仕様のため(詳細後述)
@@ -708,7 +712,7 @@
       (setq msvc:source-code-belonging-db-name db-name)
 
       ;; attach to project
-      (add-to-list 'target-buffers (current-buffer) t)
+      (push (current-buffer) target-buffers)
       (setq details (plist-put details :target-buffers target-buffers))
       ;; (print target-buffers)
 
@@ -1029,14 +1033,12 @@ optionals
 (defun msvc:reparse-active-projects ()
   (interactive)
 
-  (let* (db-names)
-    ;; msvc:activate-projects-after-parseでmsvc:active-projectsに対してadd/removeされるので
-    ;; msvc:active-projects を参照しながら msvc:activate-projects-after-parse を実行すると問題がでる可能性がある
-    ;; なので一旦対象db-nameだけを集めてから処理する
-    (cl-dolist (project msvc:active-projects)
-      (let* ((db-name (car project)))
-        (add-to-list 'db-names db-name t)))
-
+  ;; msvc:activate-projects-after-parseでmsvc:active-projectsに対してadd/removeされるので
+  ;; msvc:active-projects を参照しながら msvc:activate-projects-after-parse を実行すると問題がでる可能性がある
+  ;; なので一旦対象db-nameだけを集めてから処理する
+  (let ((db-names (mapcar (lambda (project)
+                            (car project))
+                          msvc:active-projects)))
     (cl-dolist (db-name db-names)
       (apply 'msvc:activate-projects-after-parse (msvc:query-project db-name)))))
 
@@ -1119,7 +1121,7 @@ optionals
 
 (defun msvc:build-solution-sentinel (process _event)
   (when (memq (process-status process) '(signal exit))
-    (let* ((exit-status (process-exit-status process))
+    (let* (;; (exit-status (process-exit-status process))
            (bind-buffer (process-buffer process)))
       ;; プロセスバッファを終了時に表示
       (msvc:parse-solution-build-report bind-buffer)
@@ -1403,5 +1405,10 @@ optionals
 
 
 (provide 'msvc)
-;;--------------------------------------------------------------------------------------------------
-;; EOF
+
+;; Local Variables:
+;; coding: utf-8
+;; indent-tabs-mode: nil
+;; End:
+
+;;; msvc.el ends here

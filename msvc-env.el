@@ -1,11 +1,9 @@
-;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/22.23:38:48
+;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
+
+;;; last updated : 2015/02/18.15:49:44
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
-;; Author          : yaruopooner [https://github.com/yaruopooner]
-;; Keywords        : languages, completion, syntax check, mode, convenience
-
 ;; This file is part of MSVC.
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -66,6 +64,15 @@
 
 
 
+;; for lexical-binding 
+(defmacro msvc-env:add-to-list (list-var element &optional append)
+  `(if (member ,element ,list-var)
+       ,list-var
+     (if ,append
+         (setq ,list-var (append ,list-var (list ,element)))
+       (push ,element ,list-var))))
+
+
 
 (defun msvc-env:detect-product ()
   (cl-dolist (detail msvc-env:product-details)
@@ -83,31 +90,22 @@
 
 ;; utilities
 (defun msvc-env:normalize-path (paths safe-path)
-  (let* (result
-         (converter '(lambda (path safe-path)
-                       (if (file-name-absolute-p path)
-                           path
-                         (expand-file-name path safe-path)))))
-
-    (if (listp paths)
-        (cl-dolist (path paths)
-          (add-to-list 'result (funcall converter path safe-path) t))
-      (setq result (funcall converter paths safe-path)))
-    result))
+  (unless (listp paths)
+    (setq paths (list paths)))
+  (mapcar (lambda (path)
+            (if (file-name-absolute-p path)
+                path
+              (expand-file-name path safe-path))) paths))
 
 
 (defun msvc-env:convert-to-posix-style-path (paths)
-  (let* (result
-         (converter '(lambda (path)
-                       (replace-regexp-in-string "^\\([a-zA-Z]\\):" 
-                                                 (lambda (match) (downcase (format "/cygdrive/%s" (match-string 1 path))))
-                                                 path
-                                                 t))))
-    (if (listp paths)
-        (cl-dolist (path paths)
-          (add-to-list 'result (funcall converter path) t))
-      (setq result (funcall converter paths)))
-    result))
+  (unless (listp paths)
+    (setq paths (list paths)))
+  (mapcar (lambda (path)
+            (replace-regexp-in-string "^\\([a-zA-Z]\\):"
+                                      (lambda (match) (downcase (format "/cygdrive/%s" (match-string 1 match))))
+                                      path
+                                      t)) paths))
 
 
 
@@ -181,5 +179,10 @@
 
 
 (provide 'msvc-env)
-;;--------------------------------------------------------------------------------------------------
-;; EOF
+
+;; Local Variables:
+;; coding: utf-8
+;; indent-tabs-mode: nil
+;; End:
+
+;;; msvc-env.el ends here

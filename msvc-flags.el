@@ -1,11 +1,9 @@
-;;; -*- mode: emacs-lisp ; coding: utf-8-unix ; lexical-binding: nil -*-
-;;; last updated : 2015/01/31.18:59:47
+;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
+
+;;; last updated : 2015/02/18.23:33:26
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
-;; Author          : yaruopooner [https://github.com/yaruopooner]
-;; Keywords        : languages, completion, syntax check, mode, convenience
-
 ;; This file is part of MSVC.
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -170,7 +168,8 @@
           ;; セパレーター';' で分割して格納
           (setq value (split-string value ";" t))
           (when value
-            (add-to-list 'cflags `(,key . ,value) t))))
+            (setq value (delete-dups value))
+            (push `(,key . ,value) cflags))))
 
       ;; パース後はリードオンリーとして残す
       (setq buffer-read-only t)
@@ -178,7 +177,8 @@
       (when msvc-flags:parsing-buffer-delete-p
         (kill-buffer)))
 
-    cflags))
+    ;; it is sorted by added order.
+    (nreverse cflags)))
 
 
 ;; for async parse
@@ -198,7 +198,7 @@
 
 (defun msvc-flags:process-sentinel (process _event)
   (when (memq (process-status process) '(signal exit))
-    (let* ((exit-status (process-exit-status process))
+    (let* (;; (exit-status (process-exit-status process))
            (bind-buffer (process-buffer process))
            (db-name (msvc-flags:get-db-name-from-buffer bind-buffer))
            (cflags (msvc-flags:parse-compilation-buffer bind-buffer)))
@@ -475,13 +475,13 @@ optionals
             (setq project-path (expand-file-name project-path sln-directory))
 
             (when (file-readable-p project-path)
-              (add-to-list 'projects project-path) t))
+              (msvc-env:add-to-list projects project-path) t))
           (kill-buffer)))
 
       (cl-dolist (path projects)
         (let ((db-name (apply 'msvc-flags:parse-vcx-project :project-file path args)))
           (when db-name
-            (add-to-list 'db-names db-name t))))
+            (msvc-env:add-to-list db-names db-name t))))
 
       (cl-return-from msvc-flags:parse-vcx-solution db-names))))
 
@@ -582,7 +582,7 @@ optionals
          (undef-ppdefs (msvc-flags:query-cflag db-name "CFLAG_UndefinePreprocessorDefinitions"))
          (system-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_SystemIncludePath")))
          (additional-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
-         (exclude-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_ExcludePath")))
+         ;; (exclude-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_ExcludePath")))
          (force-inc-files (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_ForceIncludeFiles")))
          ;; (target-cpp-files (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles")))
          ;; (target-hpp-files (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))
@@ -590,21 +590,21 @@ optionals
          (opt-msc-extensions-disable (car (msvc-flags:query-cflag db-name "ClCompile.DisableLanguageExtensions")))
          (opt-exception-handling-enable (car (msvc-flags:query-cflag db-name "ClCompile.ExceptionHandling")))
          (opt-rtti-enable (car (msvc-flags:query-cflag db-name "ClCompile.RuntimeTypeInfo")))
-         (opt-compile-as (car (msvc-flags:query-cflag db-name "ClCompile.CompileAs")))
-         (opt-pch-enable (car (msvc-flags:query-cflag db-name "ClCompile.PrecompiledHeader")))
-         (opt-pch-file (car (msvc-flags:query-cflag db-name "ClCompile.PrecompiledHeaderFile")))
+         ;; (opt-compile-as (car (msvc-flags:query-cflag db-name "ClCompile.CompileAs")))
+         ;; (opt-pch-enable (car (msvc-flags:query-cflag db-name "ClCompile.PrecompiledHeader")))
+         ;; (opt-pch-file (car (msvc-flags:query-cflag db-name "ClCompile.PrecompiledHeaderFile")))
          )
 
     (when (and opt-msc-extensions-disable (string-match "false" opt-msc-extensions-disable))
       (setq clang-cflags (append clang-cflags '("-fms-compatibility" "-fms-extensions" "-fmsc-version=1600"))))
     (unless (and opt-exception-handling-enable (string-match "false" opt-exception-handling-enable))
-      (add-to-list 'clang-cflags "-fcxx-exceptions" t))
+      (push "-fcxx-exceptions" clang-cflags))
     (when (and opt-rtti-enable (string-match "false" opt-rtti-enable))
-      (add-to-list 'clang-cflags "-fno-rtti" t))
+      (push "-fno-rtti" clang-cflags))
 
     ;; (unless (and opt-pch-enable (string-match "NotUsing" opt-pch-enable))
     ;;   (when opt-pch-file
-    ;;  (add-to-list 'clang-cflags (format "-include-pch %s" opt-pch-file) t)
+    ;;  (push (format "-include-pch %s" opt-pch-file) clang-cflags)
     ;;  )
     ;;   )
 
@@ -617,32 +617,36 @@ optionals
     ;; -I <directory>          Add directory to include search path
     (cl-dolist (path system-inc-paths)
       ;; (unless (assoc-string path exclude-inc-paths)
-      (add-to-list 'clang-cflags (format "-I%s" path) t)
-      ;; (add-to-list 'clang-cflags (format "-isystem %s" path) t)
-      ;; (add-to-list 'clang-cflags (format "-cxx-isystem %s" path) t)
+      (push (format "-I%s" path) clang-cflags)
+      ;; (push (format "-isystem %s" path) clang-cflags)
+      ;; (push (format "-cxx-isystem %s" path) clang-cflags)
       ;; )
       )
     ;; -I <directory>          Add directory to include search path
     (cl-dolist (path additional-inc-paths)
       ;; (unless (assoc-string path exclude-inc-paths)
-      (add-to-list 'clang-cflags (format "-I%s" path) t)
+      (push (format "-I%s" path) clang-cflags)
       ;; )
       )
     ;; -include <file>         Include file before parsing
     (cl-dolist (file force-inc-files)
-      (add-to-list 'clang-cflags (format "-include %s" file) t))
+      (push (format "-include %s" file) clang-cflags))
 
     ;; -D <macro>              Predefine the specified macro
     (cl-dolist (def system-ppdefs)
-      (add-to-list 'clang-cflags (format "-D %s" def) t))
+      (push (format "-D %s" def) clang-cflags))
     ;; -D <macro>              Predefine the specified macro
     (cl-dolist (def additional-ppdefs)
-      (add-to-list 'clang-cflags (format "-D %s" def) t))
+      (push (format "-D %s" def) clang-cflags))
     ;; -U <macro>              Undefine the specified macro
     (cl-dolist (def undef-ppdefs)
-      (add-to-list 'clang-cflags (format "-U %s" def) t))
+      (push (format "-U %s" def) clang-cflags))
 
-    clang-cflags))
+    ;; it is sorted by added order. 
+    ;; NOTICE: process for list
+    ;; OK: nreverse -> delete-dups
+    ;; NG: delete-dups -> nreverse
+    (delete-dups (nreverse clang-cflags))))
 
 
 (defun msvc-flags:create-ac-clang-cflags (db-name &optional additional-options)
@@ -703,5 +707,10 @@ optionals
 
 
 (provide 'msvc-flags)
-;;--------------------------------------------------------------------------------------------------
-;; EOF
+
+;; Local Variables:
+;; coding: utf-8
+;; indent-tabs-mode: nil
+;; End:
+
+;;; msvc-flags.el ends here
