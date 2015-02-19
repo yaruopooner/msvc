@@ -275,9 +275,9 @@ init.el は ~/.emacs.d/ 以下に配置した場合に動作するよう記述�
     
     (require 'msvc)
     
-    (msvc:initialize)
-    (msvc-flags:load-db :parsing-buffer-delete-p t)
-    (add-hook 'c-mode-common-hook 'msvc:mode-on t)
+    (msvc-initialize)
+    (msvc-flags-load-db :parsing-buffer-delete-p t)
+    (add-hook 'c-mode-common-hook 'msvc-mode-on t)
 
 # 使用方法<a id="sec-7" name="sec-7"></a>
 
@@ -296,7 +296,7 @@ init.el は ~/.emacs.d/ 以下に配置した場合に動作するよう記述�
 msvc-modeが適用されたバッファはモードラインに **MSVC\`version\`[platform|configuration]** と表示されます。  
 
 以下の関数でパース＆アクティブ化を行います。  
-`(msvc:activate-projects-after-parse &rest args)`  
+`(msvc-activate-projects-after-parse &rest args)`  
 
 異なるプロジェクトを複数同時にアクティブ化可能です。  
 個数制限は特に無いです。  
@@ -307,7 +307,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 
 ### 登録サンプル<a id="sec-7-1-1" name="sec-7-1-1"></a>
 
-    (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
+    (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
                                         :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
                                         :platform "x64"
                                         :configuration "Release" 
@@ -354,9 +354,9 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。  
     指定は文字列で行う。整数ではないので注意。  
     "2013" のように指定。  
-    指定しない or nil場合、msvc-env:default-use-versionの値がセットされる。  
-    msvc-env:default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。  
-    msvc::initialize実行後にmsvc-env:default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
+    指定しない or nil場合、msvc-env-default-use-versionの値がセットされる。  
+    msvc-env-default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。  
+    msvc-initialize実行後にmsvc-env-default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
 -   :force-parse-p  
     nil 推奨  
     すでにパース済みのプロジェクトであっても強制的にパースする。  
@@ -430,14 +430,14 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 に  
 .msvc  
 というファイルを作成しておくと初期化時に実行されます。  
-`msvc:activate-projects-after-parse` などはこのファイルに記述しておくとよいでしょう。  
+`msvc-activate-projects-after-parse` などはこのファイルに記述しておくとよいでしょう。  
 
 ## アクティブプロジェクトバッファ<a id="sec-7-3" name="sec-7-3"></a>
 
 アクティブなプロジェクトは以下のバッファ名が与えられます。  
 **MSVC Project<\`db-name\`>**  
 
-バッファに入ると `msvc:activate-projects-after-parse` で指定したパラメーターが確認可能です。  
+バッファに入ると `msvc-activate-projects-after-parse` で指定したパラメーターが確認可能です。  
 また、現在開いているソースコードバッファでプロジェクトに所属しているバッファが :target-buffers に表示されます。  
 バッファ名へカーソルを持っていきEnter入力を行うかマウスクリックを行うとバッファへジャンプ可能。  
 
@@ -465,7 +465,7 @@ buffer modified で自動起動します。
 :allow-flymake-p tであれば:flymake-manually-p nilであってもオート・マニュアル併用が可能です。  
 
 エラー表示スタイルは以下の変数にシンボルをセットすることにより変更が可能です。  
-`(setq msvc:flymake-error-display-style DISPLAY-STYLE-SYMBOL)`  
+`(setq msvc-flymake-error-display-style DISPLAY-STYLE-SYMBOL)`  
 
 -   DISPLAY-STYLE-SYMBOL  
     -   'popup  
@@ -539,11 +539,11 @@ includeのライン上で"M-i" すると対象ファイルへジャンプしま�
 
 C-f5 でプロジェクト・ソリューションのビルドが起動します。  
 コマンドからの呼び出しは  
-`(msvc:mode-feature-build-solution)`  
+`(msvc-mode-feature-build-solution)`  
 
 コマンドのみで提供されている機能  
-`(msvc:mode-feature-rebuild-solution)`  
-`(msvc:mode-feature-clean-solution)`  
+`(msvc-mode-feature-rebuild-solution)`  
+`(msvc-mode-feature-clean-solution)`  
 
 -   操作  
     -   プロジェクト・ソリューションのビルド  
@@ -552,7 +552,7 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
 
 ビルドログ報告スタイルを設定可能  
 以下の変数にシンボルをセットすることにより変更が可能です。(.msvcあたりで記述しておく)  
-`(setq msvc:solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)`  
+`(setq msvc-solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)`  
 
 -   DISPLAY-TIMING-SYMBOL  
     ビルドログバッファのウィンドウ表示タイミングを指定  
@@ -564,7 +564,7 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
         ログバッファは生成するがビルド完了後もフォアグラウンドにしない。
 
 ビルドログバッファ内での表示方法を指定  
-`(setq msvc:solution-build-report-realtime-display-p BOOLEAN)`  
+`(setq msvc-solution-build-report-realtime-display-p BOOLEAN)`  
 
 -   BOOLEAN  
     -   t  
@@ -604,7 +604,7 @@ msvcプロジェクトがアクティブな状態で、
 Visual Studio上でプロジェクトファイルを編集したり、  
 バージョンコントロールによるアップデートでプロジェクトファイルが更新された場合に使用します。  
 現在Emacs上でアクティブになっている全てのプロジェクトを再パース・再アクティブ化します。  
-`(msvc:reparse-active-projects)`  
+`(msvc-reparse-active-projects)`  
 
 ## Visual Studio の起動<a id="sec-7-11" name="sec-7-11"></a>
 
@@ -613,10 +613,10 @@ Visual Studio上でプロジェクトファイルを編集したり、
 該当バッファが属するプロジェクト・ソリューションファイルをVisual Studioで起動します。  
 ※Windowsのファイル関連付け機能を利用しているだけなので、複数のVisual Studioがインストールされている場合は関連付け設定に従います。  
 
--   `(msvc:mode-feature-launch-msvs)`  
+-   `(msvc-mode-feature-launch-msvs)`  
     バッファにソリューションが関連付けされていればソリューションで起動。  
     プロジェクトのみの場合はプロジェクトで起動。
--   `(msvc:mode-feature-launch-msvs-by-project)`  
+-   `(msvc-mode-feature-launch-msvs-by-project)`  
          プロジェクトで起動。
--   `(msvc:mode-feature-launch-msvs-by-solution)`  
+-   `(msvc-mode-feature-launch-msvs-by-solution)`  
          ソリューションで起動。

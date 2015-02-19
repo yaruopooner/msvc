@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/18.23:33:26
+;;; last updated : 2015/02/20.01:07:47
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -30,54 +30,54 @@
 
 
 ;; project file importer
-(defconst msvc-flags:vcx-proj-name "msvc-extractor.cflags.vcxproj")
-(defconst msvc-flags:vcx-proj-file (expand-file-name msvc-flags:vcx-proj-name msvc-env:package-directory))
+(defconst msvc-flags--vcx-proj-name "msvc-extractor.cflags.vcxproj")
+(defconst msvc-flags--vcx-proj-file (expand-file-name msvc-flags--vcx-proj-name msvc-env--package-directory))
 
 
-(defconst msvc-flags:db-log-cflags "cflags.log")
+(defconst msvc-flags--db-log-cflags "cflags.log")
 
 
-(defconst msvc-flags:compile-file-name "empty.cpp")
-(defconst msvc-flags:compile-file (expand-file-name msvc-flags:compile-file-name msvc-env:package-directory))
+(defconst msvc-flags--compile-file-name "empty.cpp")
+(defconst msvc-flags--compile-file (expand-file-name msvc-flags--compile-file-name msvc-env--package-directory))
 
 
 ;; process & bind buffer name
-(defconst msvc-flags:process-name "msvc-flags-generator")
-(defconst msvc-flags:process-buffer-name-prefix "MSVC cflags")
-(defconst msvc-flags:process-buffer-name-fmt (concat "*" msvc-flags:process-buffer-name-prefix "<%s>*"))
-(defconst msvc-flags:process-buffer-name-pattern (concat "*" msvc-flags:process-buffer-name-prefix "<\\([^>]+\\)>*"))
+(defconst msvc-flags--process-name "msvc-flags-generator")
+(defconst msvc-flags--process-buffer-name-prefix "MSVC cflags")
+(defconst msvc-flags--process-buffer-name-fmt (concat "*" msvc-flags--process-buffer-name-prefix "<%s>*"))
+(defconst msvc-flags--process-buffer-name-pattern (concat "*" msvc-flags--process-buffer-name-prefix "<\\([^>]+\\)>*"))
 
 
 ;; search keywords
-(defconst msvc-flags:collect-pattern "#CFLAG#:\\([^:]*\\):\\(.*\\)$")
-(defconst msvc-flags:collect-keys '(
-                                   "CFLAG_TargetMachine"
-                                   "CFLAG_SystemPreprocessorDefinitions"
-                                   "CFLAG_AdditionalPreprocessorDefinitions"
-                                   "CFLAG_UndefinePreprocessorDefinitions"
-                                   "CFLAG_SystemIncludePath"
-                                   "CFLAG_AdditionalIncludePath"
-                                   "CFLAG_ExcludePath"
-                                   "CFLAG_ForceIncludeFiles"
-                                   ;; "CFLAG_TargetSourceFiles"
-                                   ;; "CFLAG_TargetHeaderFiles"
-                                   "CFLAG_TargetFilesAbs"
+(defconst msvc-flags--collect-pattern "#CFLAG#:\\([^:]*\\):\\(.*\\)$")
+(defconst msvc-flags--collect-keys '(
+                                     "CFLAG_TargetMachine"
+                                     "CFLAG_SystemPreprocessorDefinitions"
+                                     "CFLAG_AdditionalPreprocessorDefinitions"
+                                     "CFLAG_UndefinePreprocessorDefinitions"
+                                     "CFLAG_SystemIncludePath"
+                                     "CFLAG_AdditionalIncludePath"
+                                     "CFLAG_ExcludePath"
+                                     "CFLAG_ForceIncludeFiles"
+                                     ;; "CFLAG_TargetSourceFiles"
+                                     ;; "CFLAG_TargetHeaderFiles"
+                                     "CFLAG_TargetFilesAbs"
 
-                                   "ClCompile.DisableLanguageExtensions"
-                                   "ClCompile.ExceptionHandling"
-                                   "ClCompile.RuntimeTypeInfo"
-                                   "ClCompile.CompileAs"
-                                   "ClCompile.PrecompiledHeader"
-                                   "ClCompile.PrecompiledHeaderFile"
-                                   ))
+                                     "ClCompile.DisableLanguageExtensions"
+                                     "ClCompile.ExceptionHandling"
+                                     "ClCompile.RuntimeTypeInfo"
+                                     "ClCompile.CompileAs"
+                                     "ClCompile.PrecompiledHeader"
+                                     "ClCompile.PrecompiledHeaderFile"
+                                     ))
 
 
 ;; database store path
-(defvar msvc-flags:db-root-path (locate-user-emacs-file "msvc-db/"))
+(defvar msvc-flags-db-root-path (locate-user-emacs-file "msvc-db/"))
 
 
 ;; using path style
-(defvar msvc-flags:clang-path-format nil
+(defvar msvc-flags-clang-path-format nil
   "clang include path style
 `nil'          : native style
 `posix'        : posix style
@@ -85,29 +85,29 @@
 
 
 ;; CFLAGS/CXXFLAGS Database : Microsoft Visual C/C++ Project's CFLAGS/CXXFLAGS
-(defvar msvc-flags:cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + Version.")
+(defvar msvc-flags--cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + Version.")
 
 
 ;; delete the buffer after end of parse.
-(defvar msvc-flags:parsing-buffer-delete-p nil)
+(defvar msvc-flags-parsing-buffer-delete-p nil)
 
 
 ;; sentinel flag
-(defvar msvc-flags:parsing-p nil)
-(defvar msvc-flags:parse-requests nil)
+(defvar msvc-flags--parsing-p nil)
+(defvar msvc-flags--parse-requests nil)
 
 
 
 
-(defun msvc-flags:create-db-name (vcx-proj-path platform configuration version)
+(defun msvc-flags--create-db-name (vcx-proj-path platform configuration version)
   (cedet-directory-name-to-file-name 
    (expand-file-name version (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path))))))
 
-(defun msvc-flags:create-db-path (db-name)
-  (file-name-as-directory (expand-file-name db-name msvc-flags:db-root-path)))
+(defun msvc-flags--create-db-path (db-name)
+  (file-name-as-directory (expand-file-name db-name msvc-flags-db-root-path)))
 
 
-(defun msvc-flags:create-project-property (db-name)
+(defun msvc-flags--create-project-property (db-name)
   (let* ((parsing-path (cedet-file-name-to-directory-name db-name))
          (version (file-name-nondirectory parsing-path))
          (configuration (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
@@ -117,31 +117,31 @@
     `(:project-file ,project-file :platform ,platform :configuration ,configuration :version ,version)))
 
 
-(defun msvc-flags:create-project-path (db-name)
+(defun msvc-flags--create-project-path (db-name)
   ;; project-path/project-file-name/platform/configuration/version -> project-path/project-file-name/
   (expand-file-name "../../../../" (cedet-file-name-to-directory-name db-name)))
 
 
 
-(defun msvc-flags:regist-db (db-name cflags)
+(defun msvc-flags--regist-db (db-name cflags)
   ;; if already exist on database > remove element
-  (setq msvc-flags:cflags-db (delete (assoc-string db-name msvc-flags:cflags-db) msvc-flags:cflags-db))
-  (add-to-list 'msvc-flags:cflags-db `(,db-name . ,cflags) t))
+  (setq msvc-flags--cflags-db (delete (assoc-string db-name msvc-flags--cflags-db) msvc-flags--cflags-db))
+  (add-to-list 'msvc-flags--cflags-db `(,db-name . ,cflags) t))
 
 
-(defun msvc-flags:query-cflags (db-name)
+(defun msvc-flags--query-cflags (db-name)
   "CFLAGS/CXXFLAGS Query. return Database : Microsoft Visual C/C++ Project's CFLAGS/CXXFLAGS"
-  (cdr (assoc-string db-name msvc-flags:cflags-db)))
+  (cdr (assoc-string db-name msvc-flags--cflags-db)))
 
-(defun msvc-flags:query-cflag (db-name cflag-name)
+(defun msvc-flags--query-cflag (db-name cflag-name)
   "CFLAG/CXXFLAG Query. return flag values."
-  (cdr (assoc-string cflag-name (msvc-flags:query-cflags db-name))))
+  (cdr (assoc-string cflag-name (msvc-flags--query-cflags db-name))))
 
 
 
-(defun msvc-flags:get-db-name-from-buffer (buffer)
+(defun msvc-flags--get-db-name-from-buffer (buffer)
   (let* ((bind-name (buffer-name buffer)))
-    (when (string-match msvc-flags:process-buffer-name-pattern bind-name)
+    (when (string-match msvc-flags--process-buffer-name-pattern bind-name)
       (match-string 1 bind-name))))
 
 
@@ -149,10 +149,10 @@
 ;; パース系の基底関数
 ;; 指定バッファをパースして CFLAGS を返す
 ;; 必要があればバッファを削除
-;; これは set-process-sentinel に登録された msvc-flags:process-sentinel からも呼び出される
-(defun msvc-flags:parse-compilation-buffer (buffer)
-  (let* ((pattern msvc-flags:collect-pattern)
-         (collect-keys msvc-flags:collect-keys)
+;; これは set-process-sentinel に登録された msvc-flags--process-sentinel からも呼び出される
+(defun msvc-flags--parse-compilation-buffer (buffer)
+  (let* ((pattern msvc-flags--collect-pattern)
+         (collect-keys msvc-flags--collect-keys)
          key
          value
          cflags)
@@ -174,7 +174,7 @@
       ;; パース後はリードオンリーとして残す
       (setq buffer-read-only t)
       ;; パース後にバッファ削除指定がある場合はそれを行う
-      (when msvc-flags:parsing-buffer-delete-p
+      (when msvc-flags-parsing-buffer-delete-p
         (kill-buffer)))
 
     ;; it is sorted by added order.
@@ -182,45 +182,45 @@
 
 
 ;; for async parse
-(defvar msvc-flags:after-parse-hooks nil
+(defvar msvc-flags-after-parse-hooks nil
   "Abnormal hook that is run after a parsed file.")
 ;; :'(db-name)
 ;; :type 'hook)
 ;; :group 'files)
 ;; )
 
-(defvar msvc-flags:after-all-parse-hook nil
+(defvar msvc-flags-after-all-parse-hook nil
   "Normal hook that is run after an all parsed file.")
 ;; :'(db-names)
 ;; :type 'hook
 ;; :group 'files)
 ;; )
 
-(defun msvc-flags:process-sentinel (process _event)
+(defun msvc-flags--process-sentinel (process _event)
   (when (memq (process-status process) '(signal exit))
     (let* (;; (exit-status (process-exit-status process))
            (bind-buffer (process-buffer process))
-           (db-name (msvc-flags:get-db-name-from-buffer bind-buffer))
-           (cflags (msvc-flags:parse-compilation-buffer bind-buffer)))
+           (db-name (msvc-flags--get-db-name-from-buffer bind-buffer))
+           (cflags (msvc-flags--parse-compilation-buffer bind-buffer)))
 
       (when db-name
-        (msvc-flags:regist-db db-name cflags)
-        (run-hook-with-args 'msvc-flags:after-parse-hooks db-name)))
+        (msvc-flags--regist-db db-name cflags)
+        (run-hook-with-args 'msvc-flags-after-parse-hooks db-name)))
     ;; parse finished
 
     ;; parsing flag off
-    (setq msvc-flags:parsing-p nil)
+    (setq msvc-flags--parsing-p nil)
 
     ;; next parse search & exec
     (let (request)
-      (while (and (not msvc-flags:parsing-p) (setq request (pop msvc-flags:parse-requests)))
-        (apply 'msvc-flags:parse-vcx-project request))
+      (while (and (not msvc-flags--parsing-p) (setq request (pop msvc-flags--parse-requests)))
+        (apply 'msvc-flags-parse-vcx-project request))
       ;; final request check
-      (when (and (not msvc-flags:parsing-p) (null msvc-flags:parse-requests))
+      (when (and (not msvc-flags--parsing-p) (null msvc-flags--parse-requests))
         ;; this sentinel is final request.
         ;; final sentinel hook exec
         ;; (apply final-hook args)
-        (run-hooks 'msvc-flags:after-all-parse-hook)
+        (run-hooks 'msvc-flags-after-all-parse-hook)
         ))))
 
 
@@ -228,10 +228,10 @@
 
 
 ;; 指定db-name のログファイルをパースして CFLAGS を返す
-(defun msvc-flags:parse-compilation-db (db-name)
-  (let* ((db-path (msvc-flags:create-db-path db-name))
-         (log-file (expand-file-name msvc-flags:db-log-cflags db-path))
-         (parse-buffer (format msvc-flags:process-buffer-name-fmt db-name)))
+(defun msvc-flags--parse-compilation-db (db-name)
+  (let* ((db-path (msvc-flags--create-db-path db-name))
+         (log-file (expand-file-name msvc-flags--db-log-cflags db-path))
+         (parse-buffer (format msvc-flags--process-buffer-name-fmt db-name)))
 
     (when (file-readable-p log-file)
       ;; どの変数が local variable になっているか不明なので、いったん削除しておくのが安全
@@ -241,22 +241,22 @@
         (with-current-buffer parse-buffer
           ;; parse-bufferを該当ファイルで置き換える
           (insert-file-contents log-file nil nil nil t)
-          (msvc-flags:parse-compilation-buffer parse-buffer))))))
+          (msvc-flags--parse-compilation-buffer parse-buffer))))))
 
 
 
 
 ;; バッファは同一名ではなく、Project+Platform+Configuration 毎に異なるバッファをバインドするので平行処理できる
-;; バッファ名規則は、 (format msvc-flags:process-buffer-name-fmt db-name) とする
+;; バッファ名規則は、 (format msvc-flags--process-buffer-name-fmt db-name) とする
 ;; バッファ名はユニークになるように生成されて start-process-shell-command に渡される
 ;; これにより異なるプロジェクトのパースを同時実行できる
 ;; 出力バッファを自動削除するかは、フラグで判定
-(defun msvc-flags:parse-execute ()
+(defun msvc-flags--parse-execute ()
   ;; コマンド実行部分をこっちに移す
   )
 
 
-(cl-defun msvc-flags:parse-vcx-project (&rest args)
+(cl-defun msvc-flags-parse-vcx-project (&rest args)
   "parse *.vcxproj file : Microsoft Visual Studio
 attributes
 :project-file
@@ -273,9 +273,9 @@ optionals
   (interactive)
 
   ;; product not detected MSVC
-  (unless msvc-env:product-detected-p
+  (unless msvc-env-product-detected-p
     (message "msvc-flags : product not detected : Microsoft Visual Studio")
-    (cl-return-from msvc-flags:parse-vcx-project nil))
+    (cl-return-from msvc-flags-parse-vcx-project nil))
 
   ;; get property from args
   (let ((project-file (plist-get args :project-file))
@@ -289,54 +289,54 @@ optionals
     ;; file extension check
     (unless (eq (compare-strings (file-name-extension project-file) nil nil "vcxproj" nil nil t) t)
       (message "msvc-flags : This file is not project file. : %s" project-file)
-      (cl-return-from msvc-flags:parse-vcx-project nil))
+      (cl-return-from msvc-flags-parse-vcx-project nil))
 
     ;; project file exist check
     (unless (file-readable-p project-file)
       (message "msvc-flags : Project File Not Found. : %s" project-file)
-      (cl-return-from msvc-flags:parse-vcx-project nil))
+      (cl-return-from msvc-flags-parse-vcx-project nil))
 
     ;; create database root directory
-    (unless (file-accessible-directory-p msvc-flags:db-root-path)
-      (make-directory msvc-flags:db-root-path))
+    (unless (file-accessible-directory-p msvc-flags-db-root-path)
+      (make-directory msvc-flags-db-root-path))
 
-    (let* ((db-name (msvc-flags:create-db-name project-file platform configuration version))
-           (db-path (msvc-flags:create-db-path db-name))
+    (let* ((db-name (msvc-flags--create-db-name project-file platform configuration version))
+           (db-path (msvc-flags--create-db-path db-name))
 
-           (log-file (expand-file-name msvc-flags:db-log-cflags db-path))
+           (log-file (expand-file-name msvc-flags--db-log-cflags db-path))
            (parse-p (or force-parse-p (file-newer-than-file-p project-file log-file))))
 
       ;; project file and db-log file compare date check
       (unless parse-p
         (message "msvc-flags : This project is already parsed.")
-        (cl-return-from msvc-flags:parse-vcx-project db-name))
+        (cl-return-from msvc-flags-parse-vcx-project db-name))
 
       ;; パース実行中の場合はリクエストリストへ登録
-      (when msvc-flags:parsing-p
-        (add-to-list 'msvc-flags:parse-requests args t)
-        (cl-return-from msvc-flags:parse-vcx-project db-name))
+      (when msvc-flags--parsing-p
+        (add-to-list 'msvc-flags--parse-requests args t)
+        (cl-return-from msvc-flags-parse-vcx-project db-name))
 
 
       (message "msvc-flags : Parsing db-name : %s" db-name)
 
 
       ;; parsing flag on
-      (setq msvc-flags:parsing-p t)
+      (setq msvc-flags--parsing-p t)
 
       (let* ((project-path (file-name-directory project-file))
 
              (msb-rsp-file (expand-file-name "cflags.rsp" db-path))
-             (msb-target-file (expand-file-name msvc-flags:vcx-proj-name project-path))
+             (msb-target-file (expand-file-name msvc-flags--vcx-proj-name project-path))
 
-             (process-name msvc-flags:process-name)
-             (process-bind-buffer (format msvc-flags:process-buffer-name-fmt db-name))
+             (process-name msvc-flags--process-name)
+             (process-bind-buffer (format msvc-flags--process-buffer-name-fmt db-name))
              ;; bind connection type (use pipe)
              (process-connection-type nil)
              ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
              (default-process-coding-system '(utf-8-dos . utf-8-unix))
 
-             (command (shell-quote-argument msvc-env:invoke-command))
-             (command-args (msvc-env:build-msb-command-args version msb-rsp-file log-file)))
+             (command (shell-quote-argument msvc-env--invoke-command))
+             (command-args (msvc-env--build-msb-command-args version msb-rsp-file log-file)))
 
         ;; db-path ディレクトリはあらかじめ作成しておく必要がある
         ;; プロセス開始前に *.rsp を生成・保存する必要がある
@@ -350,42 +350,42 @@ optionals
 
         ;; 強制パース時はrspに記述すべき構成に変化があったとみなして全て削除
         (when force-parse-p
-          (msvc-env:remove-msb-rsp-files db-path))
+          (msvc-env--remove-msb-rsp-files db-path))
 
         ;; プロジェクトファイルと同じ場所にインポートプロジェクトが配置されている必要がある
         ;; MSBuild の仕様のため(詳細後述)
-        (when (file-newer-than-file-p msvc-flags:vcx-proj-file msb-target-file)
-          (copy-file msvc-flags:vcx-proj-file msb-target-file t t))
+        (when (file-newer-than-file-p msvc-flags--vcx-proj-file msb-target-file)
+          (copy-file msvc-flags--vcx-proj-file msb-target-file t t))
 
 
         ;; create rsp file
         (unless (file-exists-p msb-rsp-file)
-          (let* ((compile-file msvc-flags:compile-file)
+          (let* ((compile-file msvc-flags--compile-file)
                  (logger-vb-lv "diagnostic")
                  (diagnostic-file (concat (file-name-sans-extension log-file) "-" logger-vb-lv ".log"))
                  (logger-encoding "UTF-8")
 
                  (msb-flags (list
-                             (msvc-env:create-msb-flags "/p:"
-                                                        `(("ImportProjectFile=%S"   .       ,project-file)
-                                                          ("Platform=%S"            .       ,platform)
-                                                          ("Configuration=%S"       .       ,configuration)
-                                                          ("CompileFile=%S"         .       ,compile-file)
-                                                          ;; IntDir,OutDirは末尾にスラッシュが必須(MSBuildの仕様)
-                                                          ("IntDir=%S"              .       ,db-path)
-                                                          ("OutDir=%S"              .       ,db-path)))
-                             (msvc-env:create-msb-flags "/flp:"
-                                                        `(("Verbosity=%s"           .       "normal")
-                                                          ("LogFile=%S"             .       ,log-file)
-                                                          ("Encoding=%s"            .       ,logger-encoding)))
-                             (msvc-env:create-msb-flags "/flp1:"
-                                                        `(("Verbosity=%s"           .       ,logger-vb-lv)
-                                                          ("LogFile=%S"             .       ,diagnostic-file)
-                                                          ("Encoding=%s"            .       ,logger-encoding)))
+                             (msvc-env--create-msb-flags "/p:"
+                                                         `(("ImportProjectFile=%S"   .       ,project-file)
+                                                           ("Platform=%S"            .       ,platform)
+                                                           ("Configuration=%S"       .       ,configuration)
+                                                           ("CompileFile=%S"         .       ,compile-file)
+                                                           ;; IntDir,OutDirは末尾にスラッシュが必須(MSBuildの仕様)
+                                                           ("IntDir=%S"              .       ,db-path)
+                                                           ("OutDir=%S"              .       ,db-path)))
+                             (msvc-env--create-msb-flags "/flp:"
+                                                         `(("Verbosity=%s"           .       "normal")
+                                                           ("LogFile=%S"             .       ,log-file)
+                                                           ("Encoding=%s"            .       ,logger-encoding)))
+                             (msvc-env--create-msb-flags "/flp1:"
+                                                         `(("Verbosity=%s"           .       ,logger-vb-lv)
+                                                           ("LogFile=%S"             .       ,diagnostic-file)
+                                                           ("Encoding=%s"            .       ,logger-encoding)))
                              "/noconsolelogger"
                              "/nologo")))
 
-            (msvc-env:create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)))
+            (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)))
 
         ;; パースバッファはなければ作成、既存の場合は設定引継ぎとクリア
         (when (get-buffer-create process-bind-buffer)
@@ -395,7 +395,7 @@ optionals
             (setq buffer-read-only nil)
             ;; パース後バッファ削除設定をローカル変数で引き継ぐ
             ;; for var current bind inherit
-            (set (make-local-variable 'msvc-flags:parsing-buffer-delete-p) parsing-buffer-delete-p)
+            (set (make-local-variable 'msvc-flags-parsing-buffer-delete-p) parsing-buffer-delete-p)
             ;; バッファクリア
             (erase-buffer)))
 
@@ -405,20 +405,20 @@ optionals
             ;; sync
             (progn
               (when (eq (apply 'call-process command nil process-bind-buffer nil command-args) 0)
-                (msvc-flags:regist-db db-name (msvc-flags:parse-compilation-buffer process-bind-buffer)))
+                (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-buffer process-bind-buffer)))
               ;; parsing flag off
-              (setq msvc-flags:parsing-p nil))
+              (setq msvc-flags--parsing-p nil))
           ;; async
           (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-            (set-process-sentinel process 'msvc-flags:process-sentinel)))
+            (set-process-sentinel process 'msvc-flags--process-sentinel)))
 
 
-        (cl-return-from msvc-flags:parse-vcx-project db-name)))))
+        (cl-return-from msvc-flags-parse-vcx-project db-name)))))
 
 
 
 
-(cl-defun msvc-flags:parse-vcx-solution (&rest args)
+(cl-defun msvc-flags-parse-vcx-solution (&rest args)
   "parse *.sln file : Microsoft Visual Studio
 attributes
 :solution-file
@@ -435,9 +435,9 @@ optionals
   (interactive)
 
   ;; product not detected MSVC
-  (unless msvc-env:product-detected-p
+  (unless msvc-env-product-detected-p
     (message "msvc-flags : product not detected : Microsoft Visual Studio")
-    (cl-return-from msvc-flags:parse-vcx-solution nil))
+    (cl-return-from msvc-flags-parse-vcx-solution nil))
 
   ;; get property from args
   (let ((solution-file (plist-get args :solution-file)))
@@ -445,15 +445,15 @@ optionals
     ;; file extension check
     (unless (eq (compare-strings (file-name-extension solution-file) nil nil "sln" nil nil t) t)
       (message "msvc-flags : This file is not solution file. : %s" solution-file)
-      (cl-return-from msvc-flags:parse-vcx-solution nil))
+      (cl-return-from msvc-flags-parse-vcx-solution nil))
 
     ;; solution file exist check
     (unless (file-readable-p solution-file)
       (message "msvc-flags : Solution File Not Found. : %s" solution-file)
-      (cl-return-from msvc-flags:parse-vcx-solution nil))
+      (cl-return-from msvc-flags-parse-vcx-solution nil))
 
     (let* ((sln-directory (file-name-directory solution-file))
-           (parse-buffer (format msvc-flags:process-buffer-name-fmt solution-file))
+           (parse-buffer (format msvc-flags--process-buffer-name-fmt solution-file))
            (pattern "Project([^)]+)\\s-+=\\s-+\"\\([^\"]+\\)\"[^\"]+\"\\([^\"]+\\)\"")
            projects
            project-name
@@ -475,41 +475,41 @@ optionals
             (setq project-path (expand-file-name project-path sln-directory))
 
             (when (file-readable-p project-path)
-              (msvc-env:add-to-list projects project-path) t))
+              (msvc-env--add-to-list projects project-path) t))
           (kill-buffer)))
 
       (cl-dolist (path projects)
-        (let ((db-name (apply 'msvc-flags:parse-vcx-project :project-file path args)))
+        (let ((db-name (apply 'msvc-flags-parse-vcx-project :project-file path args)))
           (when db-name
-            (msvc-env:add-to-list db-names db-name t))))
+            (msvc-env--add-to-list db-names db-name t))))
 
-      (cl-return-from msvc-flags:parse-vcx-solution db-names))))
+      (cl-return-from msvc-flags-parse-vcx-solution db-names))))
 
 
-(cl-defun msvc-flags:load-db (&key
-                            (parsing-buffer-delete-p nil)
-                            (db-name-pattern nil))
+(cl-defun msvc-flags-load-db (&key
+                              (parsing-buffer-delete-p nil)
+                              (db-name-pattern nil))
   (interactive)
   
-  ;; msvc-flags:db-root-path 以下にある全ての db をリロードして regist-db しなおす
+  ;; msvc-flags-db-root-path 以下にある全ての db をリロードして regist-db しなおす
   ;; 直下のディレクトリリストを foreach して directory-name を取り出す
   ;; name がそのまま db-name
-  (let* ((msvc-flags:parsing-buffer-delete-p parsing-buffer-delete-p)
-         (db-dirs (directory-files msvc-flags:db-root-path nil db-name-pattern t))
+  (let* ((msvc-flags-parsing-buffer-delete-p parsing-buffer-delete-p)
+         (db-dirs (directory-files msvc-flags-db-root-path nil db-name-pattern t))
          (count 0))
 
     (cl-dolist (db-name db-dirs)
       (when (not (eq ?\. (aref db-name 0)))
-        (msvc-flags:regist-db db-name (msvc-flags:parse-compilation-db db-name))
+        (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-db db-name))
         (setq count (1+ count))))
     count))
 
 
-(cl-defun msvc-flags:reparse-db (&key
-                               (parsing-buffer-delete-p nil)
-                               (db-name-pattern nil)
-                               (force-parse-p nil)
-                               (sync-p nil))
+(cl-defun msvc-flags-reparse-db (&key
+                                 (parsing-buffer-delete-p nil)
+                                 (db-name-pattern nil)
+                                 (force-parse-p nil)
+                                 (sync-p nil))
   (interactive)
 
   ;; リパースプロジェクト数が多い場合は遅延させないと、パイプエラーになる。
@@ -518,32 +518,32 @@ optionals
   ;; これは、bindスコープから脱した後に sentinel が動作するため。
 
   (let* (
-         ;; (msvc-flags:parsing-buffer-delete-p parsing-buffer-delete-p)
-         (db-dirs (directory-files msvc-flags:db-root-path nil db-name-pattern t))
+         ;; (msvc-flags-parsing-buffer-delete-p parsing-buffer-delete-p)
+         (db-dirs (directory-files msvc-flags-db-root-path nil db-name-pattern t))
          (count 0))
 
     (cl-dolist (db-name db-dirs)
       (when (not (eq ?\. (aref db-name 0)))
-        (let* ((property (msvc-flags:create-project-property db-name))
+        (let* ((property (msvc-flags--create-project-property db-name))
                (project-file (plist-get property :project-file))
                (platform (plist-get property :platform))
                (configuration (plist-get property :configuration))
                (version (plist-get property :version)))
 
-          (when (msvc-flags:parse-vcx-project :project-file project-file :platform platform :configuration configuration :version version :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p)
+          (when (msvc-flags-parse-vcx-project :project-file project-file :platform platform :configuration configuration :version version :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p)
             (setq count (1+ count))))))
     count))
 
 
-(defun msvc-flags:clear-variables ()
-  (setq msvc-flags:cflags-db nil)
-  (setq msvc-flags:parsing-buffer-delete-p nil))
+(defun msvc-flags--clear-variables ()
+  (setq msvc-flags--cflags-db nil)
+  (setq msvc-flags-parsing-buffer-delete-p nil))
 
 
-(defun msvc-flags:initialize ()
+(defun msvc-flags--initialize ()
   ;; create database root directory
-  (unless (file-accessible-directory-p msvc-flags:db-root-path)
-    (make-directory msvc-flags:db-root-path))
+  (unless (file-accessible-directory-p msvc-flags-db-root-path)
+    (make-directory msvc-flags-db-root-path))
   t)
 
 
@@ -563,36 +563,36 @@ optionals
 ;; これを回避するためには POSIX-style-path にする必要があるため
 ;; "/cygdrive/" を path-prefix として持つ cygpath にコンバートする必要がある
 ;; c:/Program Files (x86)/  > /cygdrive/c/Program Files (x86)/
-(defsubst msvc-flags:convert-to-clang-style-path (paths &optional safe-path)
+(defsubst msvc-flags--convert-to-clang-style-path (paths &optional safe-path)
   (when safe-path
-    (setq paths (msvc-env:normalize-path paths safe-path)))
+    (setq paths (msvc-env--normalize-path paths safe-path)))
 
-  (if (eq msvc-flags:clang-path-format 'posix)
-      (msvc-env:convert-to-posix-style-path paths)
+  (if (eq msvc-flags-clang-path-format 'posix)
+      (msvc-env--convert-to-posix-style-path paths)
     paths))
 
 
 ;; utility
-(defun msvc-flags:create-clang-cflags (db-name)
+(defun msvc-flags-create-clang-cflags (db-name)
   (let* (clang-cflags
-         (project-path (msvc-flags:create-project-path db-name))
+         (project-path (msvc-flags--create-project-path db-name))
 
-         (system-ppdefs (msvc-flags:query-cflag db-name "CFLAG_SystemPreprocessorDefinitions"))
-         (additional-ppdefs (msvc-flags:query-cflag db-name "CFLAG_AdditionalPreprocessorDefinitions"))
-         (undef-ppdefs (msvc-flags:query-cflag db-name "CFLAG_UndefinePreprocessorDefinitions"))
-         (system-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_SystemIncludePath")))
-         (additional-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
-         ;; (exclude-inc-paths (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_ExcludePath")))
-         (force-inc-files (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_ForceIncludeFiles")))
-         ;; (target-cpp-files (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetSourceFiles")))
-         ;; (target-hpp-files (msvc-flags:convert-to-clang-style-path (msvc-flags:query-cflag db-name "CFLAG_TargetHeaderFiles")))
+         (system-ppdefs (msvc-flags--query-cflag db-name "CFLAG_SystemPreprocessorDefinitions"))
+         (additional-ppdefs (msvc-flags--query-cflag db-name "CFLAG_AdditionalPreprocessorDefinitions"))
+         (undef-ppdefs (msvc-flags--query-cflag db-name "CFLAG_UndefinePreprocessorDefinitions"))
+         (system-inc-paths (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_SystemIncludePath")))
+         (additional-inc-paths (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
+         ;; (exclude-inc-paths (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_ExcludePath")))
+         (force-inc-files (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_ForceIncludeFiles")))
+         ;; (target-cpp-files (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_TargetSourceFiles")))
+         ;; (target-hpp-files (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_TargetHeaderFiles")))
 
-         (opt-msc-extensions-disable (car (msvc-flags:query-cflag db-name "ClCompile.DisableLanguageExtensions")))
-         (opt-exception-handling-enable (car (msvc-flags:query-cflag db-name "ClCompile.ExceptionHandling")))
-         (opt-rtti-enable (car (msvc-flags:query-cflag db-name "ClCompile.RuntimeTypeInfo")))
-         ;; (opt-compile-as (car (msvc-flags:query-cflag db-name "ClCompile.CompileAs")))
-         ;; (opt-pch-enable (car (msvc-flags:query-cflag db-name "ClCompile.PrecompiledHeader")))
-         ;; (opt-pch-file (car (msvc-flags:query-cflag db-name "ClCompile.PrecompiledHeaderFile")))
+         (opt-msc-extensions-disable (car (msvc-flags--query-cflag db-name "ClCompile.DisableLanguageExtensions")))
+         (opt-exception-handling-enable (car (msvc-flags--query-cflag db-name "ClCompile.ExceptionHandling")))
+         (opt-rtti-enable (car (msvc-flags--query-cflag db-name "ClCompile.RuntimeTypeInfo")))
+         ;; (opt-compile-as (car (msvc-flags--query-cflag db-name "ClCompile.CompileAs")))
+         ;; (opt-pch-enable (car (msvc-flags--query-cflag db-name "ClCompile.PrecompiledHeader")))
+         ;; (opt-pch-file (car (msvc-flags--query-cflag db-name "ClCompile.PrecompiledHeaderFile")))
          )
 
     (when (and opt-msc-extensions-disable (string-match "false" opt-msc-extensions-disable))
@@ -649,9 +649,7 @@ optionals
     (delete-dups (nreverse clang-cflags))))
 
 
-(defun msvc-flags:create-ac-clang-cflags (db-name &optional additional-options)
-  (interactive)
-
+(defun msvc-flags-create-ac-clang-cflags (db-name &optional additional-options)
   (let* ((default-options '(
                             "-std=c++11"
                             ;; libclang3.1 は↓の渡し方しないとだめ(3.2/3.3は未調査)
@@ -669,15 +667,13 @@ optionals
                             "-target-cpu x86-64"
                             "-triple x86_64-pc-win32"
                             ))
-         (db-clang-cflags (msvc-flags:create-clang-cflags db-name))
+         (db-clang-cflags (msvc-flags-create-clang-cflags db-name))
          (clang-cflags (append default-options db-clang-cflags additional-options)))
 
     clang-cflags))
 
 
-(defun msvc-flags:create-ac-clang-pch (db-name input-pch output-pch &optional additional-options)
-  (interactive)
-
+(defun msvc-flags-create-ac-clang-pch (db-name input-pch output-pch &optional additional-options)
   (let* ((default-options `(
                             ;; -emit-pch               Generate pre-compiled header file
                             "-cc1" "-x" "c++-header" "-emit-pch"
@@ -695,7 +691,7 @@ optionals
                             ;; "-U _X86_" "-U __SIZE_TYPE__"
                             "-o" ,output-pch
                             ))
-         (db-clang-cflags (msvc-flags:create-clang-cflags db-name))
+         (db-clang-cflags (msvc-flags-create-clang-cflags db-name))
          (clang-cflags (append default-options db-clang-cflags additional-options `(,input-pch))))
     
     (apply 'start-process "clang" "*Clang PCH-Log*" "clang" clang-cflags)
