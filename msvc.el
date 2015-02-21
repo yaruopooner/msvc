@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/20.01:08:06
+;;; last updated : 2015/02/22.04:58:00
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -76,9 +76,9 @@
 ;;   (require 'msvc)
 ;; 
 ;;   (setq w32-pipe-read-delay 0)
-;;   (msvc-initialize)
-;;   (msvc-flags-load-db :parsing-buffer-delete-p t)
-;;   (add-hook 'c-mode-common-hook 'msvc-mode-on t)
+;;   (when (msvc-initialize)
+;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
+;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
 
 
 ;;; Code:

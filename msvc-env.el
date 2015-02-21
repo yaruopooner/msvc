@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/20.01:07:47
+;;; last updated : 2015/02/22.04:55:19
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -159,8 +159,7 @@
 (cl-defun msvc-env--initialize ()
   (if (eq system-type 'windows-nt)
       (when (and (boundp 'w32-pipe-read-delay) (> w32-pipe-read-delay 0))
-        (display-warning 'msvc "Please set the appropriate value for `w32-pipe-read-delay'. Because a pipe delay value is large value."))
-    
+        (display-warning 'msvc "Please set the appropriate value for `w32-pipe-read-delay'. Because a pipe delay value is large value. Ideal value is 0. see help of `w32-pipe-read-delay'."))
     (display-warning 'msvc "This environment is not a Microsoft Windows."))
 
   (unless (msvc-env--detect-product)
