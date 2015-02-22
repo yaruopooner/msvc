@@ -122,7 +122,7 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
 
 -   GNU Emacs 24.1以上  
     24.1以降でのみ動作保証
--   Cygwin 64/32bit(or MSYS)  
+-   CYGWIN 64/32bit(or MSYS)  
     bashが必要
 -   Microsoft Windows 64/32bit
 -   Microsoft Visual Studio Professional 2013/2012/2010  
@@ -147,26 +147,24 @@ Emacsで標準組み込み済みorインストールが必要なパッケージ
     <https://github.com/chuntaro/NTEmacs64>  
     <http://sourceforge.jp/projects/gnupack/releases/?package_id=10839>
 
--   Cygwin 32bit/64bit(MSYS)  
+-   CYGWIN 32bit/64bit(MSYS)  
     $ uname -r  
     1.7.29(0.272/5/3)  
-    Cygwinは64/32bit動作チェック済み  
-    MSYSでも動作するがCygwin推奨  
+    CYGWINは64/32bit動作チェック済み  
+    MSYSでも動作するがCYGWIN推奨  
     MSYSは32bitのみ動作チェック済み
 
 -   Microsoft Windows 32bit/64bit  
-    -   XP  
-        え？
-    -   Vista  
-        動くんじゃないかな・・？
+    -   Vista/XP  
+        未検証
     -   7  
         Professional 64 bit でのみ動作テスト
     -   8 & 8.1  
         Professional 64 bit でのみ動作テスト  
-        cygwin動作に難アリ。  
+        CYGWIN動作に難アリ。  
         私の環境ではmakeやその他ツールが実行するたびにcoredumpしまくっていたので動作状況が芳しくありません。  
         msvcはbashしか使わないので動作に問題はないでしょうが、  
-        grepなど他のツールを使ったりするでしょうから、8ではcygwinがまともに動く方のみ使用するとよいでしょう。
+        grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
 
 -   Microsoft Visual Studio Professional 2013/2012/2010  
     2013/2012/2010 64 bit でのみ動作テスト
@@ -217,14 +215,14 @@ Emacsで標準組み込み済みorインストールが必要なパッケージ
 
 ## Emacsの起動設定<a id="sec-6-1" name="sec-6-1"></a>
 
-GNU Emacs を cygwin(or msys)から起動できるようにします。  
+GNU Emacs を CYGWIN(or MSYS)から起動できるようにします。  
 .bashrc あたりに以下を記述しておくとよいでしょう。  
 
 Emacsが配置されているパスを  
 c:/emacs/64/emacs-24.3-20130503  
 とします  
 
--   Cygwin  
+-   CYGWIN  
     
         alias emacs32-243-1='/cygdrive/c/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
         alias emacs='emacs32-243-1'
@@ -246,8 +244,7 @@ c:/emacs/64/emacs-24.3-20130503
 -   yasnippet  
     M-x list-packages で入手
 -   ac-clang  
-    <https://github.com/yaruopooner/ac-clang>  
-    
+    M-x list-packages で入手  
     emacs-clang-complete-asyncからforkして独自拡張したもの。  
     
     <https://github.com/Golevka/emacs-clang-complete-async>  
@@ -275,9 +272,10 @@ init.el は ~/.emacs.d/ 以下に配置した場合に動作するよう記述�
     
     (require 'msvc)
     
-    (msvc-initialize)
-    (msvc-flags-load-db :parsing-buffer-delete-p t)
-    (add-hook 'c-mode-common-hook 'msvc-mode-on t)
+    (setq w32-pipe-read-delay 0)
+    (when (msvc-initialize)
+      (msvc-flags-load-db :parsing-buffer-delete-p t)
+      (add-hook 'c-mode-common-hook 'msvc-mode-on t))
 
 # 使用方法<a id="sec-7" name="sec-7"></a>
 
@@ -323,76 +321,71 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 
 ### 必須パラメーター<a id="sec-7-1-2" name="sec-7-1-2"></a>
 
--   :solution-file or :project-file  
+-   `:solution-file or :project-file`  
     いずれかが設定されていればOKです。  
-    
-    :solution-file のみを指定した場合  
+    `:solution-file` のみを指定した場合  
     ソリューションに含まれる全てのプロジェクトがパースされ、アクティブ化されます。  
     以下の機能が追加されます。  
     アクティブ化したプロジェクトからソリューションのビルド呼び出しなどが可能になります。  
     ソリューションに登録されているプロジェクト数が少ない場合はこのスタイルで記述するのがよいでしょう。  
-    
-    :project-file のみの場合  
+    `:project-file` のみの場合  
     指定したプロジェクトのみがパース・アクティブ化されます。  
     ソリューションに関連した機能は実行できなくなります。  
-    
-    :solution-file & :project-file で指定した場合  
+    `:solution-file` & `:project-file` で指定した場合  
     ソリューションのみを指定した場合と同じ効果を持ちますが、  
     ソリューションのみの場合は所属全プロジェクトがパース＆アクティブ化されるのに対し  
     こちらは指定したプロジェクトのみがパース＆アクティブ化されます。  
     ソリューションに登録されているプロジェクトが膨大な場合は、必要なプロジェクトだけをこのスタイルで記述するのがよいでしょう。
--   :platform  
+-   `:platform`  
     パース・アクティブ化するプラットフォームを指定します。  
     プロジェクトファイルに存在するプラットフォームでなければなりません。
--   :configuration  
+-   `:configuration`  
     パース・アクティブ化するコンフィグを指定します。  
     プロジェクトファイルに存在するコンフィグでなければなりません。
 
 ### オプションパラメーター<a id="sec-7-1-3" name="sec-7-1-3"></a>
 
--   :version  
+-   `:version`  
     プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。  
     指定は文字列で行う。整数ではないので注意。  
     "2013" のように指定。  
     指定しない or nil場合、msvc-env-default-use-versionの値がセットされる。  
     msvc-env-default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。  
     msvc-initialize実行後にmsvc-env-default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
--   :force-parse-p  
+-   `:force-parse-p`  
     nil 推奨  
     すでにパース済みのプロジェクトであっても強制的にパースする。  
     主にデバッグ用途です。
--   :sync-p  
+-   `:sync-p`  
     nil 推奨  
     同期パースします。  
     ですので、プロジェクトファイルが多い場合は関数から戻るまで時間がかかります。  
     通常使用する分にはまず使用する必要は無いと思います。  
     主にデバッグ用途です。
--   :allow-cedet-p  
+-   `:allow-cedet-p`  
     t 推奨  
     CEDET機能を利用する  
     CEDETのプロジェクト管理に登録されsemanticが有効化されます。  
     nil の場合はincludeファイルへのジャンプが利用できなくなります。
--   :allow-ac-clang-p  
+-   `:allow-ac-clang-p`  
     t 推奨  
     ac-clang機能を利用する  
     libclangによるコード補完と宣言/定義へのジャンプが可能になります。  
     nil の場合はジャンプは利用不可になり、補完は情報源としてsemanticを利用するようになります。
--   :allow-flymake-p  
+-   `:allow-flymake-p`  
     t 推奨  
     flymake機能を利用する  
     MSBuildによるシンタックスチェックを利用します。
--   :cedet-root-path  
-    
-    :allow-cedet-p t の時だけ参照される  
+-   `:cedet-root-path`  
+    `:allow-cedet-p t` の時だけ参照される  
     CEDET edeプロジェクト基準ディレクトリを指定する  
     指定したディレクトリに\*.edeファイルが生成される  
     大抵はプロジェクトファイルが配置されているディレクトリで問題ないです。  
     ただ、ソースコードの配置場所がプロジェクトファイル配置ディレクトリと同階層か子孫で無い場合は注意が必要になります。  
     この場合は同階層か子孫になるような共通の親ディレクトリを指定する必要があります。
--   :cedet-spp-table  
+-   `:cedet-spp-table`  
     nil 推奨  
-    
-    :allow-cedet-p t の時だけ参照される  
+    `:allow-cedet-p t` の時だけ参照される  
     semanticがソースをパースする際にリプレースさせたいワードの連想テーブル  
     semanticが解釈できないdefineなどをリプレースするテーブルです。  
     semantic.cacheがうまく作成できない場合は設定が必要です。  
@@ -408,16 +401,14 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                            ("RESTRICT"           . ""))
     
     詳細はCEDETマニュアル参照。
--   :flymake-manually-p  
+-   `:flymake-manually-p`  
     nil 推奨  
-    
-    :allow-flymake-p t の時だけ参照される  
+    `:allow-flymake-p t` の時だけ参照される  
     flymake のシンタックスチェックを自動起動しない  
     マニュアルチェックのみ有効
--   :flymake-manually-back-end  
+-   `:flymake-manually-back-end`  
     nil 推奨  
-    
-    :allow-flymake-p t の時だけ参照される  
+    `:allow-flymake-p t` の時だけ参照される  
     MSBuild 以外を使用する場合のみ指定する  
     現在は 'clang のみ対応  
     ac-clang の clang-server を利用してシンタックスチェックをする。  
@@ -438,7 +429,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 **MSVC Project<\`db-name\`>**  
 
 バッファに入ると `msvc-activate-projects-after-parse` で指定したパラメーターが確認可能です。  
-また、現在開いているソースコードバッファでプロジェクトに所属しているバッファが :target-buffers に表示されます。  
+また、現在開いているソースコードバッファでプロジェクトに所属しているバッファが `:target-buffers` に表示されます。  
 バッファ名へカーソルを持っていきEnter入力を行うかマウスクリックを行うとバッファへジャンプ可能。  
 
 このバッファを削除すると、関連する全ソースコードバッファのmsvc-modeがoffになります。  
@@ -447,27 +438,26 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 
 利用可能な場所：msvc-mode onのソースコードバッファ上  
 
-:allow-ac-clang-p tの場合補完可能になります。  
+`:allow-ac-clang-p t` の場合補完可能になります。  
 
 -   操作  
     -   補完  
-        キー : \`::\`, \`.\`, \`->\`  
+        キー : \`.\`, \`->\`, \`::\`  
         説明 : 補完が自動起動します。
 
 ## シンタックスチェック<a id="sec-7-5" name="sec-7-5"></a>
 
 利用可能な場所：msvc-mode onのソースコードバッファ上  
 
-:allow-flymake-p tの場合可能になります。  
+`:allow-flymake-p t` の場合可能になります。  
 buffer modified で自動起動します。  
 "F5"でマニュアルシンタックスチェック。  
-
-:allow-flymake-p tであれば:flymake-manually-p nilであってもオート・マニュアル併用が可能です。  
+`:allow-flymake-p t` であれば `:flymake-manually-p nil` であってもオート・マニュアル併用が可能です。  
 
 エラー表示スタイルは以下の変数にシンボルをセットすることにより変更が可能です。  
 `(setq msvc-flymake-error-display-style DISPLAY-STYLE-SYMBOL)`  
 
--   DISPLAY-STYLE-SYMBOL  
+-   `DISPLAY-STYLE-SYMBOL`  
     -   'popup  
         初期値です。  
         auto-completeパッケージ付属のpopup.elを使用してエラー表示をします
@@ -554,8 +544,8 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
 以下の変数にシンボルをセットすることにより変更が可能です。(.msvcあたりで記述しておく)  
 `(setq msvc-solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)`  
 
--   DISPLAY-TIMING-SYMBOL  
-    ビルドログバッファのウィンドウ表示タイミングを指定  
+-   `DISPLAY-TIMING-SYMBOL`  
+         ビルドログバッファのウィンドウ表示タイミングを指定  
     -   'before  
         ビルドを開始した時点でウィンドウを分割して表示します。
     -   'after  
@@ -566,7 +556,7 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
 ビルドログバッファ内での表示方法を指定  
 `(setq msvc-solution-build-report-realtime-display-p BOOLEAN)`  
 
--   BOOLEAN  
+-   `BOOLEAN`  
     -   t  
         ビルドログをリアルタイム表示
     -   nil  
