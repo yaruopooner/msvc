@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/24.02:39:52
+;;; last updated : 2015/02/24.03:00:22
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -499,9 +499,8 @@
         (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)))
 
     (list 
-     (shell-quote-argument msvc-env--invoke-command)
-     (msvc-env--build-msb-command-args version msb-rsp-file log-file))
-    ))
+     msvc-env--invoke-command
+     (msvc-env--build-msb-command-args version msb-rsp-file log-file))))
 
 
 ;; error message display to Minibuf
@@ -1298,7 +1297,7 @@ optionals
                    (default-process-coding-system (if msvc-solution-build-report-realtime-display-p default-process-coding-system '(utf-8-dos . utf-8-unix)))
                    (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
 
-                   (command (shell-quote-argument msvc-env--invoke-command))
+                   (command msvc-env--invoke-command)
                    (command-args (msvc-env--build-msb-command-args version msb-rsp-file display-file)))
 
               ;; create rsp file(always create)

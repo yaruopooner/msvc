@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/20.01:07:47
+;;; last updated : 2015/02/24.02:51:16
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -335,7 +335,7 @@ optionals
              ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
              (default-process-coding-system '(utf-8-dos . utf-8-unix))
 
-             (command (shell-quote-argument msvc-env--invoke-command))
+             (command msvc-env--invoke-command)
              (command-args (msvc-env--build-msb-command-args version msb-rsp-file log-file)))
 
         ;; db-path ディレクトリはあらかじめ作成しておく必要がある
