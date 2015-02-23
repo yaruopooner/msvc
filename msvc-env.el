@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/22.04:55:19
+;;; last updated : 2015/02/24.02:30:52
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -121,7 +121,7 @@
 
 (defun msvc-env--create-msb-rsp-file (msb-rsp-file msb-target-file msb-flags)
   (with-temp-file msb-rsp-file
-    (insert msb-target-file "\n")
+    (insert (format "%S" msb-target-file) "\n")
     (cl-dolist (flag msb-flags)
       (insert flag "\n")))
   msb-rsp-file)

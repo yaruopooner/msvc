@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/22.21:57:10
+# last updated : 2015/02/22.22:07:55
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -76,22 +76,25 @@
 
 * 必須パッケージ
   Emacsで標準組み込み済みorインストールが必要なパッケージ
+  M-x list-packages でインストールした場合は自動インストールされます。
+  手動インストールのみ以下のパッケージをインストールする必要があります。
 
   - CEDET(built-in)
   - flymake(built-in)
   - auto-complete
   - yasnippet
   - ac-clang
+  
 
 * 対応範囲
-  - Emacs
+  - Emacs 64bit/32bit
     CEDETが標準built-inになったバージョン以降で動作
 
     Emacs は以下でテスト
     https://github.com/chuntaro/NTEmacs64
     http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
-  - CYGWIN 32bit/64bit(MSYS) 
+  - CYGWIN 64bit/32bit(MSYS) 
     $ uname -r
     1.7.29(0.272/5/3)
     CYGWINは64/32bit動作チェック済み
@@ -265,7 +268,7 @@
     #+end_src
 
 *** 必須パラメーター
-    - =:solution-file or :project-file=
+    - =:solution-file= or =:project-file=
       いずれかが設定されていればOKです。
       =:solution-file= のみを指定した場合
       ソリューションに含まれる全てのプロジェクトがパースされ、アクティブ化されます。
