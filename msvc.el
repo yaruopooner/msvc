@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/22.04:58:00
+;;; last updated : 2015/02/24.02:39:52
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -497,7 +497,6 @@
                          "/nologo")))
 
         (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)))
-    
 
     (list 
      (shell-quote-argument msvc-env--invoke-command)
@@ -1272,7 +1271,7 @@ optionals
                    (logger-encoding "UTF-8")
 
                    (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp") db-path))
-                   (msb-target-file (format "%S" solution-file))
+                   (msb-target-file solution-file)
                    (msb-flags (list
                                (msvc-env--create-msb-flags "/t:"
                                                            `(("%s"               .       ,target)))
