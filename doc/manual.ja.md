@@ -122,15 +122,20 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
 
 -   GNU Emacs 24.1以上  
     24.1以降でのみ動作保証
--   CYGWIN 64/32bit(or MSYS)  
-    bashが必要
+-   shell  
+    以下のいずれか  
+    CYGWIN 64/32bit(推奨)  
+    MSYS  
+    CMD
 -   Microsoft Windows 64/32bit
--   Microsoft Visual Studio Professional 2013/2012/2010  
+-   Microsoft Visual Studio Professional 2015?/2013/2012/2010  
     CL.exe/MSBuild.exe 等を使います
 
 # 必須パッケージ<a id="sec-3" name="sec-3"></a>
 
 Emacsで標準組み込み済みorインストールが必要なパッケージ  
+M-x list-packages でインストールした場合は自動インストールされます。  
+手動インストールのみ以下のパッケージをインストールする必要があります。  
 
 -   CEDET(built-in)
 -   flymake(built-in)
@@ -140,19 +145,22 @@ Emacsで標準組み込み済みorインストールが必要なパッケージ
 
 # 対応範囲<a id="sec-4" name="sec-4"></a>
 
--   Emacs  
+-   Emacs 64/32bit  
     CEDETが標準built-inになったバージョン以降で動作  
     
     Emacs は以下でテスト  
     <https://github.com/chuntaro/NTEmacs64>  
     <http://sourceforge.jp/projects/gnupack/releases/?package_id=10839>
 
--   CYGWIN 32bit/64bit(MSYS)  
-    $ uname -r  
-    1.7.29(0.272/5/3)  
-    CYGWINは64/32bit動作チェック済み  
-    MSYSでも動作するがCYGWIN推奨  
-    MSYSは32bitのみ動作チェック済み
+-   shell  
+    -   CYGWIN 64/32bit(MSYS)  
+        $ uname -r  
+        1.7.29(0.272/5/3)  
+        CYGWINは64/32bit動作チェック済み
+    -   MSYS  
+        32bitのみ動作チェック済み
+    -   CMD  
+        cmdproxy,cmd動作チェック済み
 
 -   Microsoft Windows 32bit/64bit  
     -   Vista/XP  
@@ -167,7 +175,7 @@ Emacsで標準組み込み済みorインストールが必要なパッケージ
         grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
 
 -   Microsoft Visual Studio Professional 2013/2012/2010  
-    2013/2012/2010 64 bit でのみ動作テスト
+    2013/2012/2010 64 bit のみ動作チェック済み
 
 -   SDK  
     下記SDKのサンプルプロジェクトでテスト。  
@@ -183,7 +191,6 @@ Emacsで標準組み込み済みorインストールが必要なパッケージ
 # 制限事項<a id="sec-5" name="sec-5"></a>
 
 1.  ソリューション・プロジェクトの配置場所  
-    
     空白を含んだパス上にプロジェクトファイル群が配置されている場合正常に補完が行えません。  
     libclangのparserの仕様orバグだと思います・・・。  
     
@@ -207,7 +214,6 @@ Emacsで標準組み込み済みorインストールが必要なパッケージ
     など
 
 2.  プリコンパイル済みヘッダ(PCH)は使用不可  
-    
     Visual Studio のPCHは使用できません。  
     PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。
 
@@ -321,7 +327,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 
 ### 必須パラメーター<a id="sec-7-1-2" name="sec-7-1-2"></a>
 
--   `:solution-file or :project-file`  
+-   `:solution-file` or `:project-file`  
     いずれかが設定されていればOKです。  
     `:solution-file` のみを指定した場合  
     ソリューションに含まれる全てのプロジェクトがパースされ、アクティブ化されます。  

@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/22.22:07:55
+# last updated : 2015/02/24.14:19:54
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -68,10 +68,13 @@
 * 必須環境
   - GNU Emacs 24.1以上
     24.1以降でのみ動作保証
-  - CYGWIN 64/32bit(or MSYS)
-    bashが必要
+  - shell
+    以下のいずれか
+    CYGWIN 64/32bit(推奨)
+    MSYS
+    CMD
   - Microsoft Windows 64/32bit
-  - Microsoft Visual Studio Professional 2013/2012/2010
+  - Microsoft Visual Studio Professional 2015?/2013/2012/2010
     CL.exe/MSBuild.exe 等を使います
 
 * 必須パッケージ
@@ -87,20 +90,23 @@
   
 
 * 対応範囲
-  - Emacs 64bit/32bit
+  - Emacs 64/32bit
     CEDETが標準built-inになったバージョン以降で動作
 
     Emacs は以下でテスト
     https://github.com/chuntaro/NTEmacs64
     http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
-  - CYGWIN 64bit/32bit(MSYS) 
-    $ uname -r
-    1.7.29(0.272/5/3)
-    CYGWINは64/32bit動作チェック済み
-    MSYSでも動作するがCYGWIN推奨
-    MSYSは32bitのみ動作チェック済み
-
+  - shell
+    - CYGWIN 64/32bit(MSYS) 
+      $ uname -r
+      1.7.29(0.272/5/3)
+      CYGWINは64/32bit動作チェック済み
+    - MSYS
+      32bitのみ動作チェック済み
+    - CMD
+      cmdproxy,cmd動作チェック済み
+      
   - Microsoft Windows 32bit/64bit
     - Vista/XP
       未検証
@@ -114,7 +120,7 @@
       grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
 
   - Microsoft Visual Studio Professional 2013/2012/2010
-    2013/2012/2010 64 bit でのみ動作テスト
+    2013/2012/2010 64 bit のみ動作チェック済み
 
   - SDK
     下記SDKのサンプルプロジェクトでテスト。
@@ -130,7 +136,6 @@
 
 * 制限事項
   1) ソリューション・プロジェクトの配置場所
-
      空白を含んだパス上にプロジェクトファイル群が配置されている場合正常に補完が行えません。
      libclangのparserの仕様orバグだと思います・・・。
      
@@ -156,7 +161,6 @@
      など
 
   2) プリコンパイル済みヘッダ(PCH)は使用不可
-
      Visual Studio のPCHは使用できません。
      PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。
 
