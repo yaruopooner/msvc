@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/24.03:00:22
+;;; last updated : 2015/02/25.03:32:38
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -30,15 +30,20 @@
 
 ;;; Commentary:
 ;; 
+;; * INTRODUCTION:
+;;   msvc parse the project file or the solution file of Visual Studio.
+;;   msvc-mode becomes effective when you open the file belonging to a project.
+;;   this mode provides the following features.
+;; 
 ;; * FEATURES:
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
 ;;     2015/2013/2012/2010
-;;   - code completion
+;;   - code completion (auto / manual)
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
-;;   - syntax check
+;;   - syntax check (auto / manual)
 ;;     backend: msbuild or ac-clang
 ;;   - jump to declaration or definition. return from jumped location.
 ;;     backend: ac-clang
@@ -46,19 +51,23 @@
 ;;     backend: semantic
 ;;   - build Solution or Project on Emacs
 ;;     backend: msbuild
+;;   - jump to error buffer from build report
+;;     look like a grep buffer
 ;;   - launch Visual Studio from Solution or Project
+;;     backend: Windows file association
 ;; 
 ;; * REQUIRE ENVIRONMENT
 ;;   - Microsoft Windows 64/32bit
 ;;     8/7/Vista
 ;;   - Microsoft Visual Studio Professional
 ;;     2015/2013/2012/2010
-;;   - Cygwin 64/32bit(or MSYS)
-;;     must be used bash
+;;   - Shell 64/32bit
+;;     CYGWIN/MSYS/CMD(cmdproxy)
+;;     The CYGWIN's bash recommended
 ;; 
 ;; * TESTED SDK:
 ;;   completion test, syntax check test
-;;   - Windows SDK 7.0A/7.1
+;;   - Windows SDK 7.1/7.0A
 ;;   - Direct X SDK(June 2010)
 ;;   - STL,std::tr1
 ;; 
@@ -70,7 +79,10 @@
 ;; Usage:
 ;; * DETAILED MANUAL:
 ;;   For more information and detailed usage, refer to the project page:
-;;   https://github.com/yaruopooner/msvc
+;;   [https://github.com/yaruopooner/msvc]
+;; 
+;;   sorry, reference manual is japanese version only.
+;;   please help english version reference manual. 
 ;; 
 ;; * SETUP:
 ;;   (require 'msvc)
@@ -79,6 +91,57 @@
 ;;   (when (msvc-initialize)
 ;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
 ;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
+;; 
+;; * REGISTRATION OF PROJECT OR SOLUTION
+;;   (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
+;;                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
+;;                                       :platform "x64"
+;;                                       :configuration "Release" 
+;;                                       :version "2013" 
+;;                                       :force-parse-p nil
+;;                                       :allow-cedet-p t
+;;                                       :allow-ac-clang-p t
+;;                                       :allow-flymake-p t
+;;                                       :cedet-root-path "d:/DirectXSamples/SubD11"
+;;                                       :cedet-spp-table nil
+;;                                       :flymake-manually-p nil
+;;                                       :flymake-manually-back-end nil)
+;; 
+;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
+;;   - start auto completion
+;;     code completion & arguments expand
+;;     `.` `->` `::`
+;;   - start manual completion
+;;     code completion & arguments expand
+;;     `<TAB>`
+;;   - jump to definition / return from definition
+;;     this is nestable jump.
+;;     `M-.` / `M-,`
+;;   - visit to include file / return from include file
+;;     `M-i` / `M-I`
+;;   - goto error line prev / next
+;;     `M-[` / `M-]`
+;;   - manual syntax check
+;;    `<f5>`
+;;   - build solution
+;;    `C-<f5>`
+;; 
+;; * DEFAULT KEYBIND(msvc on Project Buffer)
+;;   - jump to buffer
+;;     `RET` `mouse-1`
+;;   - refer to buffer
+;;     `C-z`
+;; 
+;; * DEFAULT KEYBIND(msvc on Build Report)
+;;   - goto error line prev / next
+;;     `[` / `]`
+;;   - refer error line & buffer prev / next
+;;     `M-[` / `M-]`
+;;   - jump to buffer
+;;     `RET` `mouse-1`
+;;   - refer to buffer
+;;     `C-z`
+;; 
 
 
 ;;; Code:
@@ -441,7 +504,7 @@
 
 (defconst msvc--flymake-err-line-patterns
   '(
-    ;; Visual C/C++ 2010/2012/2013
+    ;; Visual C/C++ 2013/2012/2010
     msbuild
     ;; (1:file, 2:line, 3:error-text) flymake only support
     ;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))

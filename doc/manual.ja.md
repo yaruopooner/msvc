@@ -149,11 +149,12 @@ M-x list-packages でインストールした場合は自動インストール�
     CEDETが標準built-inになったバージョン以降で動作  
     
     Emacs は以下でテスト  
+    <http://www.gnu.org/software/emacs/>  
     <https://github.com/chuntaro/NTEmacs64>  
     <http://sourceforge.jp/projects/gnupack/releases/?package_id=10839>
 
--   shell  
-    -   CYGWIN 64/32bit(MSYS)  
+-   Shell  
+    -   CYGWIN 64/32bit  
         $ uname -r  
         1.7.29(0.272/5/3)  
         CYGWINは64/32bit動作チェック済み
@@ -190,30 +191,7 @@ M-x list-packages でインストールした場合は自動インストール�
 
 # 制限事項<a id="sec-5" name="sec-5"></a>
 
-1.  ソリューション・プロジェクトの配置場所  
-    空白を含んだパス上にプロジェクトファイル群が配置されている場合正常に補完が行えません。  
-    libclangのparserの仕様orバグだと思います・・・。  
-    
-        NG  d:/user projects/my proj/test.sln
-        NG  d:/user projects/my proj/test.vcxproj
-        OK  d:/user_projects/my_proj/test.sln
-        OK  d:/user_projects/my_proj/test.vcxproj
-    
-    など  
-    
-    プロジェクト名は空白を許容します。  
-    
-        OK  d:/user_projects/my_proj/my proj.sln
-        OK  d:/user_projects/my_proj/my proj.vcxproj
-    
-    includeディレクトリが空白を含んでいるのは問題ありません。  
-    
-        OK  C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/include
-        OK  C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include
-    
-    など
-
-2.  プリコンパイル済みヘッダ(PCH)は使用不可  
+1.  プリコンパイル済みヘッダ(PCH)は使用不可  
     Visual Studio のPCHは使用できません。  
     PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。
 
