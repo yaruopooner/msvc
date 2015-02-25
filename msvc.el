@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/26.02:21:09
+;;; last updated : 2015/02/26.02:28:44
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -56,7 +56,7 @@
 ;;   - launch Visual Studio from Solution or Project
 ;;     backend: Windows file association
 ;; 
-;; * REQUIRE ENVIRONMENT
+;; * REQUIRED ENVIRONMENT
 ;;   - Microsoft Windows 64/32bit
 ;;     8/7/Vista
 ;;   - Microsoft Visual Studio Professional
@@ -123,7 +123,7 @@
 ;;      Feature associated with the Solution you will not be able to run.
 ;;   - :solution-file & :project-file
 ;;      You have the same effect as if you had specified a :solution-file only,
-;;      But only a designated project will be parsed and activated.
+;;      but only a designated project will be parsed and activated.
 ;;      In the case that there are many projects in solution, this way is recommended.
 ;;   - :platform
 ;;      Must be a platform that exists in the project file .
