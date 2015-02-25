@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/25.11:28:19
+# last updated : 2015/02/26.01:51:38
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -246,7 +246,7 @@
                                         :flymake-manually-back-end nil)
     #+end_src
 
-*** 必須パラメーター
+*** 必須プロパティ
     - =:solution-file= or =:project-file=
       いずれかが設定されていればOKです。
       =:solution-file= のみを指定した場合
@@ -269,7 +269,7 @@
       パース・アクティブ化するコンフィグを指定します。
       プロジェクトファイルに存在するコンフィグでなければなりません。
 
-*** オプションパラメーター
+*** オプションプロパティ
     - =:version=
       プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。
       指定は文字列で行う。整数ではないので注意。
@@ -311,7 +311,7 @@
     - =:cedet-spp-table=
       nil 推奨
       =:allow-cedet-p t= の時だけ参照される
-      semanticがソースをパースする際にリプレースさせたいワードの連想テーブル
+      semanticがソースをパースする際にリプレースさせたいワードの連想テーブル。
       semanticが解釈できないdefineなどをリプレースするテーブルです。
       semantic.cacheがうまく作成できない場合は設定が必要です。
       以下記述サンプル
