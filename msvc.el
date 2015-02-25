@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/26.02:18:50
+;;; last updated : 2015/02/26.02:21:09
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -71,7 +71,7 @@
 ;;   - Direct X SDK(June 2010)
 ;;   - STL,std::tr1
 ;; 
-;; * INSTALL:
+;; * INSTALLATION:
 ;;   please more information, look at the file in msvc/minimal-config-sample directory.
 ;;   
 
