@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/25.03:32:02
+# last updated : 2015/02/25.11:28:19
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -87,7 +87,6 @@
   - auto-complete
   - yasnippet
   - ac-clang
-  
 
 * 対応範囲
   - Emacs 64/32bit
