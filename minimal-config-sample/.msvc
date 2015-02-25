@@ -1,16 +1,16 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2014/11/23.03:14:42
+;;; last updated : 2015/02/26.02:37:58
 
 
-;; (setq msvc:solution-build-report-display-timing 'after)
+;; (setq msvc-solution-build-report-display-timing 'after)
 
 ;; パース&アクティブ前にデフォルトで使用する Visual Studio を指定可能
-;; (setq msvc-env:default-use-version "2013")
+;; (setq msvc-env-default-use-version "2013")
 
 
 ;; 複数のプロジェクトを同時にアクティブ化
 
-;; (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
+;; (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
 ;;                                     :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                     :platform "x64" :configuration "Release" 
 ;;                                     :version "2013"
@@ -23,7 +23,7 @@
 ;;                                     :flymake-manually-p nil
 ;;                                     :flymake-manually-back-end nil)
 
-;; (msvc:activate-projects-after-parse :solution-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.sln"
+;; (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.sln"
 ;;                                     :project-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.vcxproj"
 ;;                                     :platform "x64" :configuration "Release" 
 ;;                                     :version "2010"
