@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/26.02:28:44
+;;; last updated : 2015/03/05.00:06:36
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -1524,7 +1524,11 @@ optionals
     (add-hook 'after-init-hook
               '(lambda ()
                  (when (file-readable-p msvc--after-init-file)
-                   (load-library msvc--after-init-file)))
+                   (let ((result (ignore-errors
+                                   (load-library msvc--after-init-file)
+                                   t)))
+                     (unless result
+                       (message ".msvc error!")))))
               t)))
 
 
