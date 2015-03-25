@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/25.03:32:38
+;;; last updated : 2015/03/25.16:24:21
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -98,6 +98,7 @@
 ;;                                       :platform "x64"
 ;;                                       :configuration "Release" 
 ;;                                       :version "2013" 
+;;                                       :toolset 'x86_amd64
 ;;                                       :force-parse-p nil
 ;;                                       :allow-cedet-p t
 ;;                                       :allow-ac-clang-p t
@@ -172,6 +173,7 @@
 ;;         (platform . nil)
 ;;         (configuration . nil)
 ;;         (version . nil)
+;;         (toolset . nil)
 ;;         (allow-cedet-p . t)
 ;;         (allow-ac-clang-p . t)
 ;;         (allow-flymake-p . t)
@@ -210,6 +212,7 @@
                                         :platform
                                         :configuration
                                         :version
+                                        :toolset
                                         :allow-cedet-p
                                         :allow-ac-clang-p
                                         :allow-flymake-p
@@ -530,6 +533,7 @@
 
          (property (msvc-flags--create-project-property db-name))
          (version (plist-get property :version))
+         (toolset (plist-get property :toolset))
          (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
          (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
@@ -563,7 +567,7 @@
 
     (list 
      msvc-env--invoke-command
-     (msvc-env--build-msb-command-args version msb-rsp-file log-file))))
+     (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file))))
 
 
 ;; error message display to Minibuf
@@ -877,13 +881,15 @@
 ;; プロジェクトのアクティベーション(アクティブリストへ登録)
 (cl-defun msvc-activate-projects-after-parse (&rest args)
   "attributes
+-requires
 :solution-file
 :project-file
 :platform
 :configuration
 
-optionals
+-optionals
 :version
+:toolset
 :force-parse-p
 :sync-p
 :allow-cedet-p
@@ -917,6 +923,10 @@ optionals
     (unless (plist-get args :version)
       (setq args (plist-put args :version msvc-env-default-use-version)))
     
+    ;; check toolset
+    (unless (plist-get args :toolset)
+      (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
+    
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
       (setq db-names (apply 'msvc-flags-parse-vcx-solution args)))
@@ -937,7 +947,7 @@ optionals
 
 (cl-defun msvc-activate-project (db-name &rest args)
   "attributes
-optionals
+-optionals
 :solution-file
 :allow-cedet-p
 :allow-ac-clang-p
@@ -964,6 +974,8 @@ optionals
          (platform (plist-get property :platform))
          (configuration (plist-get property :configuration))
          (version (plist-get property :version))
+         ;; (toolset (plist-get property :toolset))
+         (toolset (plist-get args :toolset))
 
          (solution-file (plist-get args :solution-file))
 
@@ -996,20 +1008,21 @@ optionals
     ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
     (msvc--regist-project db-name `(
                                     :project-buffer ,project-buffer
-                                                    :solution-file ,solution-file
-                                                    :project-file ,project-file
-                                                    :platform ,platform
-                                                    :configuration ,configuration
-                                                    :version ,version
-                                                    :allow-cedet-p ,allow-cedet-p
-                                                    :allow-ac-clang-p ,allow-ac-clang-p
-                                                    :allow-flymake-p ,allow-flymake-p
-                                                    :cedet-root-path ,cedet-root-path
-                                                    :cedet-spp-table ,cedet-spp-table
-                                                    :flymake-manually-p ,flymake-manually-p
-                                                    :flymake-manually-back-end ,flymake-manually-back-end
-                                                    :target-buffers ,target-buffers
-                                                    ))
+                                    :solution-file ,solution-file
+                                    :project-file ,project-file
+                                    :platform ,platform
+                                    :configuration ,configuration
+                                    :version ,version
+                                    :toolset ,toolset
+                                    :allow-cedet-p ,allow-cedet-p
+                                    :allow-ac-clang-p ,allow-ac-clang-p
+                                    :allow-flymake-p ,allow-flymake-p
+                                    :cedet-root-path ,cedet-root-path
+                                    :cedet-spp-table ,cedet-spp-table
+                                    :flymake-manually-p ,flymake-manually-p
+                                    :flymake-manually-back-end ,flymake-manually-back-end
+                                    :target-buffers ,target-buffers
+                                    ))
 
     ;; setup project buffer
     (with-current-buffer project-buffer
@@ -1326,6 +1339,7 @@ optionals
                    (platform (plist-get details :platform))
                    (configuration (plist-get details :configuration))
                    (version (plist-get details :version))
+                   (toolset (plist-get details :toolset))
                    (db-path (msvc-flags--create-db-path db-name))
 
                    (dst-file-base-name (file-name-nondirectory solution-file))
@@ -1361,7 +1375,7 @@ optionals
                    (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
 
                    (command msvc-env--invoke-command)
-                   (command-args (msvc-env--build-msb-command-args version msb-rsp-file display-file)))
+                   (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file display-file)))
 
               ;; create rsp file(always create)
               (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)

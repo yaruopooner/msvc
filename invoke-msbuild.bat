@@ -6,13 +6,13 @@ pushd "%~dp0"
 
 
 @rem # set arguments
-set _MS_VS_SHELL=%1
-set _MS_VS_SHELL_ARG=%2
+set _MSVC_TOOLSET_SHELL=%1
+set _MSVC_TOOLSET_TYPE=%2
 set _MSB_RSP_FILE=%3
 set _LOG_FILE=%4
 
 
-call %_MS_VS_SHELL% %_MS_VS_SHELL_ARG%
+call %_MSVC_TOOLSET_SHELL% %_MSVC_TOOLSET_TYPE%
 
 
 @rem # exec MSBuild

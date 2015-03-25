@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/24.02:30:52
+;;; last updated : 2015/03/25.16:24:32
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -38,16 +38,21 @@
                                       (:version "2008" :env-var "VS90COMNTOOLS")))
 
 
-;; Microsoft Visual C/C++ Command Prompt 
-(defvar msvc-env--shell-msvc nil)
-(defvar msvc-env-shell-msvc-arg 'amd64
-  " MSVC shell argument symbols
-`x86'          : x86
-`amd64'        : amd64
-`x64'          : same `amd64'
-`ia64'         : ia64
-`x86_amd64'    : x86_amd64
-`x86_ia64'     : x86_ia64
+;; Microsoft Visual C/C++ Toolset Shell List &  Toolset type
+(defvar msvc-env--toolset-shells nil)
+(defvar msvc-env-default-use-toolset 'x86_amd64
+  " MSVC toolset shell argument symbols
+`x86'          : (2013/2012)
+`x86_amd64'    : (2013/2012)
+`x86_arm'      : (2013/2012)
+`x86_ia64'     : (2010)
+`amd64'        : (2013/2012)
+`amd64_x86'    : (2013)
+`amd64_arm'    : (2013)
+`arm'          : (2013/2012)
+`ia64'         : (2010)
+see this page.
+https://msdn.microsoft.com/library/f2ccy3wt.aspx
 ")
 
 
@@ -83,7 +88,7 @@
         (when (file-exists-p path)
           (setq msvc-env-product-detected-p t)
           (add-to-list 'msvc-env--product-version version t)
-          (setq msvc-env--shell-msvc (plist-put msvc-env--shell-msvc (intern (concat ":" version)) path))))))
+          (setq msvc-env--toolset-shells (plist-put msvc-env--toolset-shells (intern (concat ":" version)) path))))))
   msvc-env-product-detected-p)
 
 
@@ -135,13 +140,14 @@
 
 
 ;; log-file は cmd から type されるのでパスセパレーターが \ である必要がある
-(defun msvc-env--build-msb-command-args (version msb-rsp-file log-file)
+(defun msvc-env--build-msb-command-args (version toolset msb-rsp-file log-file)
   (interactive)
   (list
    "/c"
    msvc-env--shell-msbuild
-   (plist-get msvc-env--shell-msvc (intern (concat ":" version)))
-   (symbol-name msvc-env-shell-msvc-arg)
+   (plist-get msvc-env--toolset-shells (intern (concat ":" version)))
+   (symbol-name toolset)
+   ;; (symbol-name msvc-env-default-use-toolset)
    msb-rsp-file
    (replace-regexp-in-string "/" "\\\\" log-file)))
 
@@ -152,8 +158,8 @@
   (setq msvc-env-product-detected-p nil)
   (setq msvc-env--product-version nil)
   (setq msvc-env-default-use-version nil)
-  (setq msvc-env--shell-msvc nil)
-  (setq msvc-env-shell-msvc-arg nil))
+  (setq msvc-env--toolset-shells nil)
+  (setq msvc-env-default-use-toolset nil))
 
 
 (cl-defun msvc-env--initialize ()

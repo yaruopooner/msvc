@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/24.02:51:16
+;;; last updated : 2015/03/25.15:00:44
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -259,12 +259,14 @@
 (cl-defun msvc-flags-parse-vcx-project (&rest args)
   "parse *.vcxproj file : Microsoft Visual Studio
 attributes
+-requires
 :project-file
 :platform
 :configuration
 :version
+:toolset
 
-optionals
+-optionals
 :parsing-buffer-delete-p
 :force-parse-p
 :sync-p
@@ -282,6 +284,7 @@ optionals
         (platform (plist-get args :platform))
         (configuration (plist-get args :configuration))
         (version (plist-get args :version))
+        (toolset (plist-get args :toolset))
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
@@ -336,7 +339,7 @@ optionals
              (default-process-coding-system '(utf-8-dos . utf-8-unix))
 
              (command msvc-env--invoke-command)
-             (command-args (msvc-env--build-msb-command-args version msb-rsp-file log-file)))
+             (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file)))
 
         ;; db-path ディレクトリはあらかじめ作成しておく必要がある
         ;; プロセス開始前に *.rsp を生成・保存する必要がある
@@ -421,12 +424,14 @@ optionals
 (cl-defun msvc-flags-parse-vcx-solution (&rest args)
   "parse *.sln file : Microsoft Visual Studio
 attributes
+-requires
 :solution-file
 :platform
 :configuration
 :version
+:toolset
 
-optionals
+-optionals
 :parsing-buffer-delete-p
 :force-parse-p
 :sync-p
