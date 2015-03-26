@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/25.16:59:08
+;;; last updated : 2015/03/27.01:34:37
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -135,6 +135,9 @@
 ;;   - :version
 ;;     Specifies the version of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-version'.
+;;   - :toolset
+;;     Specifies the toolset of Visual Studio to be used.
+;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
 ;;   - :force-parse-p
 ;;     nil recommended. force parse and activate.
 ;;     It is primarily for debugging applications.
@@ -345,7 +348,7 @@
 
 
 (defvar msvc-solution-build-report-display-timing nil
-  "
+  "build report display timing symbols
 `nil'      : not foreground.
 `before'   : when the build is starts.
 `after'    : when the build is done.")
@@ -353,7 +356,7 @@
 (defvar msvc-solution-build-report-realtime-display-p t)
 
 (defvar msvc-solution-build-report-verbosity 'normal
-  "
+  "build report verbosity symbols
 `quiet'
 `minimal'
 `normal'
@@ -1041,8 +1044,7 @@
          (platform (plist-get property :platform))
          (configuration (plist-get property :configuration))
          (version (plist-get property :version))
-         ;; (toolset (plist-get property :toolset))
-         (toolset (plist-get args :toolset))
+         (toolset (plist-get property :toolset))
 
          (solution-file (plist-get args :solution-file))
 
@@ -1495,7 +1497,7 @@
   "MSVC mode key map")
 
 
-(defun msvc--update-mode-line (platform configuration version)
+(defun msvc--update-mode-line (version platform configuration)
   (setq msvc--mode-line (format " MSVC%s[%s|%s]" version platform configuration))
   (force-mode-line-update))
 
@@ -1509,12 +1511,12 @@
       (progn
         (if (msvc--evaluate-buffer)
             (let* ((property (msvc-flags--create-project-property msvc--source-code-belonging-db-name))
+                   (version (plist-get property :version))
                    (platform (plist-get property :platform))
-                   (configuration (plist-get property :configuration))
-                   (version (plist-get property :version)))
-              (msvc--update-mode-line platform configuration version))
+                   (configuration (plist-get property :configuration)))
+              (msvc--update-mode-line version platform configuration))
           (progn
-            (msvc--update-mode-line "-" "-" "")
+            (msvc--update-mode-line "" "-" "-")
             (message "This buffer don't belonging to the active projects.")
             (msvc-mode-off))))
     (progn

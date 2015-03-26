@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/26.10:29:07
+;;; last updated : 2015/03/27.01:18:01
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -40,8 +40,8 @@
 
 ;; Microsoft Visual C/C++ Toolset Shell List &  Toolset type
 (defvar msvc-env--toolset-shells nil)
-(defvar msvc-env-default-use-toolset 'x86_amd64
-  " MSVC toolset shell argument symbols
+(defvar msvc-env-default-use-toolset "x86_amd64"
+  " MSVC toolset shell argument string
 `x86'          : (2013/2012)
 `x86_amd64'    : (2013/2012)
 `x86_arm'      : (2013/2012)
@@ -146,9 +146,8 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
    "/c"
    msvc-env--shell-msbuild
    (plist-get msvc-env--toolset-shells (intern (concat ":" version)))
-   (if toolset (symbol-name toolset) (symbol-name msvc-env-default-use-toolset))
    ;; (symbol-name toolset)
-   ;; (symbol-name msvc-env-default-use-toolset)
+   toolset
    msb-rsp-file
    (replace-regexp-in-string "/" "\\\\" log-file)))
 
