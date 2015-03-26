@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/24.02:51:16
+;;; last updated : 2015/03/27.01:05:30
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -85,7 +85,7 @@
 
 
 ;; CFLAGS/CXXFLAGS Database : Microsoft Visual C/C++ Project's CFLAGS/CXXFLAGS
-(defvar msvc-flags--cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + Version.")
+(defvar msvc-flags--cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + Version + Toolset.")
 
 
 ;; delete the buffer after end of parse.
@@ -99,9 +99,9 @@
 
 
 
-(defun msvc-flags--create-db-name (vcx-proj-path platform configuration version)
+(defun msvc-flags--create-db-name (vcx-proj-path platform configuration version toolset)
   (cedet-directory-name-to-file-name 
-   (expand-file-name version (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path))))))
+   (expand-file-name toolset (expand-file-name version (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path)))))))
 
 (defun msvc-flags--create-db-path (db-name)
   (file-name-as-directory (expand-file-name db-name msvc-flags-db-root-path)))
@@ -109,17 +109,18 @@
 
 (defun msvc-flags--create-project-property (db-name)
   (let* ((parsing-path (cedet-file-name-to-directory-name db-name))
-         (version (file-name-nondirectory parsing-path))
+         (toolset (file-name-nondirectory parsing-path))
+         (version (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (configuration (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (platform (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (project-file (concat (setq parsing-path (directory-file-name (file-name-directory parsing-path))) ".vcxproj")))
 
-    `(:project-file ,project-file :platform ,platform :configuration ,configuration :version ,version)))
+    `(:project-file ,project-file :platform ,platform :configuration ,configuration :version ,version :toolset ,toolset)))
 
 
 (defun msvc-flags--create-project-path (db-name)
-  ;; project-path/project-file-name/platform/configuration/version -> project-path/project-file-name/
-  (expand-file-name "../../../../" (cedet-file-name-to-directory-name db-name)))
+  ;; project-path/project-file-name/platform/configuration/version/toolset -> project-path/project-file-name/
+  (expand-file-name "../../../../../" (cedet-file-name-to-directory-name db-name)))
 
 
 
@@ -259,12 +260,14 @@
 (cl-defun msvc-flags-parse-vcx-project (&rest args)
   "parse *.vcxproj file : Microsoft Visual Studio
 attributes
+-requires
 :project-file
 :platform
 :configuration
 :version
+:toolset
 
-optionals
+-optionals
 :parsing-buffer-delete-p
 :force-parse-p
 :sync-p
@@ -282,6 +285,7 @@ optionals
         (platform (plist-get args :platform))
         (configuration (plist-get args :configuration))
         (version (plist-get args :version))
+        (toolset (plist-get args :toolset))
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
@@ -300,7 +304,7 @@ optionals
     (unless (file-accessible-directory-p msvc-flags-db-root-path)
       (make-directory msvc-flags-db-root-path))
 
-    (let* ((db-name (msvc-flags--create-db-name project-file platform configuration version))
+    (let* ((db-name (msvc-flags--create-db-name project-file platform configuration version toolset))
            (db-path (msvc-flags--create-db-path db-name))
 
            (log-file (expand-file-name msvc-flags--db-log-cflags db-path))
@@ -336,7 +340,7 @@ optionals
              (default-process-coding-system '(utf-8-dos . utf-8-unix))
 
              (command msvc-env--invoke-command)
-             (command-args (msvc-env--build-msb-command-args version msb-rsp-file log-file)))
+             (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file)))
 
         ;; db-path ディレクトリはあらかじめ作成しておく必要がある
         ;; プロセス開始前に *.rsp を生成・保存する必要がある
@@ -421,12 +425,14 @@ optionals
 (cl-defun msvc-flags-parse-vcx-solution (&rest args)
   "parse *.sln file : Microsoft Visual Studio
 attributes
+-requires
 :solution-file
 :platform
 :configuration
 :version
+:toolset
 
-optionals
+-optionals
 :parsing-buffer-delete-p
 :force-parse-p
 :sync-p
@@ -524,13 +530,15 @@ optionals
 
     (cl-dolist (db-name db-dirs)
       (when (not (eq ?\. (aref db-name 0)))
-        (let* ((property (msvc-flags--create-project-property db-name))
-               (project-file (plist-get property :project-file))
-               (platform (plist-get property :platform))
-               (configuration (plist-get property :configuration))
-               (version (plist-get property :version)))
+        (let* ((property (msvc-flags--create-project-property db-name)))
+               ;; (project-file (plist-get property :project-file))
+               ;; (platform (plist-get property :platform))
+               ;; (configuration (plist-get property :configuration))
+               ;; (version (plist-get property :version))
+               ;; (toolset (plist-get property :toolset)))
 
-          (when (msvc-flags-parse-vcx-project :project-file project-file :platform platform :configuration configuration :version version :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p)
+          (when (apply 'msvc-flags-parse-vcx-project :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p property)
+          ;; (when (msvc-flags-parse-vcx-project :project-file project-file :platform platform :configuration configuration :version version :toolset toolset :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p)
             (setq count (1+ count))))))
     count))
 

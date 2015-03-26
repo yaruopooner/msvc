@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/02/24.03:00:22
+;;; last updated : 2015/03/27.01:39:17
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.0.0
+;; Version: 1.1.0
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0"))
 
 ;; This file is part of MSVC.
@@ -30,15 +30,20 @@
 
 ;;; Commentary:
 ;; 
+;; * INTRODUCTION:
+;;   msvc parse the project file or the solution file of Visual Studio.
+;;   msvc-mode becomes effective when you open the file belonging to a project.
+;;   This mode provides the following features.
+;; 
 ;; * FEATURES:
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
 ;;     2015/2013/2012/2010
-;;   - code completion
+;;   - code completion (auto / manual)
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
-;;   - syntax check
+;;   - syntax check (auto / manual)
 ;;     backend: msbuild or ac-clang
 ;;   - jump to declaration or definition. return from jumped location.
 ;;     backend: ac-clang
@@ -46,23 +51,27 @@
 ;;     backend: semantic
 ;;   - build Solution or Project on Emacs
 ;;     backend: msbuild
+;;   - jump to error buffer from build report
+;;     look like a grep buffer
 ;;   - launch Visual Studio from Solution or Project
+;;     backend: Windows file association
 ;; 
-;; * REQUIRE ENVIRONMENT
+;; * REQUIRED ENVIRONMENT
 ;;   - Microsoft Windows 64/32bit
 ;;     8/7/Vista
 ;;   - Microsoft Visual Studio Professional
 ;;     2015/2013/2012/2010
-;;   - Cygwin 64/32bit(or MSYS)
-;;     must be used bash
+;;   - Shell 64/32bit
+;;     CYGWIN/MSYS/CMD(cmdproxy)
+;;     CYGWIN's bash recommended
 ;; 
 ;; * TESTED SDK:
 ;;   completion test, syntax check test
-;;   - Windows SDK 7.0A/7.1
+;;   - Windows SDK 7.1/7.0A
 ;;   - Direct X SDK(June 2010)
 ;;   - STL,std::tr1
 ;; 
-;; * INSTALL:
+;; * INSTALLATION:
 ;;   please more information, look at the file in msvc/minimal-config-sample directory.
 ;;   
 
@@ -70,7 +79,10 @@
 ;; Usage:
 ;; * DETAILED MANUAL:
 ;;   For more information and detailed usage, refer to the project page:
-;;   https://github.com/yaruopooner/msvc
+;;   [https://github.com/yaruopooner/msvc]
+;; 
+;;   sorry, reference manual is japanese version only.
+;;   please help english version reference manual. 
 ;; 
 ;; * SETUP:
 ;;   (require 'msvc)
@@ -79,6 +91,128 @@
 ;;   (when (msvc-initialize)
 ;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
 ;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
+;; 
+;; * REGISTRATION OF PROJECT OR SOLUTION
+;;   (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
+;;                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
+;;                                       :platform "x64"
+;;                                       :configuration "Release" 
+;;                                       :version "2013" 
+;;                                       :toolset 'x86_amd64
+;;                                       :force-parse-p nil
+;;                                       :allow-cedet-p t
+;;                                       :allow-ac-clang-p t
+;;                                       :allow-flymake-p t
+;;                                       :cedet-root-path "d:/DirectXSamples/SubD11"
+;;                                       :cedet-spp-table nil
+;;                                       :flymake-manually-p nil)
+;; 
+;;   When the project is active , buffer with the appropriate project name will be created.
+;;   Project buffer name is based on the following format.
+;;   *MSVC Project <`db-name`>*
+;;   msvc-mode will be applied automatically when source code belonging to the project has been opened.
+;;   msvc-mode has been applied buffer in the mode line MSVC`version`[platform|configuration] and will be displayed.
+;;   You can activate a lot of projects.
+;; 
+;; * REQUIRED PROPERTIES
+;;   - :solution-file
+;;      If you don't use :project-file,
+;;      all projects that are included in the Solution is parsed, it will be activated.
+;;   - :project-file
+;;      If you don't use :solution-file,
+;;      Only the specified project is parsed, it will be activated.
+;;      Feature associated with the Solution you will not be able to run.
+;;   - :solution-file & :project-file
+;;      You have the same effect as if you had specified a :solution-file only,
+;;      but only a designated project will be parsed and activated.
+;;      In the case that there are many projects in solution, this way is recommended.
+;;   - :platform
+;;      Must be a platform that exists in the project file .
+;;   - :configuration
+;;      Must be a configuration that exists in the project file .
+;; 
+;; * OPTIONAL PROPERTIES
+;;   - :version
+;;     Specifies the version of Visual Studio to be used.
+;;     If you do not specify or nil used, the value used is `msvc-env-default-use-version'.
+;;   - :toolset
+;;     Specifies the toolset of Visual Studio to be used.
+;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
+;;   - :force-parse-p
+;;     nil recommended. force parse and activate.
+;;     It is primarily for debugging applications.
+;;   - :allow-cedet-p
+;;     t Recommended. use the CEDET. 
+;;     In the case of nil you will not be able to use the jump to include files.
+;;   - :allow-ac-clang-p
+;;     t Recommended. 
+;;     If value is t, use the ac-clang.
+;;     If value is nil, use the semantic.
+;;   - :allow-flymake-p
+;;     t Recommended. use the flymake. syntax check by MSBuild.
+;;   - :cedet-root-path
+;;     It is referenced only when the allow-cedet-p t.
+;;     You specify the CEDET ede project base directory *.ede.
+;;     File is generated in the specified directory.
+;;     It is most likely not a problem in the directory where the project file is located.
+;;     However, if the location of the source code is not a project file placement directory
+;;     at the same level or descendants you will need to be careful.  
+;;     In this case you will need to specify a common parent directory such that the same hierarchy or descendants.
+;;   - :cedet-spp-table
+;;     nil Recommended. 
+;;     It is referenced only when the allow-cedet-p t.
+;;     Word associative table that you want to replace when the semantic is to parse the source.
+;;     It is a table replacing define which cannot parsed a semantic.
+;;     If semantic.cache can not be created successfully requires this setting.
+;;     The following description sample
+;;       :cedet-spp-table '(
+;;                          ("ALIGN"              . "")
+;;                          ("FORCE_INLINE"       . "")
+;;                          ("NO_INLINE"          . "")
+;;                          ("THREAD_LOCAL"       . "")
+;;                          ("DLL_IMPORT"         . "")
+;;                          ("DLL_EXPORT"         . "")
+;;                          ("RESTRICT"           . ""))
+;;     For details, refer to CEDET manual.
+;;   - :flymake-manually-p
+;;     nil Recommended. 
+;;     If value is t, manual syntax check only.
+;; 
+;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
+;;   - start auto completion
+;;     code completion & arguments expand
+;;     `.` `->` `::`
+;;   - start manual completion
+;;     code completion & arguments expand
+;;     `<TAB>`
+;;   - jump to definition / return from definition
+;;     this is nestable jump.
+;;     `M-.` / `M-,`
+;;   - visit to include file / return from include file
+;;     `M-i` / `M-I`
+;;   - goto error line prev / next
+;;     `M-[` / `M-]`
+;;   - manual syntax check
+;;    `<f5>`
+;;   - build solution
+;;    `C-<f5>`
+;; 
+;; * DEFAULT KEYBIND(msvc on Project Buffer)
+;;   - jump to buffer
+;;     `RET` `mouse-1`
+;;   - refer to buffer
+;;     `C-z`
+;; 
+;; * DEFAULT KEYBIND(msvc on Build Report)
+;;   - goto error line prev / next
+;;     `[` / `]`
+;;   - refer error line & buffer prev / next
+;;     `M-[` / `M-]`
+;;   - jump to buffer
+;;     `RET` `mouse-1`
+;;   - refer to buffer
+;;     `C-z`
+;; 
 
 
 ;;; Code:
@@ -94,7 +228,7 @@
 
 
 
-(defconst msvc-version "1.0.0")
+(defconst msvc-version "1.1.0")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -109,6 +243,7 @@
 ;;         (platform . nil)
 ;;         (configuration . nil)
 ;;         (version . nil)
+;;         (toolset . nil)
 ;;         (allow-cedet-p . t)
 ;;         (allow-ac-clang-p . t)
 ;;         (allow-flymake-p . t)
@@ -147,6 +282,7 @@
                                         :platform
                                         :configuration
                                         :version
+                                        :toolset
                                         :allow-cedet-p
                                         :allow-ac-clang-p
                                         :allow-flymake-p
@@ -212,7 +348,7 @@
 
 
 (defvar msvc-solution-build-report-display-timing nil
-  "
+  "build report display timing symbols
 `nil'      : not foreground.
 `before'   : when the build is starts.
 `after'    : when the build is done.")
@@ -220,7 +356,7 @@
 (defvar msvc-solution-build-report-realtime-display-p t)
 
 (defvar msvc-solution-build-report-verbosity 'normal
-  "
+  "build report verbosity symbols
 `quiet'
 `minimal'
 `normal'
@@ -441,7 +577,7 @@
 
 (defconst msvc--flymake-err-line-patterns
   '(
-    ;; Visual C/C++ 2010/2012/2013
+    ;; Visual C/C++ 2013/2012/2010
     msbuild
     ;; (1:file, 2:line, 3:error-text) flymake only support
     ;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
@@ -467,6 +603,7 @@
 
          (property (msvc-flags--create-project-property db-name))
          (version (plist-get property :version))
+         (toolset (plist-get property :toolset))
          (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
          (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
@@ -500,7 +637,7 @@
 
     (list 
      msvc-env--invoke-command
-     (msvc-env--build-msb-command-args version msb-rsp-file log-file))))
+     (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file))))
 
 
 ;; error message display to Minibuf
@@ -814,13 +951,15 @@
 ;; プロジェクトのアクティベーション(アクティブリストへ登録)
 (cl-defun msvc-activate-projects-after-parse (&rest args)
   "attributes
+-requires
 :solution-file
 :project-file
 :platform
 :configuration
 
-optionals
+-optionals
 :version
+:toolset
 :force-parse-p
 :sync-p
 :allow-cedet-p
@@ -854,6 +993,10 @@ optionals
     (unless (plist-get args :version)
       (setq args (plist-put args :version msvc-env-default-use-version)))
     
+    ;; check toolset
+    (unless (plist-get args :toolset)
+      (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
+    
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
       (setq db-names (apply 'msvc-flags-parse-vcx-solution args)))
@@ -874,7 +1017,7 @@ optionals
 
 (cl-defun msvc-activate-project (db-name &rest args)
   "attributes
-optionals
+-optionals
 :solution-file
 :allow-cedet-p
 :allow-ac-clang-p
@@ -901,6 +1044,7 @@ optionals
          (platform (plist-get property :platform))
          (configuration (plist-get property :configuration))
          (version (plist-get property :version))
+         (toolset (plist-get property :toolset))
 
          (solution-file (plist-get args :solution-file))
 
@@ -933,20 +1077,21 @@ optionals
     ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
     (msvc--regist-project db-name `(
                                     :project-buffer ,project-buffer
-                                                    :solution-file ,solution-file
-                                                    :project-file ,project-file
-                                                    :platform ,platform
-                                                    :configuration ,configuration
-                                                    :version ,version
-                                                    :allow-cedet-p ,allow-cedet-p
-                                                    :allow-ac-clang-p ,allow-ac-clang-p
-                                                    :allow-flymake-p ,allow-flymake-p
-                                                    :cedet-root-path ,cedet-root-path
-                                                    :cedet-spp-table ,cedet-spp-table
-                                                    :flymake-manually-p ,flymake-manually-p
-                                                    :flymake-manually-back-end ,flymake-manually-back-end
-                                                    :target-buffers ,target-buffers
-                                                    ))
+                                    :solution-file ,solution-file
+                                    :project-file ,project-file
+                                    :platform ,platform
+                                    :configuration ,configuration
+                                    :version ,version
+                                    :toolset ,toolset
+                                    :allow-cedet-p ,allow-cedet-p
+                                    :allow-ac-clang-p ,allow-ac-clang-p
+                                    :allow-flymake-p ,allow-flymake-p
+                                    :cedet-root-path ,cedet-root-path
+                                    :cedet-spp-table ,cedet-spp-table
+                                    :flymake-manually-p ,flymake-manually-p
+                                    :flymake-manually-back-end ,flymake-manually-back-end
+                                    :target-buffers ,target-buffers
+                                    ))
 
     ;; setup project buffer
     (with-current-buffer project-buffer
@@ -1263,6 +1408,7 @@ optionals
                    (platform (plist-get details :platform))
                    (configuration (plist-get details :configuration))
                    (version (plist-get details :version))
+                   (toolset (plist-get details :toolset))
                    (db-path (msvc-flags--create-db-path db-name))
 
                    (dst-file-base-name (file-name-nondirectory solution-file))
@@ -1298,7 +1444,7 @@ optionals
                    (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
 
                    (command msvc-env--invoke-command)
-                   (command-args (msvc-env--build-msb-command-args version msb-rsp-file display-file)))
+                   (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file display-file)))
 
               ;; create rsp file(always create)
               (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
@@ -1351,7 +1497,7 @@ optionals
   "MSVC mode key map")
 
 
-(defun msvc--update-mode-line (platform configuration version)
+(defun msvc--update-mode-line (version platform configuration)
   (setq msvc--mode-line (format " MSVC%s[%s|%s]" version platform configuration))
   (force-mode-line-update))
 
@@ -1365,12 +1511,12 @@ optionals
       (progn
         (if (msvc--evaluate-buffer)
             (let* ((property (msvc-flags--create-project-property msvc--source-code-belonging-db-name))
+                   (version (plist-get property :version))
                    (platform (plist-get property :platform))
-                   (configuration (plist-get property :configuration))
-                   (version (plist-get property :version)))
-              (msvc--update-mode-line platform configuration version))
+                   (configuration (plist-get property :configuration)))
+              (msvc--update-mode-line version platform configuration))
           (progn
-            (msvc--update-mode-line "-" "-" "")
+            (msvc--update-mode-line "" "-" "-")
             (message "This buffer don't belonging to the active projects.")
             (msvc-mode-off))))
     (progn
@@ -1394,7 +1540,11 @@ optionals
     (add-hook 'after-init-hook
               '(lambda ()
                  (when (file-readable-p msvc--after-init-file)
-                   (load-library msvc--after-init-file)))
+                   (let ((result (ignore-errors
+                                   (load-library msvc--after-init-file)
+                                   t)))
+                     (unless result
+                       (message ".msvc error!")))))
               t)))
 
 

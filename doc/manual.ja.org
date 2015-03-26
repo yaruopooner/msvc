@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/22.22:07:55
+# last updated : 2015/02/26.01:51:38
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -68,10 +68,13 @@
 * 必須環境
   - GNU Emacs 24.1以上
     24.1以降でのみ動作保証
-  - CYGWIN 64/32bit(or MSYS)
-    bashが必要
+  - shell
+    以下のいずれか
+    CYGWIN 64/32bit(推奨)
+    MSYS
+    CMD
   - Microsoft Windows 64/32bit
-  - Microsoft Visual Studio Professional 2013/2012/2010
+  - Microsoft Visual Studio Professional 2015?/2013/2012/2010
     CL.exe/MSBuild.exe 等を使います
 
 * 必須パッケージ
@@ -84,23 +87,26 @@
   - auto-complete
   - yasnippet
   - ac-clang
-  
 
 * 対応範囲
-  - Emacs 64bit/32bit
+  - Emacs 64/32bit
     CEDETが標準built-inになったバージョン以降で動作
 
     Emacs は以下でテスト
+    http://www.gnu.org/software/emacs/
     https://github.com/chuntaro/NTEmacs64
     http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
-  - CYGWIN 64bit/32bit(MSYS) 
-    $ uname -r
-    1.7.29(0.272/5/3)
-    CYGWINは64/32bit動作チェック済み
-    MSYSでも動作するがCYGWIN推奨
-    MSYSは32bitのみ動作チェック済み
-
+  - Shell
+    - CYGWIN 64/32bit
+      $ uname -r
+      1.7.29(0.272/5/3)
+      CYGWINは64/32bit動作チェック済み
+    - MSYS
+      32bitのみ動作チェック済み
+    - CMD
+      cmdproxy,cmd動作チェック済み
+      
   - Microsoft Windows 32bit/64bit
     - Vista/XP
       未検証
@@ -114,7 +120,7 @@
       grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
 
   - Microsoft Visual Studio Professional 2013/2012/2010
-    2013/2012/2010 64 bit でのみ動作テスト
+    2013/2012/2010 64 bit のみ動作チェック済み
 
   - SDK
     下記SDKのサンプルプロジェクトでテスト。
@@ -129,34 +135,7 @@
       boostは未テスト
 
 * 制限事項
-  1) ソリューション・プロジェクトの配置場所
-
-     空白を含んだパス上にプロジェクトファイル群が配置されている場合正常に補完が行えません。
-     libclangのparserの仕様orバグだと思います・・・。
-     
-     #+begin_src shell
-     NG  d:/user projects/my proj/test.sln
-     NG  d:/user projects/my proj/test.vcxproj
-     OK  d:/user_projects/my_proj/test.sln
-     OK  d:/user_projects/my_proj/test.vcxproj
-     #+end_src
-     など
-     
-     プロジェクト名は空白を許容します。
-     #+begin_src shell
-     OK  d:/user_projects/my_proj/my proj.sln
-     OK  d:/user_projects/my_proj/my proj.vcxproj
-     #+end_src
-     
-     includeディレクトリが空白を含んでいるのは問題ありません。
-     #+begin_src shell
-     OK  C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/include
-     OK  C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include
-     #+end_src
-     など
-
-  2) プリコンパイル済みヘッダ(PCH)は使用不可
-
+  1) プリコンパイル済みヘッダ(PCH)は使用不可
      Visual Studio のPCHは使用できません。
      PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。
 
@@ -267,7 +246,7 @@
                                         :flymake-manually-back-end nil)
     #+end_src
 
-*** 必須パラメーター
+*** 必須プロパティ
     - =:solution-file= or =:project-file=
       いずれかが設定されていればOKです。
       =:solution-file= のみを指定した場合
@@ -290,7 +269,7 @@
       パース・アクティブ化するコンフィグを指定します。
       プロジェクトファイルに存在するコンフィグでなければなりません。
 
-*** オプションパラメーター
+*** オプションプロパティ
     - =:version=
       プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。
       指定は文字列で行う。整数ではないので注意。
@@ -332,7 +311,7 @@
     - =:cedet-spp-table=
       nil 推奨
       =:allow-cedet-p t= の時だけ参照される
-      semanticがソースをパースする際にリプレースさせたいワードの連想テーブル
+      semanticがソースをパースする際にリプレースさせたいワードの連想テーブル。
       semanticが解釈できないdefineなどをリプレースするテーブルです。
       semantic.cacheがうまく作成できない場合は設定が必要です。
       以下記述サンプル
