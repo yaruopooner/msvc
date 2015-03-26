@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2015/02/26.02:37:58
+;;; last updated : 2015/03/27.01:46:52
 
 
 ;; (setq msvc-solution-build-report-display-timing 'after)
@@ -14,6 +14,7 @@
 ;;                                     :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                     :platform "x64" :configuration "Release" 
 ;;                                     :version "2013"
+;;                                     :toolset "amd64"
 ;;                                     :force-parse-p nil
 ;;                                     :allow-cedet-p t
 ;;                                     :allow-ac-clang-p t
@@ -27,6 +28,7 @@
 ;;                                     :project-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.vcxproj"
 ;;                                     :platform "x64" :configuration "Release" 
 ;;                                     :version "2010"
+;;                                     :toolset "x86_amd64"
 ;;                                     :force-parse-p nil
 ;;                                     :allow-cedet-p t
 ;;                                     :allow-ac-clang-p t
