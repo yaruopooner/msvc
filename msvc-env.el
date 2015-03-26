@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/25.16:24:32
+;;; last updated : 2015/03/26.10:29:07
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -146,7 +146,8 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
    "/c"
    msvc-env--shell-msbuild
    (plist-get msvc-env--toolset-shells (intern (concat ":" version)))
-   (symbol-name toolset)
+   (if toolset (symbol-name toolset) (symbol-name msvc-env-default-use-toolset))
+   ;; (symbol-name toolset)
    ;; (symbol-name msvc-env-default-use-toolset)
    msb-rsp-file
    (replace-regexp-in-string "/" "\\\\" log-file)))

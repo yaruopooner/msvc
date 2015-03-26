@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/25.16:24:21
+;;; last updated : 2015/03/25.16:59:08
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -33,7 +33,7 @@
 ;; * INTRODUCTION:
 ;;   msvc parse the project file or the solution file of Visual Studio.
 ;;   msvc-mode becomes effective when you open the file belonging to a project.
-;;   this mode provides the following features.
+;;   This mode provides the following features.
 ;; 
 ;; * FEATURES:
 ;;   - Visual Studio project file manager
@@ -56,14 +56,14 @@
 ;;   - launch Visual Studio from Solution or Project
 ;;     backend: Windows file association
 ;; 
-;; * REQUIRE ENVIRONMENT
+;; * REQUIRED ENVIRONMENT
 ;;   - Microsoft Windows 64/32bit
 ;;     8/7/Vista
 ;;   - Microsoft Visual Studio Professional
 ;;     2015/2013/2012/2010
 ;;   - Shell 64/32bit
 ;;     CYGWIN/MSYS/CMD(cmdproxy)
-;;     The CYGWIN's bash recommended
+;;     CYGWIN's bash recommended
 ;; 
 ;; * TESTED SDK:
 ;;   completion test, syntax check test
@@ -71,7 +71,7 @@
 ;;   - Direct X SDK(June 2010)
 ;;   - STL,std::tr1
 ;; 
-;; * INSTALL:
+;; * INSTALLATION:
 ;;   please more information, look at the file in msvc/minimal-config-sample directory.
 ;;   
 
@@ -105,8 +105,75 @@
 ;;                                       :allow-flymake-p t
 ;;                                       :cedet-root-path "d:/DirectXSamples/SubD11"
 ;;                                       :cedet-spp-table nil
-;;                                       :flymake-manually-p nil
-;;                                       :flymake-manually-back-end nil)
+;;                                       :flymake-manually-p nil)
+;; 
+;;   When the project is active , buffer with the appropriate project name will be created.
+;;   Project buffer name is based on the following format.
+;;   *MSVC Project <`db-name`>*
+;;   msvc-mode will be applied automatically when source code belonging to the project has been opened.
+;;   msvc-mode has been applied buffer in the mode line MSVC`version`[platform|configuration] and will be displayed.
+;;   You can activate a lot of projects.
+;; 
+;; * REQUIRED PROPERTIES
+;;   - :solution-file
+;;      If you don't use :project-file,
+;;      all projects that are included in the Solution is parsed, it will be activated.
+;;   - :project-file
+;;      If you don't use :solution-file,
+;;      Only the specified project is parsed, it will be activated.
+;;      Feature associated with the Solution you will not be able to run.
+;;   - :solution-file & :project-file
+;;      You have the same effect as if you had specified a :solution-file only,
+;;      but only a designated project will be parsed and activated.
+;;      In the case that there are many projects in solution, this way is recommended.
+;;   - :platform
+;;      Must be a platform that exists in the project file .
+;;   - :configuration
+;;      Must be a configuration that exists in the project file .
+;; 
+;; * OPTIONAL PROPERTIES
+;;   - :version
+;;     Specifies the version of Visual Studio to be used.
+;;     If you do not specify or nil used, the value used is `msvc-env-default-use-version'.
+;;   - :force-parse-p
+;;     nil recommended. force parse and activate.
+;;     It is primarily for debugging applications.
+;;   - :allow-cedet-p
+;;     t Recommended. use the CEDET. 
+;;     In the case of nil you will not be able to use the jump to include files.
+;;   - :allow-ac-clang-p
+;;     t Recommended. 
+;;     If value is t, use the ac-clang.
+;;     If value is nil, use the semantic.
+;;   - :allow-flymake-p
+;;     t Recommended. use the flymake. syntax check by MSBuild.
+;;   - :cedet-root-path
+;;     It is referenced only when the allow-cedet-p t.
+;;     You specify the CEDET ede project base directory *.ede.
+;;     File is generated in the specified directory.
+;;     It is most likely not a problem in the directory where the project file is located.
+;;     However, if the location of the source code is not a project file placement directory
+;;     at the same level or descendants you will need to be careful.  
+;;     In this case you will need to specify a common parent directory such that the same hierarchy or descendants.
+;;   - :cedet-spp-table
+;;     nil Recommended. 
+;;     It is referenced only when the allow-cedet-p t.
+;;     Word associative table that you want to replace when the semantic is to parse the source.
+;;     It is a table replacing define which cannot parsed a semantic.
+;;     If semantic.cache can not be created successfully requires this setting.
+;;     The following description sample
+;;       :cedet-spp-table '(
+;;                          ("ALIGN"              . "")
+;;                          ("FORCE_INLINE"       . "")
+;;                          ("NO_INLINE"          . "")
+;;                          ("THREAD_LOCAL"       . "")
+;;                          ("DLL_IMPORT"         . "")
+;;                          ("DLL_EXPORT"         . "")
+;;                          ("RESTRICT"           . ""))
+;;     For details, refer to CEDET manual.
+;;   - :flymake-manually-p
+;;     nil Recommended. 
+;;     If value is t, manual syntax check only.
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
 ;;   - start auto completion
@@ -1471,7 +1538,11 @@
     (add-hook 'after-init-hook
               '(lambda ()
                  (when (file-readable-p msvc--after-init-file)
-                   (load-library msvc--after-init-file)))
+                   (let ((result (ignore-errors
+                                   (load-library msvc--after-init-file)
+                                   t)))
+                     (unless result
+                       (message ".msvc error!")))))
               t)))
 
 

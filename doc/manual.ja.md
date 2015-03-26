@@ -30,8 +30,8 @@
 <li><a href="#sec-7-1">7.1. プロジェクトのパースと登録1</a>
 <ul>
 <li><a href="#sec-7-1-1">7.1.1. 登録サンプル</a></li>
-<li><a href="#sec-7-1-2">7.1.2. 必須パラメーター</a></li>
-<li><a href="#sec-7-1-3">7.1.3. オプションパラメーター</a></li>
+<li><a href="#sec-7-1-2">7.1.2. 必須プロパティ</a></li>
+<li><a href="#sec-7-1-3">7.1.3. オプションプロパティ</a></li>
 </ul>
 </li>
 <li><a href="#sec-7-2">7.2. プロジェクトのパースと登録2</a></li>
@@ -303,7 +303,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                                         :flymake-manually-p nil
                                         :flymake-manually-back-end nil)
 
-### 必須パラメーター<a id="sec-7-1-2" name="sec-7-1-2"></a>
+### 必須プロパティ<a id="sec-7-1-2" name="sec-7-1-2"></a>
 
 -   `:solution-file` or `:project-file`  
     いずれかが設定されていればOKです。  
@@ -327,7 +327,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     パース・アクティブ化するコンフィグを指定します。  
     プロジェクトファイルに存在するコンフィグでなければなりません。
 
-### オプションパラメーター<a id="sec-7-1-3" name="sec-7-1-3"></a>
+### オプションプロパティ<a id="sec-7-1-3" name="sec-7-1-3"></a>
 
 -   `:version`  
     プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。  
@@ -370,7 +370,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 -   `:cedet-spp-table`  
     nil 推奨  
     `:allow-cedet-p t` の時だけ参照される  
-    semanticがソースをパースする際にリプレースさせたいワードの連想テーブル  
+    semanticがソースをパースする際にリプレースさせたいワードの連想テーブル。  
     semanticが解釈できないdefineなどをリプレースするテーブルです。  
     semantic.cacheがうまく作成できない場合は設定が必要です。  
     以下記述サンプル  
