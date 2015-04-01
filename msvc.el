@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/29.18:21:11
+;;; last updated : 2015/04/02.02:38:44
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -99,6 +99,7 @@
 ;;                                       :configuration "Release" 
 ;;                                       :version "2013" 
 ;;                                       :toolset 'x86_amd64
+;;                                       :dir-name-md5-p nil
 ;;                                       :force-parse-p nil
 ;;                                       :allow-cedet-p t
 ;;                                       :allow-ac-clang-p t
@@ -138,6 +139,8 @@
 ;;   - :toolset
 ;;     Specifies the toolset of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
+;;   - :dir-name-md5-p
+;;     
 ;;   - :force-parse-p
 ;;     nil recommended. force parse and activate.
 ;;     It is primarily for debugging applications.
@@ -276,7 +279,7 @@
 (defvar msvc-display-update-p t)
 
 (defvar msvc-display-allow-properties '(
-                                        ;; :activate-name
+                                        ;; :db-path
                                         :project-buffer
                                         :solution-file
                                         :project-file
@@ -284,6 +287,7 @@
                                         :configuration
                                         :version
                                         :toolset
+                                        :dir-name-md5-p
                                         :allow-cedet-p
                                         :allow-ac-clang-p
                                         :allow-flymake-p
@@ -961,6 +965,7 @@
 -optionals
 :version
 :toolset
+:dir-name-md5-p
 :force-parse-p
 :sync-p
 :allow-cedet-p
@@ -998,10 +1003,6 @@
     ;; check toolset
     (unless (plist-get args :toolset)
       (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
-    
-    ;; check db-path
-    (unless (plist-get args :db-path)
-      (setq args (plist-put args :db-path (msvc-flags--create-db-name project-file platform configuration (plist-get args :version) (plist-get args :toolset)))))
     
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
@@ -1054,6 +1055,10 @@
 
          (solution-file (plist-get args :solution-file))
 
+         (dir-name-md5-p (plist-get args :dir-name-md5-p))
+         (dir-name (if dir-name-md5-p (md5 db-name) db-name))
+         (db-path (msvc-flags--create-db-path dir-name))
+
          ;; project allow feature
          (allow-cedet-p (plist-get args :allow-cedet-p))
          (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
@@ -1089,6 +1094,7 @@
                                     :configuration ,configuration
                                     :version ,version
                                     :toolset ,toolset
+                                    :db-path ,db-path
                                     :allow-cedet-p ,allow-cedet-p
                                     :allow-ac-clang-p ,allow-ac-clang-p
                                     :allow-flymake-p ,allow-flymake-p
