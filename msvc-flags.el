@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/27.01:05:30
+;;; last updated : 2015/04/01.02:41:52
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -30,6 +30,8 @@
 
 
 ;; project file importer
+(defconst msvc-flags--property-file-name "property")
+
 (defconst msvc-flags--vcx-proj-name "msvc-extractor.cflags.vcxproj")
 (defconst msvc-flags--vcx-proj-file (expand-file-name msvc-flags--vcx-proj-name msvc-env--package-directory))
 
@@ -115,7 +117,7 @@
          (platform (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (project-file (concat (setq parsing-path (directory-file-name (file-name-directory parsing-path))) ".vcxproj")))
 
-    `(:project-file ,project-file :platform ,platform :configuration ,configuration :version ,version :toolset ,toolset)))
+    `(:db-name ,db-name :project-file ,project-file :platform ,platform :configuration ,configuration :version ,version :toolset ,toolset)))
 
 
 (defun msvc-flags--create-project-path (db-name)
@@ -144,6 +146,25 @@
   (let* ((bind-name (buffer-name buffer)))
     (when (string-match msvc-flags--process-buffer-name-pattern bind-name)
       (match-string 1 bind-name))))
+
+
+
+;; property
+(defun msvc-flags--create-property-file (db-name property &optional overwrite-p)
+  (let ((property-file (expand-file-name msvc-flags--property-file-name (msvc-flags--create-db-path db-name))))
+    (when (or (not (file-exists-p property-file)) overwrite-p)
+      (with-temp-file property-file
+        ;; (insert (pp property)))
+        (pp property (current-buffer)))
+      property-file)))
+
+(defun msvc-flags--load-property-file (db-name)
+  (let ((property-file (expand-file-name msvc-flags--property-file-name (msvc-flags--create-db-path db-name))))
+    (when (file-exists-p property-file)
+      (with-temp-buffer
+        (insert-file-contents property-file)
+        (goto-char (point-min))
+        (read (current-buffer))))))
 
 
 
@@ -270,7 +291,9 @@ attributes
 -optionals
 :parsing-buffer-delete-p
 :force-parse-p
+:dir-name-md5-p
 :sync-p
+:activate-name
 "
 
   (interactive)
@@ -288,6 +311,7 @@ attributes
         (toolset (plist-get args :toolset))
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
         (force-parse-p (plist-get args :force-parse-p))
+        (dir-name-md5-p (plist-get args :dir-name-md5-p))
         (sync-p (plist-get args :sync-p)))
 
     ;; file extension check
@@ -305,7 +329,7 @@ attributes
       (make-directory msvc-flags-db-root-path))
 
     (let* ((db-name (msvc-flags--create-db-name project-file platform configuration version toolset))
-           (db-path (msvc-flags--create-db-path db-name))
+           (db-path (msvc-flags--create-db-path (if dir-name-md5-p (md5 db-name) db-name)))
 
            (log-file (expand-file-name msvc-flags--db-log-cflags db-path))
            (parse-p (or force-parse-p (file-newer-than-file-p project-file log-file))))
@@ -328,6 +352,8 @@ attributes
       (setq msvc-flags--parsing-p t)
 
       (let* ((project-path (file-name-directory project-file))
+
+             (property (msvc-flags--create-project-property db-name))
 
              (msb-rsp-file (expand-file-name "cflags.rsp" db-path))
              (msb-target-file (expand-file-name msvc-flags--vcx-proj-name project-path))
@@ -352,6 +378,9 @@ attributes
         (unless (file-accessible-directory-p db-path)
           (make-directory db-path))
 
+        ;; save property of project
+        (msvc-flags--create-property-file db-path property force-parse-p)
+        
         ;; 強制パース時はrspに記述すべき構成に変化があったとみなして全て削除
         (when force-parse-p
           (msvc-env--remove-msb-rsp-files db-path))
@@ -435,6 +464,7 @@ attributes
 -optionals
 :parsing-buffer-delete-p
 :force-parse-p
+:dir-name-md5-p
 :sync-p
 "
 
@@ -504,10 +534,13 @@ attributes
          (db-dirs (directory-files msvc-flags-db-root-path nil db-name-pattern t))
          (count 0))
 
-    (cl-dolist (db-name db-dirs)
-      (when (not (eq ?\. (aref db-name 0)))
-        (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-db db-name))
-        (setq count (1+ count))))
+    (cl-dolist (dir-name db-dirs)
+      (when (not (eq ?\. (aref dir-name 0)))
+        (let* ((property (msvc-flags--load-property-file dir-name))
+               (db-name (plist-get property :db-name)))
+          (when db-name
+            (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-db dir-name))
+            (setq count (1+ count))))))
     count))
 
 

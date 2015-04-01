@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/27.01:39:17
+;;; last updated : 2015/03/29.18:21:11
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -276,6 +276,7 @@
 (defvar msvc-display-update-p t)
 
 (defvar msvc-display-allow-properties '(
+                                        ;; :activate-name
                                         :project-buffer
                                         :solution-file
                                         :project-file
@@ -969,6 +970,7 @@
 :cedet-spp-table
 :flymake-manually-p
 :flymake-manually-back-end
+:db-path
 "
   (interactive)
 
@@ -996,6 +998,10 @@
     ;; check toolset
     (unless (plist-get args :toolset)
       (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
+    
+    ;; check db-path
+    (unless (plist-get args :db-path)
+      (setq args (plist-put args :db-path (msvc-flags--create-db-name project-file platform configuration (plist-get args :version) (plist-get args :toolset)))))
     
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
