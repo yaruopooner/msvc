@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/02.02:38:44
+;;; last updated : 2015/04/03.02:36:16
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -278,8 +278,8 @@
 ;; usage: the control usually use let bind.
 (defvar msvc-display-update-p t)
 
-(defvar msvc-display-allow-properties '(
-                                        ;; :db-path
+;; diplay allow & order
+(defvar msvc-display-allow-properties '(:db-path
                                         :project-buffer
                                         :solution-file
                                         :project-file
@@ -295,8 +295,8 @@
                                         :cedet-spp-table
                                         :flymake-manually-p
                                         :flymake-manually-back-end
-                                        :target-buffers
-                                        ))
+                                        :target-buffers))
+                                        
 
 
 
@@ -494,6 +494,22 @@
             (cl-dolist (property msvc-display-allow-properties)
               (let ((value (plist-get details property)))
                 (cond
+                 ((eq property :db-path)
+                  (insert
+                   (propertize (format "%-30s : " property)
+                               'directory nil
+                               ;; 'keymap msvc-mode-filter-map
+                               'mouse-face 'highlight)
+                   (propertize (format "%s" value)
+                               'directory nil
+                               ;; 'keymap msvc-mode-filter-map
+                               'face 'font-lock-keyword-face
+                               'mouse-face 'highlight)
+                   (propertize "\n"
+                               'directory nil
+                               ;; 'keymap msvc-mode-filter-map
+                               )
+                   ))
                  ((eq property :target-buffers)
                   (insert (format "%-30s :\n" property))
                   (cl-dolist (buffer value)
@@ -598,7 +614,6 @@
 (defun msvc--flymake-command-generator ()
   (interactive)
   (let* ((db-name msvc--source-code-belonging-db-name)
-         (db-path (msvc-flags--create-db-path db-name))
          (compile-file (flymake-init-create-temp-buffer-copy
                         'flymake-create-temp-inplace))
 
@@ -606,17 +621,18 @@
          (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags--create-project-path db-name)))
          (fix-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
 
-         (property (msvc-flags--create-project-property db-name))
-         (version (plist-get property :version))
-         (toolset (plist-get property :toolset))
+         (details (msvc--query-project db-name))
+         (db-path (plist-get details :db-path))
+         (version (plist-get details :version))
+         (toolset (plist-get details :toolset))
          (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
          (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
     ;; create rsp file
     (unless (file-exists-p msb-rsp-file)
-      (let* ((project-file (plist-get property :project-file))
-             (platform (plist-get property :platform))
-             (configuration (plist-get property :configuration))
+      (let* ((project-file (plist-get details :project-file))
+             (platform (plist-get details :platform))
+             (configuration (plist-get details :configuration))
 
              (logger-encoding "UTF-8")
              (project-path (file-name-directory project-file))
@@ -691,11 +707,11 @@
   (cl-case status
     (enable
      ;; backup value
-     (push ac-sources msvc--ac-sources-backup)
+     ;; (push ac-sources msvc--ac-sources-backup)
      (push ac-clang-cflags msvc--ac-clang-cflags-backup)
 
      ;; set database value
-     (setq ac-sources '(ac-source-clang-async))
+     ;; (setq ac-sources '(ac-source-clang-async))
      (setq ac-clang-cflags (msvc-flags-create-ac-clang-cflags db-name))
 
      ;; buffer modified > do activation
@@ -706,7 +722,7 @@
      (ac-clang-deactivate)
 
      ;; restore value
-     (setq ac-sources (pop msvc--ac-sources-backup))
+     ;; (setq ac-sources (pop msvc--ac-sources-backup))
      (setq ac-clang-cflags (pop msvc--ac-clang-cflags-backup)))))
 
 
@@ -975,7 +991,6 @@
 :cedet-spp-table
 :flymake-manually-p
 :flymake-manually-back-end
-:db-path
 "
   (interactive)
 
@@ -1045,7 +1060,7 @@
   ;; DBリストからプロジェクトマネージャーを生成
   (let* ((property (msvc-flags--create-project-property db-name))
 
-         ;; project basic information
+         ;; project basic information(from property)
          (project-buffer (format msvc--project-buffer-name-fmt db-name))
          (project-file (plist-get property :project-file))
          (platform (plist-get property :platform))
@@ -1053,13 +1068,14 @@
          (version (plist-get property :version))
          (toolset (plist-get property :toolset))
 
-         (solution-file (plist-get args :solution-file))
-
+         ;; project basic information(from args)
          (dir-name-md5-p (plist-get args :dir-name-md5-p))
          (dir-name (if dir-name-md5-p (md5 db-name) db-name))
          (db-path (msvc-flags--create-db-path dir-name))
 
-         ;; project allow feature
+         (solution-file (plist-get args :solution-file))
+
+         ;; project allow feature(from args)
          (allow-cedet-p (plist-get args :allow-cedet-p))
          (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
          (allow-flymake-p (plist-get args :allow-flymake-p))
@@ -1087,6 +1103,7 @@
     ;; value が最初はnilだとわかっていても変数を入れておかないと評価時におかしくなる・・
     ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
     (msvc--regist-project db-name `(
+                                    :db-path ,db-path
                                     :project-buffer ,project-buffer
                                     :solution-file ,solution-file
                                     :project-file ,project-file
@@ -1094,7 +1111,7 @@
                                     :configuration ,configuration
                                     :version ,version
                                     :toolset ,toolset
-                                    :db-path ,db-path
+                                    :dir-name-md5-p ,dir-name-md5-p
                                     :allow-cedet-p ,allow-cedet-p
                                     :allow-ac-clang-p ,allow-ac-clang-p
                                     :allow-flymake-p ,allow-flymake-p
@@ -1417,11 +1434,11 @@
              (solution-file (plist-get details :solution-file)))
         (if solution-file
             (let* ((target (or target "Build"))
+                   (db-path (plist-get details :db-path))
                    (platform (plist-get details :platform))
                    (configuration (plist-get details :configuration))
                    (version (plist-get details :version))
                    (toolset (plist-get details :toolset))
-                   (db-path (msvc-flags--create-db-path db-name))
 
                    (dst-file-base-name (file-name-nondirectory solution-file))
                    (log-file (expand-file-name (concat dst-file-base-name ".build.log") db-path))
