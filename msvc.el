@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/03.02:36:16
+;;; last updated : 2015/04/03.12:42:02
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.1.0
+;; Version: 1.2.0
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0"))
 
 ;; This file is part of MSVC.
@@ -109,7 +109,7 @@
 ;;                                       :flymake-manually-p nil)
 ;; 
 ;;   When the project is active , buffer with the appropriate project name will be created.
-;;   Project buffer name is based on the following format.
+;;   The project buffer name is based on the following format.
 ;;   *MSVC Project <`db-name`>*
 ;;   msvc-mode will be applied automatically when source code belonging to the project has been opened.
 ;;   msvc-mode has been applied buffer in the mode line MSVC`version`[platform|configuration] and will be displayed.
@@ -140,19 +140,21 @@
 ;;     Specifies the toolset of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
 ;;   - :dir-name-md5-p
-;;     
+;;     nil recommended.
+;;     If value is t, generate a database directory and file name by MD5.
+;;     This attribute solves a database absolute path longer than MAX_PATH(260 bytes).
 ;;   - :force-parse-p
 ;;     nil recommended. force parse and activate.
 ;;     It is primarily for debugging applications.
 ;;   - :allow-cedet-p
-;;     t Recommended. use the CEDET. 
+;;     t recommended. use the CEDET. 
 ;;     In the case of nil you will not be able to use the jump to include files.
 ;;   - :allow-ac-clang-p
-;;     t Recommended. 
+;;     t recommended. 
 ;;     If value is t, use the ac-clang.
 ;;     If value is nil, use the semantic.
 ;;   - :allow-flymake-p
-;;     t Recommended. use the flymake. syntax check by MSBuild.
+;;     t recommended. use the flymake. syntax check by MSBuild.
 ;;   - :cedet-root-path
 ;;     It is referenced only when the allow-cedet-p t.
 ;;     You specify the CEDET ede project base directory *.ede.
@@ -162,7 +164,7 @@
 ;;     at the same level or descendants you will need to be careful.  
 ;;     In this case you will need to specify a common parent directory such that the same hierarchy or descendants.
 ;;   - :cedet-spp-table
-;;     nil Recommended. 
+;;     nil recommended. 
 ;;     It is referenced only when the allow-cedet-p t.
 ;;     Word associative table that you want to replace when the semantic is to parse the source.
 ;;     It is a table replacing define which cannot parsed a semantic.
@@ -178,7 +180,7 @@
 ;;                          ("RESTRICT"           . ""))
 ;;     For details, refer to CEDET manual.
 ;;   - :flymake-manually-p
-;;     nil Recommended. 
+;;     nil recommended. 
 ;;     If value is t, manual syntax check only.
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
@@ -231,29 +233,29 @@
 
 
 
-(defconst msvc-version "1.1.0")
+(defconst msvc-version "1.2.0")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
 
 ;; active projects database
-(defvar msvc--active-projects nil)
+(defvar msvc--active-projects nil
+  "active project details")
 
 ;; '(db-name . 
-;;        (
-;;         (project-buffer  . project-buffer)
-;;         (project-file . project-file)
-;;         (platform . nil)
-;;         (configuration . nil)
-;;         (version . nil)
-;;         (toolset . nil)
-;;         (allow-cedet-p . t)
-;;         (allow-ac-clang-p . t)
-;;         (allow-flymake-p . t)
-;;         (cedet-spp-table . nil)
-;;         (target-buffers . ())
-;;         )
-;;        )
+;;         ((db-path . db-path)
+;;          (project-buffer  . project-buffer)
+;;          (project-file . project-file)
+;;          (platform . nil)
+;;          (configuration . nil)
+;;          (version . nil)
+;;          (toolset . nil)
+;;          (allow-cedet-p . t)
+;;          (allow-ac-clang-p . t)
+;;          (allow-flymake-p . t)
+;;          (cedet-spp-table . nil)
+;;          (target-buffers . ())
+;;         ))
 
 
 ;; the project name(per MSVC buffer)
