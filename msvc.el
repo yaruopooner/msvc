@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/03.12:42:02
+;;; last updated : 2015/04/04.20:56:47
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -99,7 +99,7 @@
 ;;                                       :configuration "Release" 
 ;;                                       :version "2013" 
 ;;                                       :toolset 'x86_amd64
-;;                                       :dir-name-md5-p nil
+;;                                       :md5-name-p nil
 ;;                                       :force-parse-p nil
 ;;                                       :allow-cedet-p t
 ;;                                       :allow-ac-clang-p t
@@ -139,7 +139,7 @@
 ;;   - :toolset
 ;;     Specifies the toolset of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
-;;   - :dir-name-md5-p
+;;   - :md5-name-p
 ;;     nil recommended.
 ;;     If value is t, generate a database directory and file name by MD5.
 ;;     This attribute solves a database absolute path longer than MAX_PATH(260 bytes).
@@ -289,7 +289,7 @@
                                         :configuration
                                         :version
                                         :toolset
-                                        :dir-name-md5-p
+                                        :md5-name-p
                                         :allow-cedet-p
                                         :allow-ac-clang-p
                                         :allow-flymake-p
@@ -621,12 +621,14 @@
 
          (cedet-file-name (cedet-directory-name-to-file-name compile-file))
          (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags--create-project-path db-name)))
-         (fix-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
+         (extract-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
 
          (details (msvc--query-project db-name))
          (db-path (plist-get details :db-path))
          (version (plist-get details :version))
          (toolset (plist-get details :toolset))
+         (md5-name-p (plist-get details :md5-name-p))
+         (fix-file-name (if md5-name-p (md5 extract-file-name) extract-file-name))
          (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
          (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
@@ -983,7 +985,7 @@
 -optionals
 :version
 :toolset
-:dir-name-md5-p
+:md5-name-p
 :force-parse-p
 :sync-p
 :allow-cedet-p
@@ -1071,8 +1073,8 @@
          (toolset (plist-get property :toolset))
 
          ;; project basic information(from args)
-         (dir-name-md5-p (plist-get args :dir-name-md5-p))
-         (dir-name (if dir-name-md5-p (md5 db-name) db-name))
+         (md5-name-p (plist-get args :md5-name-p))
+         (dir-name (if md5-name-p (md5 db-name) db-name))
          (db-path (msvc-flags--create-db-path dir-name))
 
          (solution-file (plist-get args :solution-file))
@@ -1113,7 +1115,7 @@
                                     :configuration ,configuration
                                     :version ,version
                                     :toolset ,toolset
-                                    :dir-name-md5-p ,dir-name-md5-p
+                                    :md5-name-p ,md5-name-p
                                     :allow-cedet-p ,allow-cedet-p
                                     :allow-ac-clang-p ,allow-ac-clang-p
                                     :allow-flymake-p ,allow-flymake-p

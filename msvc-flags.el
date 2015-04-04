@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/02.02:22:53
+;;; last updated : 2015/04/04.21:00:31
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -154,7 +154,6 @@
   (let ((property-file (expand-file-name msvc-flags--property-file-name (msvc-flags--create-db-path dir-name))))
     (when (or (not (file-exists-p property-file)) overwrite-p)
       (with-temp-file property-file
-        ;; (insert (pp property)))
         (pp property (current-buffer)))
       property-file)))
 
@@ -289,7 +288,7 @@ attributes
 :toolset
 
 -optionals
-:dir-name-md5-p
+:md5-name-p
 :parsing-buffer-delete-p
 :force-parse-p
 :sync-p
@@ -308,7 +307,7 @@ attributes
         (configuration (plist-get args :configuration))
         (version (plist-get args :version))
         (toolset (plist-get args :toolset))
-        (dir-name-md5-p (plist-get args :dir-name-md5-p))
+        (md5-name-p (plist-get args :md5-name-p))
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
@@ -328,7 +327,7 @@ attributes
       (make-directory msvc-flags-db-root-path))
 
     (let* ((db-name (msvc-flags--create-db-name project-file platform configuration version toolset))
-           (dir-name (if dir-name-md5-p (md5 db-name) db-name))
+           (dir-name (if md5-name-p (md5 db-name) db-name))
            (db-path (msvc-flags--create-db-path dir-name))
 
            (log-file (expand-file-name msvc-flags--db-log-cflags db-path))
@@ -462,7 +461,7 @@ attributes
 :toolset
 
 -optionals
-:dir-name-md5-p
+:md5-name-p
 :parsing-buffer-delete-p
 :force-parse-p
 :sync-p
