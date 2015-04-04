@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/04.20:56:47
+;;; last updated : 2015/04/05.01:45:53
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -375,10 +375,10 @@
 ;; for Project Buffer keymap
 (defvar msvc-mode-filter-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET") 'msvc--keyboard-visit-buffer)
-    (define-key map (kbd "C-z") 'msvc--keyboard-visit-buffer-other-window)
+    (define-key map (kbd "RET") 'msvc--keyboard-visit-target)
+    (define-key map (kbd "C-z") 'msvc--keyboard-visit-target-other-window)
     ;; (define-key map [(mouse-1)] 'ibuffer-mouse-toggle-mark)
-    (define-key map [(mouse-1)] 'msvc--mouse-visit-buffer)
+    (define-key map [(mouse-1)] 'msvc--mouse-visit-target)
     ;; (define-key map [down-mouse-3] 'ibuffer-mouse-popup-menu)
     map))
 
@@ -457,28 +457,49 @@
       (set-window-buffer target-window buffer))))
 
 (defun msvc--visit-buffer (point switch-function)
-  (let* ((target-buffer (get-text-property point 'buffer)))
+  (let* ((target-buffer (get-text-property point 'value)))
     (if target-buffer
         (apply switch-function target-buffer nil)
       (error "buffer no present"))))
 
-(defun msvc--keyboard-visit-buffer ()
+(defun msvc--visit-path (point switch-function)
+  (let* ((target-path (get-text-property point 'value)))
+    (if target-path
+        (apply switch-function target-path nil)
+      (error "path no present"))))
+
+
+(defun msvc--keyboard-visit-target ()
   "Toggle the display status of the filter group on this line."
   (interactive)
-  (msvc--visit-buffer (point) 'switch-to-buffer))
 
-(defun msvc--keyboard-visit-buffer-other-window ()
+  (cl-case (get-text-property (point) 'target)
+    (buffer
+     (msvc--visit-buffer (point) 'switch-to-buffer))
+    (path
+     (msvc--visit-path (point) 'find-file))))
+     
+
+(defun msvc--keyboard-visit-target-other-window ()
   "Toggle the display status of the filter group on this line."
   (interactive)
-  (msvc--visit-buffer (point) 'msvc--split-window))
 
-(defun msvc--mouse-visit-buffer (event)
+  (cl-case (get-text-property (point) 'target)
+    (buffer
+     (msvc--visit-buffer (point) 'msvc--split-window))
+    (path
+     (msvc--visit-path (point) 'find-file-other-window))))
+    
+
+(defun msvc--mouse-visit-target (event)
   "Toggle the display status of the filter group chosen with the mouse."
   (interactive "e")
-  (msvc--visit-buffer (save-excursion
-                        (mouse-set-point event)
-                        (point))
-                      'switch-to-buffer))
+
+  (cl-case (get-text-property (point) 'target)
+    (buffer
+     (msvc--visit-buffer (point) 'switch-to-buffer))
+    (path
+     (msvc--visit-path (point) 'find-file))))
 
 
 
@@ -499,17 +520,20 @@
                  ((eq property :db-path)
                   (insert
                    (propertize (format "%-30s : " property)
-                               'directory nil
-                               ;; 'keymap msvc-mode-filter-map
+                               'target 'path
+                               'value value
+                               'keymap msvc-mode-filter-map
                                'mouse-face 'highlight)
                    (propertize (format "%s" value)
-                               'directory nil
-                               ;; 'keymap msvc-mode-filter-map
+                               'target 'path
+                               'value value
+                               'keymap msvc-mode-filter-map
                                'face 'font-lock-keyword-face
                                'mouse-face 'highlight)
                    (propertize "\n"
-                               'directory nil
-                               ;; 'keymap msvc-mode-filter-map
+                               'target 'path
+                               'value value
+                               'keymap msvc-mode-filter-map
                                )
                    ))
                  ((eq property :target-buffers)
@@ -517,16 +541,19 @@
                   (cl-dolist (buffer value)
                     (insert
                      (propertize (format " -%-28s : " "buffer-name")
-                                 'buffer buffer
+                                 'target 'buffer
+                                 'value buffer
                                  'keymap msvc-mode-filter-map
                                  'mouse-face 'highlight)
                      (propertize (format "%-30s : %s" buffer (buffer-file-name buffer))
-                                 'buffer buffer
+                                 'target 'buffer
+                                 'value buffer
                                  'keymap msvc-mode-filter-map
                                  'face 'font-lock-keyword-face
                                  'mouse-face 'highlight)
                      (propertize "\n"
-                                 'buffer buffer
+                                 'target 'buffer
+                                 'value buffer
                                  'keymap msvc-mode-filter-map)
                      )))
                  (t
