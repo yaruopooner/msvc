@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2015/03/27.01:46:52
+;;; last updated : 2015/04/04.21:35:21
 
 
 ;; (setq msvc-solution-build-report-display-timing 'after)
@@ -15,6 +15,7 @@
 ;;                                     :platform "x64" :configuration "Release" 
 ;;                                     :version "2013"
 ;;                                     :toolset "amd64"
+;;                                     :md5-name-p nil
 ;;                                     :force-parse-p nil
 ;;                                     :allow-cedet-p t
 ;;                                     :allow-ac-clang-p t
@@ -29,6 +30,7 @@
 ;;                                     :platform "x64" :configuration "Release" 
 ;;                                     :version "2010"
 ;;                                     :toolset "x86_amd64"
+;;                                     :md5-name-p nil
 ;;                                     :force-parse-p nil
 ;;                                     :allow-cedet-p t
 ;;                                     :allow-ac-clang-p t

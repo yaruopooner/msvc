@@ -294,6 +294,8 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                                         :platform "x64"
                                         :configuration "Release" 
                                         :version "2013" 
+                                        :toolset "x86_amd64"
+                                        :md5-name-p nil
                                         :force-parse-p nil
                                         :allow-cedet-p t
                                         :allow-ac-clang-p t
@@ -336,6 +338,15 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     指定しない or nil場合、msvc-env-default-use-versionの値がセットされる。  
     msvc-env-default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。  
     msvc-initialize実行後にmsvc-env-default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
+-   `:toolset`  
+    コンパイラプラットフォームを指定。  
+    指定は文字列で行う。シンボルではないので注意。  
+    指定しない or nil場合、msvc-env-default-use-toolsetの値がセットされる。
+-   `:md5-name-p`  
+    nil 推奨  
+    t を設定した場合、下記制限に抵触するパスをmsvcで扱えるようにパス名をMD5変換し、衝突しない固定長名として扱う。  
+    パース対象のプロジェクト名を含む絶対パスやパース後のデータベース名を含む絶対パスがMAX\_PATH(260文字)を超える場合はシェル上で扱えなくなる。  
+    NTFSのUNICODEパスは32kBまで使用可能だが、shell(cmd.exe)上で扱えるのはMAX\_PATHが限度となる。
 -   `:force-parse-p`  
     nil 推奨  
     すでにパース済みのプロジェクトであっても強制的にパースする。  

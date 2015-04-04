@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/27.01:39:17
+;;; last updated : 2015/04/05.01:45:53
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.1.0
+;; Version: 1.2.0
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0"))
 
 ;; This file is part of MSVC.
@@ -99,6 +99,7 @@
 ;;                                       :configuration "Release" 
 ;;                                       :version "2013" 
 ;;                                       :toolset 'x86_amd64
+;;                                       :md5-name-p nil
 ;;                                       :force-parse-p nil
 ;;                                       :allow-cedet-p t
 ;;                                       :allow-ac-clang-p t
@@ -108,7 +109,7 @@
 ;;                                       :flymake-manually-p nil)
 ;; 
 ;;   When the project is active , buffer with the appropriate project name will be created.
-;;   Project buffer name is based on the following format.
+;;   The project buffer name is based on the following format.
 ;;   *MSVC Project <`db-name`>*
 ;;   msvc-mode will be applied automatically when source code belonging to the project has been opened.
 ;;   msvc-mode has been applied buffer in the mode line MSVC`version`[platform|configuration] and will be displayed.
@@ -138,18 +139,22 @@
 ;;   - :toolset
 ;;     Specifies the toolset of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
+;;   - :md5-name-p
+;;     nil recommended.
+;;     If value is t, generate a database directory and file name by MD5.
+;;     This attribute solves a database absolute path longer than MAX_PATH(260 bytes).
 ;;   - :force-parse-p
 ;;     nil recommended. force parse and activate.
 ;;     It is primarily for debugging applications.
 ;;   - :allow-cedet-p
-;;     t Recommended. use the CEDET. 
+;;     t recommended. use the CEDET. 
 ;;     In the case of nil you will not be able to use the jump to include files.
 ;;   - :allow-ac-clang-p
-;;     t Recommended. 
+;;     t recommended. 
 ;;     If value is t, use the ac-clang.
 ;;     If value is nil, use the semantic.
 ;;   - :allow-flymake-p
-;;     t Recommended. use the flymake. syntax check by MSBuild.
+;;     t recommended. use the flymake. syntax check by MSBuild.
 ;;   - :cedet-root-path
 ;;     It is referenced only when the allow-cedet-p t.
 ;;     You specify the CEDET ede project base directory *.ede.
@@ -159,7 +164,7 @@
 ;;     at the same level or descendants you will need to be careful.  
 ;;     In this case you will need to specify a common parent directory such that the same hierarchy or descendants.
 ;;   - :cedet-spp-table
-;;     nil Recommended. 
+;;     nil recommended. 
 ;;     It is referenced only when the allow-cedet-p t.
 ;;     Word associative table that you want to replace when the semantic is to parse the source.
 ;;     It is a table replacing define which cannot parsed a semantic.
@@ -175,7 +180,7 @@
 ;;                          ("RESTRICT"           . ""))
 ;;     For details, refer to CEDET manual.
 ;;   - :flymake-manually-p
-;;     nil Recommended. 
+;;     nil recommended. 
 ;;     If value is t, manual syntax check only.
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
@@ -228,29 +233,29 @@
 
 
 
-(defconst msvc-version "1.1.0")
+(defconst msvc-version "1.2.0")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
 
 ;; active projects database
-(defvar msvc--active-projects nil)
+(defvar msvc--active-projects nil
+  "active project details")
 
 ;; '(db-name . 
-;;        (
-;;         (project-buffer  . project-buffer)
-;;         (project-file . project-file)
-;;         (platform . nil)
-;;         (configuration . nil)
-;;         (version . nil)
-;;         (toolset . nil)
-;;         (allow-cedet-p . t)
-;;         (allow-ac-clang-p . t)
-;;         (allow-flymake-p . t)
-;;         (cedet-spp-table . nil)
-;;         (target-buffers . ())
-;;         )
-;;        )
+;;         ((db-path . db-path)
+;;          (project-buffer  . project-buffer)
+;;          (project-file . project-file)
+;;          (platform . nil)
+;;          (configuration . nil)
+;;          (version . nil)
+;;          (toolset . nil)
+;;          (allow-cedet-p . t)
+;;          (allow-ac-clang-p . t)
+;;          (allow-flymake-p . t)
+;;          (cedet-spp-table . nil)
+;;          (target-buffers . ())
+;;         ))
 
 
 ;; the project name(per MSVC buffer)
@@ -275,7 +280,8 @@
 ;; usage: the control usually use let bind.
 (defvar msvc-display-update-p t)
 
-(defvar msvc-display-allow-properties '(
+;; diplay allow & order
+(defvar msvc-display-allow-properties '(:db-path
                                         :project-buffer
                                         :solution-file
                                         :project-file
@@ -283,6 +289,7 @@
                                         :configuration
                                         :version
                                         :toolset
+                                        :md5-name-p
                                         :allow-cedet-p
                                         :allow-ac-clang-p
                                         :allow-flymake-p
@@ -290,8 +297,8 @@
                                         :cedet-spp-table
                                         :flymake-manually-p
                                         :flymake-manually-back-end
-                                        :target-buffers
-                                        ))
+                                        :target-buffers))
+                                        
 
 
 
@@ -368,10 +375,10 @@
 ;; for Project Buffer keymap
 (defvar msvc-mode-filter-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET") 'msvc--keyboard-visit-buffer)
-    (define-key map (kbd "C-z") 'msvc--keyboard-visit-buffer-other-window)
+    (define-key map (kbd "RET") 'msvc--keyboard-visit-target)
+    (define-key map (kbd "C-z") 'msvc--keyboard-visit-target-other-window)
     ;; (define-key map [(mouse-1)] 'ibuffer-mouse-toggle-mark)
-    (define-key map [(mouse-1)] 'msvc--mouse-visit-buffer)
+    (define-key map [(mouse-1)] 'msvc--mouse-visit-target)
     ;; (define-key map [down-mouse-3] 'ibuffer-mouse-popup-menu)
     map))
 
@@ -450,28 +457,49 @@
       (set-window-buffer target-window buffer))))
 
 (defun msvc--visit-buffer (point switch-function)
-  (let* ((target-buffer (get-text-property point 'buffer)))
+  (let* ((target-buffer (get-text-property point 'value)))
     (if target-buffer
         (apply switch-function target-buffer nil)
       (error "buffer no present"))))
 
-(defun msvc--keyboard-visit-buffer ()
+(defun msvc--visit-path (point switch-function)
+  (let* ((target-path (get-text-property point 'value)))
+    (if target-path
+        (apply switch-function target-path nil)
+      (error "path no present"))))
+
+
+(defun msvc--keyboard-visit-target ()
   "Toggle the display status of the filter group on this line."
   (interactive)
-  (msvc--visit-buffer (point) 'switch-to-buffer))
 
-(defun msvc--keyboard-visit-buffer-other-window ()
+  (cl-case (get-text-property (point) 'target)
+    (buffer
+     (msvc--visit-buffer (point) 'switch-to-buffer))
+    (path
+     (msvc--visit-path (point) 'find-file))))
+     
+
+(defun msvc--keyboard-visit-target-other-window ()
   "Toggle the display status of the filter group on this line."
   (interactive)
-  (msvc--visit-buffer (point) 'msvc--split-window))
 
-(defun msvc--mouse-visit-buffer (event)
+  (cl-case (get-text-property (point) 'target)
+    (buffer
+     (msvc--visit-buffer (point) 'msvc--split-window))
+    (path
+     (msvc--visit-path (point) 'find-file-other-window))))
+    
+
+(defun msvc--mouse-visit-target (event)
   "Toggle the display status of the filter group chosen with the mouse."
   (interactive "e")
-  (msvc--visit-buffer (save-excursion
-                        (mouse-set-point event)
-                        (point))
-                      'switch-to-buffer))
+
+  (cl-case (get-text-property (point) 'target)
+    (buffer
+     (msvc--visit-buffer (point) 'switch-to-buffer))
+    (path
+     (msvc--visit-path (point) 'find-file))))
 
 
 
@@ -489,21 +517,43 @@
             (cl-dolist (property msvc-display-allow-properties)
               (let ((value (plist-get details property)))
                 (cond
+                 ((eq property :db-path)
+                  (insert
+                   (propertize (format "%-30s : " property)
+                               'target 'path
+                               'value value
+                               'keymap msvc-mode-filter-map
+                               'mouse-face 'highlight)
+                   (propertize (format "%s" value)
+                               'target 'path
+                               'value value
+                               'keymap msvc-mode-filter-map
+                               'face 'font-lock-keyword-face
+                               'mouse-face 'highlight)
+                   (propertize "\n"
+                               'target 'path
+                               'value value
+                               'keymap msvc-mode-filter-map
+                               )
+                   ))
                  ((eq property :target-buffers)
                   (insert (format "%-30s :\n" property))
                   (cl-dolist (buffer value)
                     (insert
                      (propertize (format " -%-28s : " "buffer-name")
-                                 'buffer buffer
+                                 'target 'buffer
+                                 'value buffer
                                  'keymap msvc-mode-filter-map
                                  'mouse-face 'highlight)
                      (propertize (format "%-30s : %s" buffer (buffer-file-name buffer))
-                                 'buffer buffer
+                                 'target 'buffer
+                                 'value buffer
                                  'keymap msvc-mode-filter-map
                                  'face 'font-lock-keyword-face
                                  'mouse-face 'highlight)
                      (propertize "\n"
-                                 'buffer buffer
+                                 'target 'buffer
+                                 'value buffer
                                  'keymap msvc-mode-filter-map)
                      )))
                  (t
@@ -593,25 +643,27 @@
 (defun msvc--flymake-command-generator ()
   (interactive)
   (let* ((db-name msvc--source-code-belonging-db-name)
-         (db-path (msvc-flags--create-db-path db-name))
          (compile-file (flymake-init-create-temp-buffer-copy
                         'flymake-create-temp-inplace))
 
          (cedet-file-name (cedet-directory-name-to-file-name compile-file))
          (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags--create-project-path db-name)))
-         (fix-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
+         (extract-file-name (substring cedet-file-name (1- (abs (compare-strings cedet-project-path nil nil cedet-file-name nil nil)))))
 
-         (property (msvc-flags--create-project-property db-name))
-         (version (plist-get property :version))
-         (toolset (plist-get property :toolset))
+         (details (msvc--query-project db-name))
+         (db-path (plist-get details :db-path))
+         (version (plist-get details :version))
+         (toolset (plist-get details :toolset))
+         (md5-name-p (plist-get details :md5-name-p))
+         (fix-file-name (if md5-name-p (md5 extract-file-name) extract-file-name))
          (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
          (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
 
     ;; create rsp file
     (unless (file-exists-p msb-rsp-file)
-      (let* ((project-file (plist-get property :project-file))
-             (platform (plist-get property :platform))
-             (configuration (plist-get property :configuration))
+      (let* ((project-file (plist-get details :project-file))
+             (platform (plist-get details :platform))
+             (configuration (plist-get details :configuration))
 
              (logger-encoding "UTF-8")
              (project-path (file-name-directory project-file))
@@ -686,11 +738,11 @@
   (cl-case status
     (enable
      ;; backup value
-     (push ac-sources msvc--ac-sources-backup)
+     ;; (push ac-sources msvc--ac-sources-backup)
      (push ac-clang-cflags msvc--ac-clang-cflags-backup)
 
      ;; set database value
-     (setq ac-sources '(ac-source-clang-async))
+     ;; (setq ac-sources '(ac-source-clang-async))
      (setq ac-clang-cflags (msvc-flags-create-ac-clang-cflags db-name))
 
      ;; buffer modified > do activation
@@ -701,7 +753,7 @@
      (ac-clang-deactivate)
 
      ;; restore value
-     (setq ac-sources (pop msvc--ac-sources-backup))
+     ;; (setq ac-sources (pop msvc--ac-sources-backup))
      (setq ac-clang-cflags (pop msvc--ac-clang-cflags-backup)))))
 
 
@@ -960,6 +1012,7 @@
 -optionals
 :version
 :toolset
+:md5-name-p
 :force-parse-p
 :sync-p
 :allow-cedet-p
@@ -1038,7 +1091,7 @@
   ;; DBリストからプロジェクトマネージャーを生成
   (let* ((property (msvc-flags--create-project-property db-name))
 
-         ;; project basic information
+         ;; project basic information(from property)
          (project-buffer (format msvc--project-buffer-name-fmt db-name))
          (project-file (plist-get property :project-file))
          (platform (plist-get property :platform))
@@ -1046,9 +1099,14 @@
          (version (plist-get property :version))
          (toolset (plist-get property :toolset))
 
+         ;; project basic information(from args)
+         (md5-name-p (plist-get args :md5-name-p))
+         (dir-name (if md5-name-p (md5 db-name) db-name))
+         (db-path (msvc-flags--create-db-path dir-name))
+
          (solution-file (plist-get args :solution-file))
 
-         ;; project allow feature
+         ;; project allow feature(from args)
          (allow-cedet-p (plist-get args :allow-cedet-p))
          (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
          (allow-flymake-p (plist-get args :allow-flymake-p))
@@ -1076,6 +1134,7 @@
     ;; value が最初はnilだとわかっていても変数を入れておかないと評価時におかしくなる・・
     ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
     (msvc--regist-project db-name `(
+                                    :db-path ,db-path
                                     :project-buffer ,project-buffer
                                     :solution-file ,solution-file
                                     :project-file ,project-file
@@ -1083,6 +1142,7 @@
                                     :configuration ,configuration
                                     :version ,version
                                     :toolset ,toolset
+                                    :md5-name-p ,md5-name-p
                                     :allow-cedet-p ,allow-cedet-p
                                     :allow-ac-clang-p ,allow-ac-clang-p
                                     :allow-flymake-p ,allow-flymake-p
@@ -1405,11 +1465,11 @@
              (solution-file (plist-get details :solution-file)))
         (if solution-file
             (let* ((target (or target "Build"))
+                   (db-path (plist-get details :db-path))
                    (platform (plist-get details :platform))
                    (configuration (plist-get details :configuration))
                    (version (plist-get details :version))
                    (toolset (plist-get details :toolset))
-                   (db-path (msvc-flags--create-db-path db-name))
 
                    (dst-file-base-name (file-name-nondirectory solution-file))
                    (log-file (expand-file-name (concat dst-file-base-name ".build.log") db-path))
