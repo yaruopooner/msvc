@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/27.01:18:01
+;;; last updated : 2015/03/30.02:18:30
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -29,7 +29,14 @@
 ;; Microsoft Visual C/C++ Product information
 (defvar msvc-env-product-detected-p nil)
 (defvar msvc-env--product-version nil)
-(defvar msvc-env-default-use-version nil)
+(defvar msvc-env-default-use-version nil
+  "MSVC default use version string
+`2013'
+`2012'
+`2010'
+`2008'
+If the value is nil, latest version will be used.
+")
 
 (defconst msvc-env--product-details '((:version "2015" :env-var "VS130COMNTOOLS")
                                       (:version "2013" :env-var "VS120COMNTOOLS")
@@ -41,7 +48,8 @@
 ;; Microsoft Visual C/C++ Toolset Shell List &  Toolset type
 (defvar msvc-env--toolset-shells nil)
 (defvar msvc-env-default-use-toolset "x86_amd64"
-  " MSVC toolset shell argument string
+  "MSVC toolset shell argument string
+toolset-name   : support product
 `x86'          : (2013/2012)
 `x86_amd64'    : (2013/2012)
 `x86_arm'      : (2013/2012)
