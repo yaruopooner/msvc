@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/02/06.02:38:41
+# last updated : 2015/04/05.02:45:28
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
@@ -13,9 +13,13 @@
 
 
 * What's New?
+** MSVC 2015-04-05 was released
+*** new feature
+    - The database name generate by MD5.
+
 ** MSVC 2015-02-03 was released
 *** bug fix
-    - small bug fixes.
+    - Small bug fixes.
 
 ** MSVC 2014-06-09 was released
 *** new feature
@@ -25,8 +29,8 @@
 *** new feature
     - Visual Studio of different versions became able to coexist.
 *** bug fix
-    - small bug fixes.
+    - Small bug fixes.
 
 ** MSVC 2013-09-30 was released
 *** new feature
-    first release
+    First release
