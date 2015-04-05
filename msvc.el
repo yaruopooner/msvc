@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/05.01:45:53
+;;; last updated : 2015/04/05.23:07:07
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -9,7 +9,7 @@
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
 ;; Version: 1.2.0
-;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.0.0"))
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.1.1"))
 
 ;; This file is part of MSVC.
 
@@ -299,6 +299,24 @@
                                         :flymake-manually-back-end
                                         :target-buffers))
                                         
+;; diplay properties
+(defvar msvc--display-property-types '(:db-path path
+                                       :project-buffer value
+                                       :solution-file path
+                                       :project-file path
+                                       :platform value
+                                       :configuration value
+                                       :version value
+                                       :toolset value
+                                       :md5-name-p value
+                                       :allow-cedet-p value
+                                       :allow-ac-clang-p value
+                                       :allow-flymake-p value
+                                       :cedet-root-path path
+                                       :cedet-spp-table value
+                                       :flymake-manually-p value
+                                       :flymake-manually-back-end value
+                                       :target-buffers buffer))
 
 
 
@@ -515,49 +533,27 @@
             (goto-char (point-min))
 
             (cl-dolist (property msvc-display-allow-properties)
-              (let ((value (plist-get details property)))
-                (cond
-                 ((eq property :db-path)
-                  (insert
-                   (propertize (format "%-30s : " property)
-                               'target 'path
-                               'value value
-                               'keymap msvc-mode-filter-map
-                               'mouse-face 'highlight)
-                   (propertize (format "%s" value)
-                               'target 'path
-                               'value value
-                               'keymap msvc-mode-filter-map
-                               'face 'font-lock-keyword-face
-                               'mouse-face 'highlight)
-                   (propertize "\n"
-                               'target 'path
-                               'value value
-                               'keymap msvc-mode-filter-map
-                               )
-                   ))
-                 ((eq property :target-buffers)
-                  (insert (format "%-30s :\n" property))
-                  (cl-dolist (buffer value)
-                    (insert
-                     (propertize (format " -%-28s : " "buffer-name")
-                                 'target 'buffer
-                                 'value buffer
-                                 'keymap msvc-mode-filter-map
-                                 'mouse-face 'highlight)
-                     (propertize (format "%-30s : %s" buffer (buffer-file-name buffer))
-                                 'target 'buffer
-                                 'value buffer
-                                 'keymap msvc-mode-filter-map
-                                 'face 'font-lock-keyword-face
-                                 'mouse-face 'highlight)
-                     (propertize "\n"
-                                 'target 'buffer
-                                 'value buffer
-                                 'keymap msvc-mode-filter-map)
-                     )))
-                 (t
-                  (insert (format "%-30s : %s\n" property value))))))))))))
+              (let ((type (plist-get msvc--display-property-types property))
+                    (value (plist-get details property))
+                    (start-pos (point)))
+                (cl-case type
+                  (path
+                   (insert
+                    (format "%-30s : " property)
+                    (propertize (format "%s" value) 'face 'font-lock-keyword-face)
+                    "\n")
+                   (add-text-properties start-pos (1- (point)) `(target ,type value ,value keymap ,msvc-mode-filter-map mouse-face highlight)))
+                  (buffer
+                   (insert (format "%-30s :\n" property))
+                   (cl-dolist (buffer value)
+                     (setq start-pos (point))
+                     (insert
+                      (format " -%-28s : " "buffer-name")
+                      (propertize (format "%-30s : %s" buffer (buffer-file-name buffer)) 'face 'font-lock-keyword-face)
+                      "\n")
+                     (add-text-properties start-pos (1- (point)) `(target ,type value ,buffer keymap ,msvc-mode-filter-map mouse-face highlight))))
+                  (value
+                   (insert (format "%-30s : %s\n" property value))))))))))))
 
 
 
