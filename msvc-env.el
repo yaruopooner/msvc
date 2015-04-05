@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/06.00:55:05
+;;; last updated : 2015/04/06.01:16:25
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -50,14 +50,14 @@ If the value is nil, latest version will be used.
 (defvar msvc-env-default-use-toolset "x86_amd64"
   "MSVC toolset shell argument string
 toolset-name   : support product
-`x86'          : (2013/2012)
-`x86_amd64'    : (2013/2012)
-`x86_arm'      : (2013/2012)
+`x86'          : (2015/2013/2012)
+`x86_amd64'    : (2015/2013/2012)
+`x86_arm'      : (2015/2013/2012)
 `x86_ia64'     : (2010)
-`amd64'        : (2013/2012)
-`amd64_x86'    : (2013)
-`amd64_arm'    : (2013)
-`arm'          : (2013/2012)
+`amd64'        : (2015/2013/2012)
+`amd64_x86'    : (2015/2013)
+`amd64_arm'    : (2015/2013)
+`arm'          : (2015/2013/2012)
 `ia64'         : (2010)
 see this page.
 https://msdn.microsoft.com/library/f2ccy3wt.aspx
