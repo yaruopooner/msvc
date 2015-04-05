@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/03/30.02:18:30
+;;; last updated : 2015/04/06.00:55:05
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -38,7 +38,7 @@
 If the value is nil, latest version will be used.
 ")
 
-(defconst msvc-env--product-details '((:version "2015" :env-var "VS130COMNTOOLS")
+(defconst msvc-env--product-details '((:version "2015" :env-var "VS140COMNTOOLS")
                                       (:version "2013" :env-var "VS120COMNTOOLS")
                                       (:version "2012" :env-var "VS110COMNTOOLS")
                                       (:version "2010" :env-var "VS100COMNTOOLS")
