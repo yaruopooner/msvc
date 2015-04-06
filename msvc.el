@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/05.23:07:07
+;;; last updated : 2015/04/07.02:42:28
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -634,6 +634,23 @@
     clang
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
+
+
+;; (defvar-local msvc--syntax-check-suspend-p nil)
+;; (defun msvc--syntax-check-suspend ()
+;;   (unless msvc--syntax-check-suspend-p
+;;     ;; (assoc-default 'flymake-mode (buffer-local-variables)
+;;     (flymake-mode-off)
+;;     (setq msvc--syntax-check-suspend-p t)))
+
+
+;; (defun msvc--syntax-check-resume ()
+;;   (when msvc--syntax-check-suspend-p
+;;     (flymake-mode-on)
+;;     (setq msvc--syntax-check-suspend-p nil)))
+
+;; (add-hook 'yas-before-expand-snippet-hook 'msvc--syntax-check-suspend nil t)
+;; (add-hook 'yas-after-exit-snippet-hook 'msvc--syntax-check-resume nil t)
 
 
 (defun msvc--flymake-command-generator ()
