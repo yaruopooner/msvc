@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/07.02:42:28
+;;; last updated : 2015/04/07.12:09:47
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -636,21 +636,19 @@
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
 
 
-;; (defvar-local msvc--syntax-check-suspend-p nil)
-;; (defun msvc--syntax-check-suspend ()
-;;   (unless msvc--syntax-check-suspend-p
-;;     ;; (assoc-default 'flymake-mode (buffer-local-variables)
-;;     (flymake-mode-off)
-;;     (setq msvc--syntax-check-suspend-p t)))
+(defvar-local msvc--suspend-syntax-check-p nil)
 
+(defun msvc--suspend-syntax-check ()
+  (unless msvc--suspend-syntax-check-p
+    ;; (assoc-default 'flymake-mode (buffer-local-variables)
+    (flymake-mode-off)
+    (setq msvc--suspend-syntax-check-p t)))
 
-;; (defun msvc--syntax-check-resume ()
-;;   (when msvc--syntax-check-suspend-p
-;;     (flymake-mode-on)
-;;     (setq msvc--syntax-check-suspend-p nil)))
-
-;; (add-hook 'yas-before-expand-snippet-hook 'msvc--syntax-check-suspend nil t)
-;; (add-hook 'yas-after-exit-snippet-hook 'msvc--syntax-check-resume nil t)
+(defun msvc--resume-syntax-check ()
+  (when msvc--suspend-syntax-check-p
+    (flymake-mode-on)
+    ;; (msvc-mode-feature-manually-flymake)
+    (setq msvc--suspend-syntax-check-p nil)))
 
 
 (defun msvc--flymake-command-generator ()
@@ -877,6 +875,11 @@
        (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc--flymake-err-line-patterns msvc--flymake-manually-back-end))
        ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
        (set (make-local-variable 'flymake-start-syntax-check-on-find-file) nil)
+
+       (when (featurep 'yasnippet)
+         (add-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check nil t)
+         (add-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check nil t))
+
        (unless manually-p
          (flymake-mode-on)))
       ;; (let ((flymake-start-syntax-check-on-find-file nil))
@@ -885,6 +888,11 @@
        (if manually-p
            (flymake-delete-own-overlays)
          (flymake-mode-off))
+
+       (when (featurep 'yasnippet)
+         (remove-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check t)
+         (remove-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check t))
+
        (setq msvc--flymake-back-end nil)
        (setq msvc--flymake-manually-back-end nil)
        (set (make-local-variable 'flymake-allowed-file-name-masks) (default-value 'flymake-allowed-file-name-masks))
