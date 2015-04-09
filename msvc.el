@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/07.12:09:47
+;;; last updated : 2015/04/09.11:48:31
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -639,15 +639,14 @@
 (defvar-local msvc--suspend-syntax-check-p nil)
 
 (defun msvc--suspend-syntax-check ()
-  (unless msvc--suspend-syntax-check-p
-    ;; (assoc-default 'flymake-mode (buffer-local-variables)
+  (when (and (not msvc--suspend-syntax-check-p) (assoc-default 'flymake-mode (buffer-local-variables)))
     (flymake-mode-off)
     (setq msvc--suspend-syntax-check-p t)))
 
 (defun msvc--resume-syntax-check ()
   (when msvc--suspend-syntax-check-p
     (flymake-mode-on)
-    ;; (msvc-mode-feature-manually-flymake)
+    (msvc-mode-feature-manually-flymake)
     (setq msvc--suspend-syntax-check-p nil)))
 
 
