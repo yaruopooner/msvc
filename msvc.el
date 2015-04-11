@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/09.11:48:31
+;;; last updated : 2015/04/11.02:55:38
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -666,8 +666,8 @@
          (toolset (plist-get details :toolset))
          (md5-name-p (plist-get details :md5-name-p))
          (fix-file-name (if md5-name-p (md5 extract-file-name) extract-file-name))
-         (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
-         (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
+         (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp.msvc") db-path))
+         (log-file (expand-file-name (concat fix-file-name ".flymake.log.msvc") db-path)))
 
     ;; create rsp file
     (unless (file-exists-p msb-rsp-file)
@@ -1492,10 +1492,10 @@
                    (toolset (plist-get details :toolset))
 
                    (dst-file-base-name (file-name-nondirectory solution-file))
-                   (log-file (expand-file-name (concat dst-file-base-name ".build.log") db-path))
+                   (log-file (expand-file-name (concat dst-file-base-name ".build.log.msvc") db-path))
                    (logger-encoding "UTF-8")
 
-                   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp") db-path))
+                   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp.msvc") db-path))
                    (msb-target-file solution-file)
                    (msb-flags (list
                                (msvc-env--create-msb-flags "/t:"

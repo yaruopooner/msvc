@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/06.01:24:02
+;;; last updated : 2015/04/12.02:43:24
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -141,7 +141,7 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
 
 
 (defun msvc-env--remove-msb-rsp-files (path)
-  (let* ((files (directory-files path t "\.rsp$")))
+  (let* ((files (directory-files path t "\.rsp\.msvc$")))
     (cl-dolist (file files)
       (delete-file file))))
 
