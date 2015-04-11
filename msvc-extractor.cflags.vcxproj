@@ -47,8 +47,8 @@
       <CFLAG Include="empty">
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
-        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM') OR ('$(Platform)' == 'ARM)">MachineARM</TargetMachine>
-        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineIA64') OR ('%(ImpLib.TargetMachine)' == 'MachineIA64') OR ('%(Link.TargetMachine)' == 'MachineIA64') OR ('$(Platform)' == 'Itanium)">MachineIA64</TargetMachine>
+        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM') OR ('$(Platform)' == 'ARM')">MachineARM</TargetMachine>
+        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineIA64') OR ('%(ImpLib.TargetMachine)' == 'MachineIA64') OR ('%(Link.TargetMachine)' == 'MachineIA64') OR ('$(Platform)' == 'Itanium')">MachineIA64</TargetMachine>
       </CFLAG>
 
 
