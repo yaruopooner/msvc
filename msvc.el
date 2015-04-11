@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/11.02:55:38
+;;; last updated : 2015/04/12.05:46:35
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -542,7 +542,8 @@
                     (format "%-30s : " property)
                     (propertize (format "%s" value) 'face 'font-lock-keyword-face)
                     "\n")
-                   (add-text-properties start-pos (1- (point)) `(target ,type value ,value keymap ,msvc-mode-filter-map mouse-face highlight)))
+                   (add-text-properties start-pos (1- (point)) `(mouse-face highlight))
+                   (add-text-properties start-pos (point) `(target ,type value ,value keymap ,msvc-mode-filter-map)))
                   (buffer
                    (insert (format "%-30s :\n" property))
                    (cl-dolist (buffer value)
@@ -551,7 +552,8 @@
                       (format " -%-28s : " "buffer-name")
                       (propertize (format "%-30s : %s" buffer (buffer-file-name buffer)) 'face 'font-lock-keyword-face)
                       "\n")
-                     (add-text-properties start-pos (1- (point)) `(target ,type value ,buffer keymap ,msvc-mode-filter-map mouse-face highlight))))
+                     (add-text-properties start-pos (1- (point)) `(mouse-face highlight))
+                     (add-text-properties start-pos (point) `(target ,type value ,buffer keymap ,msvc-mode-filter-map))))
                   (value
                    (insert (format "%-30s : %s\n" property value))))))))))))
 
