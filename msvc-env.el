@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/12.02:43:24
+;;; last updated : 2015/04/12.02:55:14
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -31,6 +31,7 @@
 (defvar msvc-env--product-version nil)
 (defvar msvc-env-default-use-version nil
   "MSVC default use version string
+`2015'
 `2013'
 `2012'
 `2010'

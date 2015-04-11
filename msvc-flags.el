@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/12.02:37:44
+;;; last updated : 2015/04/12.02:57:08
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -36,8 +36,8 @@
 (defconst msvc-flags--vcx-proj-file (expand-file-name msvc-flags--vcx-proj-name msvc-env--package-directory))
 
 
-(defconst msvc-flags--db-log-cflags "cflags.log.msvc")
 (defconst msvc-flags--db-rsp-cflags "cflags.rsp.msvc")
+(defconst msvc-flags--db-log-cflags "cflags.log.msvc")
 
 
 (defconst msvc-flags--compile-file-name "empty.cpp")
