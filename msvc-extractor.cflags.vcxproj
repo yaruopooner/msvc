@@ -189,9 +189,11 @@
     <Message Text="#CFLAG#:CFLAG_TargetSourceFiles:@(CFLAG_TargetSourceFiles)"/>
     <Message Text="#CFLAG#:CFLAG_TargetHeaderFiles:@(CFLAG_TargetHeaderFiles)"/>
     <Message Text="#CFLAG#:CFLAG_TargetFilesAbs:@(CFLAG_TargetFilesAbs)"/>
-
     <!-- CFLAG_* key end -->
+
     
+    <!-- <Message Text="#CFLAG#:ProjectConfiguration.Platform:%(ProjectConfiguration.Platform)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
+    <!-- <Message Text="#CFLAG#:ProjectConfiguration.Configuration:%(ProjectConfiguration.Configuration)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
   </Target>
  
   <!-- <PropertyGroup> -->
