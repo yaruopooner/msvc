@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/04.21:00:31
+;;; last updated : 2015/04/12.02:57:08
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -30,13 +30,14 @@
 
 
 ;; project file importer
-(defconst msvc-flags--property-file-name "property")
+(defconst msvc-flags--property-file-name "property.msvc")
 
 (defconst msvc-flags--vcx-proj-name "msvc-extractor.cflags.vcxproj")
 (defconst msvc-flags--vcx-proj-file (expand-file-name msvc-flags--vcx-proj-name msvc-env--package-directory))
 
 
-(defconst msvc-flags--db-log-cflags "cflags.log")
+(defconst msvc-flags--db-rsp-cflags "cflags.rsp.msvc")
+(defconst msvc-flags--db-log-cflags "cflags.log.msvc")
 
 
 (defconst msvc-flags--compile-file-name "empty.cpp")
@@ -354,7 +355,7 @@ attributes
 
              (property (msvc-flags--create-project-property db-name))
 
-             (msb-rsp-file (expand-file-name "cflags.rsp" db-path))
+             (msb-rsp-file (expand-file-name msvc-flags--db-rsp-cflags db-path))
              (msb-target-file (expand-file-name msvc-flags--vcx-proj-name project-path))
 
              (process-name msvc-flags--process-name)
@@ -394,10 +395,12 @@ attributes
         (unless (file-exists-p msb-rsp-file)
           (let* ((compile-file msvc-flags--compile-file)
                  (logger-vb-lv "diagnostic")
-                 (diagnostic-file (concat (file-name-sans-extension log-file) "-" logger-vb-lv ".log"))
+                 (diagnostic-file (concat (file-name-sans-extension log-file) "-" logger-vb-lv ".log.msvc"))
                  (logger-encoding "UTF-8")
 
                  (msb-flags (list
+                             ;; (msvc-env--create-msb-flags "/t:"
+                             ;;                             '(("%s" . "Clean;Build;FinalReport")))
                              (msvc-env--create-msb-flags "/p:"
                                                          `(("ImportProjectFile=%S"   .       ,project-file)
                                                            ("Platform=%S"            .       ,platform)

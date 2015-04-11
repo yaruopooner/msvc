@@ -45,9 +45,10 @@
 
       <!-- CFLAG_* item metadatas create, this metadata reference by CFLAG_* item's condition -->
       <CFLAG Include="empty">
-        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>
-        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM')">MachineARM</TargetMachine>
+        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
+        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM') OR ('$(Platform)' == 'ARM')">MachineARM</TargetMachine>
+        <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineIA64') OR ('%(ImpLib.TargetMachine)' == 'MachineIA64') OR ('%(Link.TargetMachine)' == 'MachineIA64') OR ('$(Platform)' == 'Itanium')">MachineIA64</TargetMachine>
       </CFLAG>
 
 
@@ -188,9 +189,11 @@
     <Message Text="#CFLAG#:CFLAG_TargetSourceFiles:@(CFLAG_TargetSourceFiles)"/>
     <Message Text="#CFLAG#:CFLAG_TargetHeaderFiles:@(CFLAG_TargetHeaderFiles)"/>
     <Message Text="#CFLAG#:CFLAG_TargetFilesAbs:@(CFLAG_TargetFilesAbs)"/>
-
     <!-- CFLAG_* key end -->
+
     
+    <!-- <Message Text="#CFLAG#:ProjectConfiguration.Platform:%(ProjectConfiguration.Platform)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
+    <!-- <Message Text="#CFLAG#:ProjectConfiguration.Configuration:%(ProjectConfiguration.Configuration)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
   </Target>
  
   <!-- <PropertyGroup> -->
@@ -209,4 +212,25 @@
 
   <!-- import original project file -->
   <Import Project="$(ImportProjectFile)" />
+
+  <!-- <ItemDefinitionGroup> -->
+  <!--   <Link> -->
+  <!--     <NoEntryPoint>true</NoEntryPoint> -->
+  <!--     <AdditionalOptions>/DLL</AdditionalOptions> -->
+  <!--     <AdditionalDependencies></AdditionalDependencies> -->
+  <!--   </Link> -->
+  <!-- </ItemDefinitionGroup> -->
+  <!-- <PropertyGroup Label="Configuration"> -->
+  <!--   <ConfigurationType>DynamicLibrary</ConfigurationType> -->
+  <!--   <PlatformToolset>v120</PlatformToolset> -->
+  <!-- </PropertyGroup> -->
+  <!-- <Target Name="FinalReport"> -->
+  <!--   <Message Text="Final Report"/> -->
+  <!--   <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)"/> -->
+  <!--   <Message Text="#CFLAG#:Midl.PreprocessorDefinitions:%(Midl.PreprocessorDefinitions)"/> -->
+  <!--   <Message Text="#CFLAG#:Midl.UndefinePreprocessorDefinitions:%(Midl.UndefinePreprocessorDefinitions)"/> -->
+  <!--   <Message Text="#CFLAG#:Lib.TargetMachine:%(Lib.TargetMachine)"/> -->
+  <!--   <Message Text="#CFLAG#:ImpLib.TargetMachine:%(ImpLib.TargetMachine)"/> -->
+  <!--   <Message Text="#CFLAG#:Link.TargetMachine:%(Link.TargetMachine)"/> -->
+  <!-- </Target> -->
 </Project>

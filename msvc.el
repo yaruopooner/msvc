@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/05.23:07:07
+;;; last updated : 2015/04/11.02:55:38
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -636,6 +636,20 @@
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
 
 
+(defvar-local msvc--suspend-syntax-check-p nil)
+
+(defun msvc--suspend-syntax-check ()
+  (when (and (not msvc--suspend-syntax-check-p) (assoc-default 'flymake-mode (buffer-local-variables)))
+    (flymake-mode-off)
+    (setq msvc--suspend-syntax-check-p t)))
+
+(defun msvc--resume-syntax-check ()
+  (when msvc--suspend-syntax-check-p
+    (flymake-mode-on)
+    (msvc-mode-feature-manually-flymake)
+    (setq msvc--suspend-syntax-check-p nil)))
+
+
 (defun msvc--flymake-command-generator ()
   (interactive)
   (let* ((db-name msvc--source-code-belonging-db-name)
@@ -652,8 +666,8 @@
          (toolset (plist-get details :toolset))
          (md5-name-p (plist-get details :md5-name-p))
          (fix-file-name (if md5-name-p (md5 extract-file-name) extract-file-name))
-         (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp") db-path))
-         (log-file (expand-file-name (concat fix-file-name ".flymake.log") db-path)))
+         (msb-rsp-file (expand-file-name (concat fix-file-name ".flymake.rsp.msvc") db-path))
+         (log-file (expand-file-name (concat fix-file-name ".flymake.log.msvc") db-path)))
 
     ;; create rsp file
     (unless (file-exists-p msb-rsp-file)
@@ -860,6 +874,11 @@
        (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc--flymake-err-line-patterns msvc--flymake-manually-back-end))
        ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
        (set (make-local-variable 'flymake-start-syntax-check-on-find-file) nil)
+
+       (when (featurep 'yasnippet)
+         (add-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check nil t)
+         (add-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check nil t))
+
        (unless manually-p
          (flymake-mode-on)))
       ;; (let ((flymake-start-syntax-check-on-find-file nil))
@@ -868,6 +887,11 @@
        (if manually-p
            (flymake-delete-own-overlays)
          (flymake-mode-off))
+
+       (when (featurep 'yasnippet)
+         (remove-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check t)
+         (remove-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check t))
+
        (setq msvc--flymake-back-end nil)
        (setq msvc--flymake-manually-back-end nil)
        (set (make-local-variable 'flymake-allowed-file-name-masks) (default-value 'flymake-allowed-file-name-masks))
@@ -1468,10 +1492,10 @@
                    (toolset (plist-get details :toolset))
 
                    (dst-file-base-name (file-name-nondirectory solution-file))
-                   (log-file (expand-file-name (concat dst-file-base-name ".build.log") db-path))
+                   (log-file (expand-file-name (concat dst-file-base-name ".build.log.msvc") db-path))
                    (logger-encoding "UTF-8")
 
-                   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp") db-path))
+                   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp.msvc") db-path))
                    (msb-target-file solution-file)
                    (msb-flags (list
                                (msvc-env--create-msb-flags "/t:"
