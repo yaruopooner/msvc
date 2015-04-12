@@ -72,7 +72,7 @@ Visual Studio プロジェクトファイルをパースすることにより、
 
 ## バージョンの異なるVisual Studio共存と利用<a id="sec-1-2" name="sec-1-2"></a>
 
-Visual Studio 2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも  
+Visual Studio 2015/2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも  
 msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。  
 これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。  
 
@@ -128,13 +128,13 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
     MSYS  
     CMD
 -   Microsoft Windows 64/32bit
--   Microsoft Visual Studio Professional 2015?/2013/2012/2010  
+-   Microsoft Visual Studio Professional 2015/2013/2012/2010  
     CL.exe/MSBuild.exe 等を使います
 
 # 必須パッケージ<a id="sec-3" name="sec-3"></a>
 
-Emacsで標準組み込み済みorインストールが必要なパッケージ  
-M-x list-packages でインストールした場合は自動インストールされます。  
+Emacsで標準組み込み済み&インストールが必要なパッケージ  
+msvcを M-x list-packages でインストールした場合は自動インストールされます。  
 手動インストールのみ以下のパッケージをインストールする必要があります。  
 
 -   CEDET(built-in)
@@ -175,8 +175,8 @@ M-x list-packages でインストールした場合は自動インストール�
         msvcはbashしか使わないので動作に問題はないでしょうが、  
         grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
 
--   Microsoft Visual Studio Professional 2013/2012/2010  
-    2013/2012/2010 64 bit のみ動作チェック済み
+-   Microsoft Visual Studio Professional  
+    2015/2013/2012/2010 のみ動作チェック済み
 
 -   SDK  
     下記SDKのサンプルプロジェクトでテスト。  
@@ -223,20 +223,9 @@ c:/emacs/64/emacs-24.3-20130503
 
 -   CEDET(built-in)
 -   flymake(built-in)
--   auto-complete  
-    M-x list-packages で入手
--   yasnippet  
-    M-x list-packages で入手
--   ac-clang  
-    M-x list-packages で入手  
-    emacs-clang-complete-asyncからforkして独自拡張したもの。  
-    
-    <https://github.com/Golevka/emacs-clang-complete-async>  
-    
-    オリジナルは list-packages で入手可能ですがmsvcでは動作しません。  
-    emacs-clang-complete-asyncではバッファ毎にプロセスを起動する仕様や  
-    libclang.aがVisual Studio向けでなかったので独自拡張になりました。  
-    詳細はac-clang側ドキュメントに記載。
+-   auto-complete
+-   yasnippet
+-   ac-clang
 
 必要最低限の設定が行えるサンプルファイルを添付しているので、  
 パッケージに関する自前設定がない人は添付ファイルをロードするなりコピペするなりしてください。  
@@ -344,7 +333,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     指定しない or nil場合、msvc-env-default-use-toolsetの値がセットされる。
 -   `:md5-name-p`  
     nil 推奨  
-    t を設定した場合、下記制限に抵触するパスをmsvcで扱えるようにパス名をMD5変換し、衝突しない固定長名として扱う。  
+    t を設定した場合、下記制限に抵触するパスをmsvcで扱えるように、名前をMD5変換し衝突しない固定長名として扱う。  
     パース対象のプロジェクト名を含む絶対パスやパース後のデータベース名を含む絶対パスがMAX\_PATH(260文字)を超える場合はシェル上で扱えなくなる。  
     NTFSのUNICODEパスは32kBまで使用可能だが、shell(cmd.exe)上で扱えるのはMAX\_PATHが限度となる。
 -   `:force-parse-p`  
