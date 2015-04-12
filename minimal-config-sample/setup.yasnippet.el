@@ -1,5 +1,5 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2014/09/25.03:23:08
+;;; last updated : 2015/04/13.02:12:16
 
 
 ;;==================================================================================================
@@ -30,7 +30,7 @@
 (require 'yasnippet)
 
 
-(require 'dropdown-list)
+;; (require 'dropdown-list)
 
 
 
@@ -45,7 +45,8 @@
 
 ;; 同一名を持つ key を展開しようとすると x-window のドロップダウンGUIが表示されるのを削除
 ;; C-n,C-p で操作できるCUIドロップダウンリストにする
-(setq yas-prompt-functions '(yas-dropdown-prompt
+(setq yas-prompt-functions '(
+                             ;; yas-dropdown-prompt
                              yas-ido-prompt
                              yas-completing-prompt))
 
@@ -62,7 +63,7 @@
 
 
 ;; 上記設定に基づいて初期化
-(yas--initialize)
+(yas-initialize)
 
 
 
