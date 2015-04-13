@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/12.05:46:35
+;;; last updated : 2015/04/14.02:41:25
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -65,6 +65,15 @@
 ;;     CYGWIN/MSYS/CMD(cmdproxy)
 ;;     CYGWIN's bash recommended
 ;; 
+;; * REQUIRED EMACS LISP PACKAGE
+;;   - ac-clang
+;;     ac-clang provide code completion and arguments expand.
+;;     This program consists of the client(elisp) and server(binary).
+;;     The server is executable file, and a self-build is necessary.
+;;     The server achieve code completion using libclang of LLVM.
+;;     For ac-clang information and detailed usage, refer to the project page
+;;     [https://github.com/yaruopooner/ac-clang]
+;;  
 ;; * TESTED SDK:
 ;;   completion test, syntax check test
 ;;   - Windows SDK 7.1/7.0A
