@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/14.02:41:25
+;;; last updated : 2015/04/14.12:26:00
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -71,7 +71,8 @@
 ;;     This program consists of the client(elisp) and server(binary).
 ;;     The server is executable file, and a self-build is necessary.
 ;;     The server achieve code completion using libclang of LLVM.
-;;     For ac-clang information and detailed usage, refer to the project page
+;;     For ac-clang information and detailed usage, 
+;;     refer to header document of ac-clang.el or the project page.
 ;;     [https://github.com/yaruopooner/ac-clang]
 ;;  
 ;; * TESTED SDK:
@@ -80,9 +81,6 @@
 ;;   - Direct X SDK(June 2010)
 ;;   - STL,std::tr1
 ;; 
-;; * INSTALLATION:
-;;   please more information, look at the file in msvc/minimal-config-sample directory.
-;;   
 
 
 ;; Usage:
@@ -93,6 +91,15 @@
 ;;   sorry, reference manual is japanese version only.
 ;;   please help english version reference manual. 
 ;; 
+;; * INSTALLATION:
+;;   If you use auto-complete by ac-clang, you will need an external program.
+;;   It's necessary to download or self-build the external program.
+;; 
+;;   - download
+;;     [https://github.com/yaruopooner/ac-clang/releases]
+;;   - self-build
+;;     [https://github.com/yaruopooner/llvm-build-shells]
+;; 
 ;; * SETUP:
 ;;   (require 'msvc)
 ;; 
@@ -100,6 +107,8 @@
 ;;   (when (msvc-initialize)
 ;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
 ;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
+;; 
+;;   please more information, look at the file in msvc/minimal-config-sample directory.
 ;; 
 ;; * REGISTRATION OF PROJECT OR SOLUTION
 ;;   (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
