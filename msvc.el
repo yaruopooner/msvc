@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/14.12:26:00
+;;; last updated : 2015/04/16.01:40:26
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -108,7 +108,11 @@
 ;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
 ;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
 ;; 
-;;   please more information, look at the file in msvc/minimal-config-sample directory.
+;;   For more samples, please refer the following URL.
+;;   [https://github.com/yaruopooner/msvc/tree/master/minimal-config-sample]
+;;   If you want to test a sample, please checkout.
+;;   $ git clone https://github.com/yaruopooner/msvc.git
+;;   Look at the file in 'msvc/minimal-config-sample' directory.
 ;; 
 ;; * REGISTRATION OF PROJECT OR SOLUTION
 ;;   (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
