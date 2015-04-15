@@ -199,7 +199,8 @@ msvcを M-x list-packages でインストールした場合は自動インスト
 
 ## Emacsの起動設定<a id="sec-6-1" name="sec-6-1"></a>
 
-GNU Emacs を CYGWIN(or MSYS)から起動できるようにします。  
+GNU Emacs を CYGWIN or MSYS or CMDから起動できるようにします。  
+各シェルのHOME directoryに .emacs ファイルを置いて起動する場合は  
 .bashrc あたりに以下を記述しておくとよいでしょう。  
 
 Emacsが配置されているパスを  
@@ -208,13 +209,17 @@ c:/emacs/64/emacs-24.3-20130503
 
 -   CYGWIN  
     
-        alias emacs32-243-1='/cygdrive/c/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
-        alias emacs='emacs32-243-1'
+        alias emacs64-243-1='/cygdrive/c/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+        alias emacs='emacs64-243-1'
 
 -   MSYS  
     
-        alias emacs32-243-1='c:/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
-        alias emacs='emacs32-243-1'
+        alias emacs64-243-1='c:/emacs/64/emacs-24.3-20130503/bin/emacs.exe --debug-init'
+        alias emacs='emacs64-243-1'
+
+-   CMD  
+    特に設定はありません。  
+    c:/emacs/64/emacs-24.3-20130503/bin あたりにパスが通っていれば問題ないでしょう
 
 ## Emacsパッケージの設定<a id="sec-6-2" name="sec-6-2"></a>
 
@@ -233,6 +238,12 @@ c:/emacs/64/emacs-24.3-20130503
 msvc/.minimal-config-sample/init.el を参照してください。  
 init.el は ~/.emacs.d/ 以下に配置した場合に動作するよう記述されています。  
 必要に応じてコードを抜き出してください。  
+
+※注意  
+ac-clangは外部プログラムと連携するためelispパッケージだけでは実行できません。  
+外部プログラムをセルフビルドするか、ビルド済みバイナリをダウンロードしてインストールする必要があります。  
+詳細はac-clangのマニュアルを参照してください。  
+<https://github.com/yaruopooner/ac-clang>  
 
 ## 初期化設定<a id="sec-6-3" name="sec-6-3"></a>
 
