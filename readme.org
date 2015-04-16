@@ -1,9 +1,8 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/04/16.11:38:50
+# last updated : 2015/04/16.11:52:32
 
 
-[[http://melpa.org/#/ac-clang][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/ac-clang][file:http://stable.melpa.org/packages/msvc-badge.svg]]
-
+[[http://melpa.org/#/msvc][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/msvc][file:http://stable.melpa.org/packages/msvc-badge.svg]]
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
 #+AUTHOR:    yaruopooner
