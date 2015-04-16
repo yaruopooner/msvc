@@ -38,6 +38,7 @@
 </div>
 
 
+[![img](http://melpa.org/packages/msvc-badge.svg)](http://melpa.org/#/ac-clang) [![img](http://stable.melpa.org/packages/msvc-badge.svg)](http://stable.melpa.org/#/ac-clang)  
 
 # Main Document<a id="sec-1" name="sec-1"></a>
 
