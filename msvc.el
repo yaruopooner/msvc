@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/16.01:40:26
+;;; last updated : 2015/04/19.19:59:23
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -400,6 +400,11 @@
 `before'   : when the build is starts.
 `after'    : when the build is done.")
 
+(defvar msvc-solution-build-report-display-target nil
+  "build report display target symbols
+`nil'         : self
+`other-frame' : other frame.")
+
 (defvar msvc-solution-build-report-realtime-display-p t)
 
 (defvar msvc-solution-build-report-verbosity 'normal
@@ -490,6 +495,11 @@
 
 
 
+
+(defun msvc--switch-to-buffer-other-frame (buffer)
+  (let ((current-frame (selected-frame)))
+    (switch-to-buffer-other-frame buffer)
+    (raise-frame current-frame)))
 
 (defun msvc--split-window (buffer)
   (unless (get-buffer-window-list buffer)
@@ -1373,7 +1383,9 @@
       ;; プロセスバッファを終了時に表示
       (msvc--parse-solution-build-report bind-buffer)
       (when (eq msvc-solution-build-report-display-timing 'after)
-        (msvc--split-window bind-buffer)))))
+        (if (eq msvc-solution-build-report-display-target 'other-frame)
+            (msvc--switch-to-buffer-other-frame bind-buffer)
+          (msvc--split-window bind-buffer))))))
 
 
 (defun msvc-mode-feature-solution-goto-prev-error ()
@@ -1561,7 +1573,9 @@
 
               ;; プロセスバッファを最初に表示
               (when (eq msvc-solution-build-report-display-timing 'before)
-                (msvc--split-window process-bind-buffer))
+                (if (eq msvc-solution-build-report-display-target 'other-frame)
+                    (msvc--switch-to-buffer-other-frame process-bind-buffer)
+                  (msvc--split-window process-bind-buffer)))
 
               (with-current-buffer process-bind-buffer
                 ;; buffer sentinelで終了検知後に、文字列propertize & read-only化が望ましい
