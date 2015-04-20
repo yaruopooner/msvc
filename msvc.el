@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/19.19:59:23
+;;; last updated : 2015/04/21.02:15:42
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.1.1"))
 
 ;; This file is part of MSVC.
@@ -150,9 +150,9 @@
 ;;      but only a designated project will be parsed and activated.
 ;;      In the case that there are many projects in solution, this way is recommended.
 ;;   - :platform
-;;      Must be a platform that exists in the project file .
+;;      Must be a platform that exists in the project file.
 ;;   - :configuration
-;;      Must be a configuration that exists in the project file .
+;;      Must be a configuration that exists in the project file.
 ;; 
 ;; * OPTIONAL PROPERTIES
 ;;   - :version
@@ -255,7 +255,7 @@
 
 
 
-(defconst msvc-version "1.2.0")
+(defconst msvc-version "1.2.1")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -1513,7 +1513,7 @@
 
 
 
-(defun msvc-mode-feature-build-solution (&optional target)
+(cl-defun msvc-mode-feature-build-solution (&optional target)
   (interactive)
   (let ((db-name (or msvc--db-name msvc--source-code-belonging-db-name)))
     (when db-name
@@ -1565,6 +1565,10 @@
               ;; create rsp file(always create)
               (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
 
+              (when (process-live-p (get-buffer-process process-bind-buffer))
+                (message "The solution is already building.")
+                (cl-return-from msvc-mode-feature-build-solution nil))
+              
               (when (get-buffer process-bind-buffer)
                 (kill-buffer process-bind-buffer))
 
@@ -1581,7 +1585,7 @@
                 ;; buffer sentinelで終了検知後に、文字列propertize & read-only化が望ましい
                 (setq buffer-read-only t))
               t)
-          (message "solution name not found on active project."))))))
+          (message "The solution name not found on active project."))))))
 
 
 (defun msvc-mode-feature-rebuild-solution ()
