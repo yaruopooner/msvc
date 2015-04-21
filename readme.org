@@ -1,5 +1,6 @@
+
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2015/04/16.11:52:32
+# last updated : 2015/04/22.01:39:24
 
 
 [[http://melpa.org/#/msvc][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/msvc][file:http://stable.melpa.org/packages/msvc-badge.svg]]
@@ -7,7 +8,7 @@
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual Top
 #+AUTHOR:    yaruopooner
 #+EMAIL:     [https://github.com/yaruopooner]
-#+OPTIONS:   author:nil timestamp:t |:t \n:t ^:nil
+#+OPTIONS:   author:nil timestamp:t |:t \n:t ^:nil toc:nil
 
 
 * Main Document
@@ -15,6 +16,10 @@
 
 
 * What's New?
+** MSVC 2015-04-21 was released
+*** new feature
+    - Added solution build report display target.
+
 ** MSVC 2015-04-05 was released
 *** new feature
     - The database name generate by MD5.

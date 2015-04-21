@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/16.01:40:26
+;;; last updated : 2015/04/21.16:43:05
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.1.1"))
 
 ;; This file is part of MSVC.
@@ -150,9 +150,9 @@
 ;;      but only a designated project will be parsed and activated.
 ;;      In the case that there are many projects in solution, this way is recommended.
 ;;   - :platform
-;;      Must be a platform that exists in the project file .
+;;      Must be a platform that exists in the project file.
 ;;   - :configuration
-;;      Must be a configuration that exists in the project file .
+;;      Must be a configuration that exists in the project file.
 ;; 
 ;; * OPTIONAL PROPERTIES
 ;;   - :version
@@ -255,7 +255,7 @@
 
 
 
-(defconst msvc-version "1.2.0")
+(defconst msvc-version "1.2.1")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -400,6 +400,11 @@
 `before'   : when the build is starts.
 `after'    : when the build is done.")
 
+(defvar msvc-solution-build-report-display-target nil
+  "build report display target symbols
+`nil'         : self
+`other-frame' : other frame.")
+
 (defvar msvc-solution-build-report-realtime-display-p t)
 
 (defvar msvc-solution-build-report-verbosity 'normal
@@ -490,6 +495,11 @@
 
 
 
+
+(defun msvc--switch-to-buffer-other-frame (buffer)
+  (let ((current-frame (selected-frame)))
+    (switch-to-buffer-other-frame buffer)
+    (raise-frame current-frame)))
 
 (defun msvc--split-window (buffer)
   (unless (get-buffer-window-list buffer)
@@ -1373,7 +1383,9 @@
       ;; プロセスバッファを終了時に表示
       (msvc--parse-solution-build-report bind-buffer)
       (when (eq msvc-solution-build-report-display-timing 'after)
-        (msvc--split-window bind-buffer)))))
+        (if (eq msvc-solution-build-report-display-target 'other-frame)
+            (msvc--switch-to-buffer-other-frame bind-buffer)
+          (msvc--split-window bind-buffer))))))
 
 
 (defun msvc-mode-feature-solution-goto-prev-error ()
@@ -1501,73 +1513,83 @@
 
 
 
-(defun msvc-mode-feature-build-solution (&optional target)
+(cl-defun msvc-mode-feature-build-solution (&optional target)
   (interactive)
   (let ((db-name (or msvc--db-name msvc--source-code-belonging-db-name)))
     (when db-name
       (let* ((details (msvc--query-project db-name))
-             (solution-file (plist-get details :solution-file)))
-        (if solution-file
-            (let* ((target (or target "Build"))
-                   (db-path (plist-get details :db-path))
-                   (platform (plist-get details :platform))
-                   (configuration (plist-get details :configuration))
-                   (version (plist-get details :version))
-                   (toolset (plist-get details :toolset))
+             (solution-file (plist-get details :solution-file))
+             (process-bind-buffer (format "*MSVC Build<%s>*" db-name)))
 
-                   (dst-file-base-name (file-name-nondirectory solution-file))
-                   (log-file (expand-file-name (concat dst-file-base-name ".build.log.msvc") db-path))
-                   (logger-encoding "UTF-8")
+        (unless solution-file
+          (message "The solution name not found on active project.")
+          (cl-return-from msvc-mode-feature-build-solution nil))
 
-                   (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp.msvc") db-path))
-                   (msb-target-file solution-file)
-                   (msb-flags (list
-                               (msvc-env--create-msb-flags "/t:"
-                                                           `(("%s"               .       ,target)))
-                               (msvc-env--create-msb-flags "/p:"
-                                                           `(("Platform=%S"      .       ,platform)
-                                                             ("Configuration=%S" .       ,configuration)))
-                               (msvc-env--create-msb-flags "/flp:"
-                                                           `(("Verbosity=%s"     .       ,(symbol-name msvc-solution-build-report-verbosity))
-                                                             ("LogFile=%S"       .       ,log-file)
-                                                             ("Encoding=%s"      .       ,logger-encoding)
-                                                             ("%s"               .       "NoSummary")))
-                               (if msvc-solution-build-report-realtime-display-p
-                                   (msvc-env--create-msb-flags "/clp:"
-                                                               `(("Verbosity=%s" .       ,(symbol-name msvc-solution-build-report-verbosity))))
-                                 "/noconsolelogger")
-                               "/nologo"
-                               "/maxcpucount"))
+        (when (process-live-p (get-buffer-process process-bind-buffer))
+          (message "The solution is already building.")
+          (cl-return-from msvc-mode-feature-build-solution nil))
+          
+        (let* ((target (or target "Build"))
+               (db-path (plist-get details :db-path))
+               (platform (plist-get details :platform))
+               (configuration (plist-get details :configuration))
+               (version (plist-get details :version))
+               (toolset (plist-get details :toolset))
 
-                   (process-name "msvc-build")
-                   (process-bind-buffer (format "*MSVC Build<%s>*" db-name))
-                   ;; bind connection type (use pipe)
-                   (process-connection-type nil)
-                   ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
-                   (default-process-coding-system (if msvc-solution-build-report-realtime-display-p default-process-coding-system '(utf-8-dos . utf-8-unix)))
-                   (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
+               (dst-file-base-name (file-name-nondirectory solution-file))
+               (log-file (expand-file-name (concat dst-file-base-name ".build.log.msvc") db-path))
+               (logger-encoding "UTF-8")
 
-                   (command msvc-env--invoke-command)
-                   (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file display-file)))
+               (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp.msvc") db-path))
+               (msb-target-file solution-file)
+               (msb-flags (list
+                           (msvc-env--create-msb-flags "/t:"
+                                                       `(("%s"               .       ,target)))
+                           (msvc-env--create-msb-flags "/p:"
+                                                       `(("Platform=%S"      .       ,platform)
+                                                         ("Configuration=%S" .       ,configuration)))
+                           (msvc-env--create-msb-flags "/flp:"
+                                                       `(("Verbosity=%s"     .       ,(symbol-name msvc-solution-build-report-verbosity))
+                                                         ("LogFile=%S"       .       ,log-file)
+                                                         ("Encoding=%s"      .       ,logger-encoding)
+                                                         ("%s"               .       "NoSummary")))
+                           (if msvc-solution-build-report-realtime-display-p
+                               (msvc-env--create-msb-flags "/clp:"
+                                                           `(("Verbosity=%s" .       ,(symbol-name msvc-solution-build-report-verbosity))))
+                             "/noconsolelogger")
+                           "/nologo"
+                           "/maxcpucount"))
 
-              ;; create rsp file(always create)
-              (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
+               (process-name "msvc-build")
+               ;; bind connection type (use pipe)
+               (process-connection-type nil)
+               ;; bind encoding system (logfile:utf-8-dos, buffer:utf-8-unix)
+               (default-process-coding-system (if msvc-solution-build-report-realtime-display-p default-process-coding-system '(utf-8-dos . utf-8-unix)))
+               (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
 
-              (when (get-buffer process-bind-buffer)
-                (kill-buffer process-bind-buffer))
+               (command msvc-env--invoke-command)
+               (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file display-file)))
 
-              (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-                (set-process-sentinel process 'msvc--build-solution-sentinel))
+          ;; create rsp file(always create)
+          (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
 
-              ;; プロセスバッファを最初に表示
-              (when (eq msvc-solution-build-report-display-timing 'before)
-                (msvc--split-window process-bind-buffer))
+          (when (get-buffer process-bind-buffer)
+            (kill-buffer process-bind-buffer))
 
-              (with-current-buffer process-bind-buffer
-                ;; buffer sentinelで終了検知後に、文字列propertize & read-only化が望ましい
-                (setq buffer-read-only t))
-              t)
-          (message "solution name not found on active project."))))))
+          (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
+            (set-process-sentinel process 'msvc--build-solution-sentinel))
+
+          ;; プロセスバッファを最初に表示
+          (when (eq msvc-solution-build-report-display-timing 'before)
+            (if (eq msvc-solution-build-report-display-target 'other-frame)
+                (msvc--switch-to-buffer-other-frame process-bind-buffer)
+              (msvc--split-window process-bind-buffer)))
+
+          (with-current-buffer process-bind-buffer
+            ;; buffer sentinelで終了検知後に、文字列propertize & read-only化が望ましい
+            (setq buffer-read-only t))
+          t)
+        ))))
 
 
 (defun msvc-mode-feature-rebuild-solution ()
