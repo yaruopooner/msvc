@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/21.16:43:05
+;;; last updated : 2015/05/10.02:58:20
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -541,7 +541,7 @@
      (msvc--visit-path (point) 'find-file-other-window))))
     
 
-(defun msvc--mouse-visit-target (event)
+(defun msvc--mouse-visit-target (_event)
   "Toggle the display status of the filter group chosen with the mouse."
   (interactive "e")
 
@@ -770,7 +770,7 @@
 
 
 
-(defun msvc--setup-project-feature-ac-clang (db-name status)
+(defun msvc--setup-project-feature-ac-clang (_db-name status)
   (cl-case status
     (enable
      nil
@@ -853,7 +853,7 @@
       (disable
        nil))))
 
-(defun msvc--setup-buffer-feature-cedet (db-name status)
+(defun msvc--setup-buffer-feature-cedet (_db-name status)
   (cl-case status
     (enable
      ;; backup value
