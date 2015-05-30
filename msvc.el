@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/21.16:43:05
+;;; last updated : 2015/05/30.17:50:18
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -8,8 +8,8 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.2.1
-;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.1.1"))
+;; Version: 1.2.2
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.2.0"))
 
 ;; This file is part of MSVC.
 
@@ -255,7 +255,7 @@
 
 
 
-(defconst msvc-version "1.2.1")
+(defconst msvc-version "1.2.2")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -541,7 +541,7 @@
      (msvc--visit-path (point) 'find-file-other-window))))
     
 
-(defun msvc--mouse-visit-target (event)
+(defun msvc--mouse-visit-target (_event)
   "Toggle the display status of the filter group chosen with the mouse."
   (interactive "e")
 
@@ -770,7 +770,7 @@
 
 
 
-(defun msvc--setup-project-feature-ac-clang (db-name status)
+(defun msvc--setup-project-feature-ac-clang (_db-name status)
   (cl-case status
     (enable
      nil
@@ -853,7 +853,7 @@
       (disable
        nil))))
 
-(defun msvc--setup-buffer-feature-cedet (db-name status)
+(defun msvc--setup-buffer-feature-cedet (_db-name status)
   (cl-case status
     (enable
      ;; backup value
@@ -1340,7 +1340,7 @@
      (flymake-start-syntax-check))
     (clang
      ;; back end : clang
-     (ac-clang-syntax-check))))
+     (ac-clang-diagnostics))))
 
 (defun msvc-mode-feature-jump-to-project-buffer ()
   (interactive)
