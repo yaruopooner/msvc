@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/05/10.02:58:20
+;;; last updated : 2015/05/30.17:46:06
 
 
 ;; Copyright (C) 2013-2015  yaruopooner
@@ -1340,7 +1340,7 @@
      (flymake-start-syntax-check))
     (clang
      ;; back end : clang
-     (ac-clang-syntax-check))))
+     (ac-clang-diagnostics))))
 
 (defun msvc-mode-feature-jump-to-project-buffer ()
   (interactive)
