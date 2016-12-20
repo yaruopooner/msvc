@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/12.02:55:14
+;;; last updated : 2016/11/27.20:22:11
 
 ;; Copyright (C) 2013-2015  yaruopooner
 ;; 
@@ -31,6 +31,7 @@
 (defvar msvc-env--product-version nil)
 (defvar msvc-env-default-use-version nil
   "MSVC default use version string
+`2017'
 `2015'
 `2013'
 `2012'
@@ -39,11 +40,12 @@
 If the value is nil, latest version will be used.
 ")
 
-(defconst msvc-env--product-details '((:version "2015" :env-var "VS140COMNTOOLS")
-                                      (:version "2013" :env-var "VS120COMNTOOLS")
-                                      (:version "2012" :env-var "VS110COMNTOOLS")
-                                      (:version "2010" :env-var "VS100COMNTOOLS")
-                                      (:version "2008" :env-var "VS90COMNTOOLS")))
+(defconst msvc-env--product-details '((:version "2017" :env-var "VS150COMNTOOLS" :vcvars-apath "../../VC/Auxiliary/Build/vcvarsall.bat")
+                                      (:version "2015" :env-var "VS140COMNTOOLS" :vcvars-apath "../../VC/vcvarsall.bat")
+                                      (:version "2013" :env-var "VS120COMNTOOLS" :vcvars-apath "../../VC/vcvarsall.bat")
+                                      (:version "2012" :env-var "VS110COMNTOOLS" :vcvars-apath "../../VC/vcvarsall.bat")
+                                      (:version "2010" :env-var "VS100COMNTOOLS" :vcvars-apath "../../VC/vcvarsall.bat")
+                                      (:version "2008" :env-var "VS90COMNTOOLS" :vcvars-apath "../../VC/vcvarsall.bat")))
 
 
 ;; Microsoft Visual C/C++ Toolset Shell List &  Toolset type
@@ -51,14 +53,18 @@ If the value is nil, latest version will be used.
 (defvar msvc-env-default-use-toolset "x86_amd64"
   "MSVC toolset shell argument string
 toolset-name   : support product
-`x86'          : (2015/2013/2012/2010)
-`x86_amd64'    : (2015/2013/2012/2010)
-`x86_arm'      : (2015/2013/2012)
+`x86'          : (2017/2015/2013/2012/2010)
+`x86_x64'      : (2017)
+`x86_amd64'    : (2017/2015/2013/2012/2010)
+`x86_arm'      : (2017/2015/2013/2012)
 `x86_ia64'     : (2010)
-`amd64'        : (2015/2013/2012/2010)
-`amd64_x86'    : (2015/2013)
-`amd64_arm'    : (2015/2013)
-`arm'          : (2015/2013/2012)
+`x64'          : (2017)
+`x64_x86'      : (2017)
+`x64_arm'      : (2017)
+`amd64'        : (2017/2015/2013/2012/2010)
+`amd64_x86'    : (2017/2015/2013)
+`amd64_arm'    : (2017/2015/2013)
+`arm'          : (2017/2015/2013/2012)
 `ia64'         : (2010)
 see this page.
 https://msdn.microsoft.com/library/f2ccy3wt.aspx
@@ -91,9 +97,10 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
 (defun msvc-env--detect-product ()
   (cl-dolist (detail msvc-env--product-details)
     (let ((version (plist-get detail :version))
-          (path (getenv (plist-get detail :env-var))))
+          (path (getenv (plist-get detail :env-var)))
+          (vcvars-apath (plist-get detail :vcvars-apath)))
       (when path
-        (setq path (expand-file-name "../../VC/vcvarsall.bat" path))
+        (setq path (expand-file-name vcvars-apath path))
         (when (file-exists-p path)
           (setq msvc-env-product-detected-p t)
           (add-to-list 'msvc-env--product-version version t)
