@@ -1,9 +1,9 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/05/30.17:50:18
+;;; last updated : 2016/12/21.20:08:45
 
 
-;; Copyright (C) 2013-2015  yaruopooner
+;; Copyright (C) 2013-2016  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
