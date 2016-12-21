@@ -6,6 +6,12 @@
 
 # What's New?
 
+## MSVC 2016-12-21 was released
+
+### new feature
+
+-   Supported Visual Studio 2017RC.
+
 ## MSVC 2015-04-21 was released
 
 ### new feature

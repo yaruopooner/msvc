@@ -72,7 +72,7 @@ Visual Studio プロジェクトファイルをパースすることにより、
 
 ## バージョンの異なるVisual Studio共存と利用<a id="sec-1-2" name="sec-1-2"></a>
 
-Visual Studio 2015/2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも  
+Visual Studio 2017/2015/2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも  
 msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。  
 これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。  
 
@@ -128,7 +128,7 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
     MSYS  
     CMD
 -   Microsoft Windows 64/32bit
--   Microsoft Visual Studio Professional 2015/2013/2012/2010  
+-   Microsoft Visual Studio 2017/2015/2013/2012/2010  
     CL.exe/MSBuild.exe 等を使います
 
 # 必須パッケージ<a id="sec-3" name="sec-3"></a>
@@ -164,19 +164,15 @@ msvcを M-x list-packages でインストールした場合は自動インスト
         cmdproxy,cmd動作チェック済み
 
 -   Microsoft Windows 32bit/64bit  
-    -   Vista/XP  
-        未検証
+    -   10
+    -   8.x
     -   7  
         Professional 64 bit でのみ動作テスト
-    -   8 & 8.1  
-        Professional 64 bit でのみ動作テスト  
-        CYGWIN動作に難アリ。  
-        私の環境ではmakeやその他ツールが実行するたびにcoredumpしまくっていたので動作状況が芳しくありません。  
-        msvcはbashしか使わないので動作に問題はないでしょうが、  
-        grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
+    -   Vista/XP  
+        サポート対象外
 
--   Microsoft Visual Studio Professional  
-    2015/2013/2012/2010 のみ動作チェック済み
+-   Microsoft Visual Studio Community/Professional/Enterprise  
+    2017/2015/2013/2012/2010 動作チェック済み
 
 -   SDK  
     下記SDKのサンプルプロジェクトでテスト。  
