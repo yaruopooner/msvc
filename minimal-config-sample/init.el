@@ -1,5 +1,5 @@
 ;;; -*- Mode: Emacs-Lisp ; Coding: utf-8-unix -*-
-;;; last updated : 2015/04/13.02:07:48
+;;; last updated : 2017/05/29.01:09:05
 
 
 ;;==============================================================================
@@ -41,7 +41,8 @@
 
 (defconst msvc-dependency-package-list '(auto-complete
                                          yasnippet
-                                         ac-clang))
+                                         ac-clang
+                                         msvc))
                                          
 
 
