@@ -1,8 +1,8 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2016/12/21.20:08:45
+;;; last updated : 2017/03/15.03:02:14
 
-;; Copyright (C) 2013-2016  yaruopooner
+;; Copyright (C) 2013-2017  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -40,12 +40,12 @@
 If the value is nil, latest version will be used.
 ")
 
-(defconst msvc-env--product-details '((:version "2017" :value-name "15.0" :env-var "VS150COMNTOOLS" :vcvars-apath "VC/Auxiliary/Build/vcvarsall.bat")
-                                      (:version "2015" :value-name "14.0" :env-var "VS140COMNTOOLS" :vcvars-apath "VC/vcvarsall.bat")
-                                      (:version "2013" :value-name "12.0" :env-var "VS120COMNTOOLS" :vcvars-apath "VC/vcvarsall.bat")
-                                      (:version "2012" :value-name "11.0" :env-var "VS110COMNTOOLS" :vcvars-apath "VC/vcvarsall.bat")
-                                      (:version "2010" :value-name "10.0" :env-var "VS100COMNTOOLS" :vcvars-apath "VC/vcvarsall.bat")
-                                      (:version "2008" :value-name "9.0" :env-var "VS90COMNTOOLS" :vcvars-apath "VC/vcvarsall.bat")))
+(defconst msvc-env--product-details '((:version "2017" :key-name "15.0" :env-var "VS150COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
+                                      (:version "2015" :key-name "14.0" :env-var "VS140COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
+                                      (:version "2013" :key-name "12.0" :env-var "VS120COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
+                                      (:version "2012" :key-name "11.0" :env-var "VS110COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
+                                      (:version "2010" :key-name "10.0" :env-var "VS100COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
+                                      (:version "2008" :key-name "9.0" :env-var "VS90COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")))
 
 (defconst msvc-env--product-query-details '((:platform 64 :sub-key "\"%s\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\SxS\\VS7\"" :root-keys ("HKLM" "HKCU"))
                                             (:platform 32 :sub-key "\"%s\\SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS7\"" :root-keys ("HKLM" "HKCU"))))
@@ -111,12 +111,12 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
       (let* ((sub-key (plist-get detail :sub-key))
              (root-keys (plist-get detail :root-keys)))
         (cl-dolist (root-key root-keys)
-          (let* ((key-name (format sub-key root-key))
-                 (cmd-result (shell-command-to-string (concat "reg query " key-name)))
+          (let* ((full-key-name (format sub-key root-key))
+                 (cmd-result (shell-command-to-string (concat "reg query " full-key-name)))
                  (entries (cdr (split-string cmd-result "\n" t))) ; split after excluded 1st element
                  version
                  path)
-            ;; (print key-name)
+            ;; (print full-key-name)
             ;; (print cmd-result)
             ;; (print (length entries))
             (when entries
@@ -135,11 +135,11 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
   (let ((query-results (msvc-env--query-product-at-registry)))
     (cl-dolist (detail msvc-env--product-details)
       (let* ((version (plist-get detail :version))
-             (value-name (plist-get detail :value-name))
-             (path (gethash value-name query-results))
-             (vcvars-apath (plist-get detail :vcvars-apath)))
+             (key-name (plist-get detail :key-name))
+             (path (gethash key-name query-results))
+             (vcvars-rpath (plist-get detail :vcvars-rpath)))
         (when path
-          (setq path (expand-file-name vcvars-apath path))
+          (setq path (expand-file-name vcvars-rpath path))
           (when (file-exists-p path)
             (setq msvc-env-product-detected-p t)
             (add-to-list 'msvc-env--product-version version t)
@@ -151,9 +151,9 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
   (cl-dolist (detail msvc-env--product-details)
     (let ((version (plist-get detail :version))
           (path (getenv (plist-get detail :env-var)))
-          (vcvars-apath (plist-get detail :vcvars-apath)))
+          (vcvars-rpath (plist-get detail :vcvars-rpath)))
       (when path
-        (setq path (expand-file-name (concat "../../" vcvars-apath) path))
+        (setq path (expand-file-name (concat "../../" vcvars-rpath) path))
         (when (file-exists-p path)
           (setq msvc-env-product-detected-p t)
           (add-to-list 'msvc-env--product-version version t)
