@@ -91,8 +91,20 @@
       <CFLAG_SystemPreprocessorDefinitions Include="_MFC_VER=0x0A00"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_MSC_BUILD"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_MSC_EXTENSIONS" Condition="'%(ClCompile.DisableLanguageExtensions)' != 'true'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=150020706"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1600"/>
+
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1500" Condition="'$(VisualStudioVersion)' == '9.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=150030729" Condition="'$(VisualStudioVersion)' == '9.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1600" Condition="'$(VisualStudioVersion)' == '10.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=160040219" Condition="'$(VisualStudioVersion)' == '10.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1700" Condition="'$(VisualStudioVersion)' == '11.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=170061030" Condition="'$(VisualStudioVersion)' == '11.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1800" Condition="'$(VisualStudioVersion)' == '12.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=180040629" Condition="'$(VisualStudioVersion)' == '12.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1900" Condition="'$(VisualStudioVersion)' == '14.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=190024210" Condition="'$(VisualStudioVersion)' == '14.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1910" Condition="'$(VisualStudioVersion)' == '15.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=191025017" Condition="'$(VisualStudioVersion)' == '15.0'"/>
+
       <CFLAG_SystemPreprocessorDefinitions Include="_WCHAR_T_DEFINED;_NATIVE_WCHAR_T_DEFINED" Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)' == 'true'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="__MSVC_RUNTIME_CHECKS" Condition="'%(ClCompile.SmallerTypeCheck)' == 'true'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_OPENMP" Condition="'%(ClCompile.OpenMPSupport)' == 'true'"/>
@@ -128,6 +140,7 @@
 
 
     <!-- output message to STDOUT for msvc-flags's parser -->
+    <Message Text="#CFLAG#:VisualStudioVersion:$(VisualStudioVersion)"/>
     <Message Text="#CFLAG#:IncludePath:$(IncludePath)"/>
     <Message Text="#CFLAG#:ClCompile.AdditionalIncludeDirectories:%(ClCompile.AdditionalIncludeDirectories)"/>
     <Message Text="#CFLAG#:ClCompile.AdditionalUsingDirectories:%(ClCompile.AdditionalUsingDirectories)"/>
