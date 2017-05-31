@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/03/15.03:01:45
+;;; last updated : 2017/05/31.13:00:16
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -214,8 +214,10 @@
 ;;     `<TAB>`
 ;;   - jump to definition / return from definition
 ;;     this is nestable jump.
+;;     target is type, function, enum, macro, include, misc.
+;;     visit to definition file / return from definition file.
 ;;     `M-.` / `M-,`
-;;   - visit to include file / return from include file
+;;   - visit to include file / return from include file(CEDET)
 ;;     `M-i` / `M-I`
 ;;   - goto error line prev / next
 ;;     `M-[` / `M-]`
