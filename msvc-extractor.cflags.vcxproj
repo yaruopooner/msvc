@@ -45,6 +45,14 @@
 
       <!-- CFLAG_* item metadatas create, this metadata reference by CFLAG_* item's condition -->
       <CFLAG Include="empty">
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &lt; '10.0')"></CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '10.0')">c++11</CppLanguageStd>
+        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' == '11.0')">c++11</CppLanguageStd> -->
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '12.0')">c++14</CppLanguageStd>
+        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' == '14.0')">c++14</CppLanguageStd> -->
+        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++17</CppLanguageStd> -->
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++1z</CppLanguageStd>
+
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM') OR ('$(Platform)' == 'ARM')">MachineARM</TargetMachine>
@@ -91,8 +99,20 @@
       <CFLAG_SystemPreprocessorDefinitions Include="_MFC_VER=0x0A00"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_MSC_BUILD"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_MSC_EXTENSIONS" Condition="'%(ClCompile.DisableLanguageExtensions)' != 'true'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=150020706"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1600"/>
+
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1500" Condition="'$(VisualStudioVersion)' == '9.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=150030729" Condition="'$(VisualStudioVersion)' == '9.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1600" Condition="'$(VisualStudioVersion)' == '10.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=160040219" Condition="'$(VisualStudioVersion)' == '10.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1700" Condition="'$(VisualStudioVersion)' == '11.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=170061030" Condition="'$(VisualStudioVersion)' == '11.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1800" Condition="'$(VisualStudioVersion)' == '12.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=180040629" Condition="'$(VisualStudioVersion)' == '12.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1900" Condition="'$(VisualStudioVersion)' == '14.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=190024210" Condition="'$(VisualStudioVersion)' == '14.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1910" Condition="'$(VisualStudioVersion)' == '15.0'"/>
+      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=191025017" Condition="'$(VisualStudioVersion)' == '15.0'"/>
+
       <CFLAG_SystemPreprocessorDefinitions Include="_WCHAR_T_DEFINED;_NATIVE_WCHAR_T_DEFINED" Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)' == 'true'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="__MSVC_RUNTIME_CHECKS" Condition="'%(ClCompile.SmallerTypeCheck)' == 'true'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_OPENMP" Condition="'%(ClCompile.OpenMPSupport)' == 'true'"/>
@@ -128,6 +148,7 @@
 
 
     <!-- output message to STDOUT for msvc-flags's parser -->
+    <Message Text="#CFLAG#:VisualStudioVersion:$(VisualStudioVersion)"/>
     <Message Text="#CFLAG#:IncludePath:$(IncludePath)"/>
     <Message Text="#CFLAG#:ClCompile.AdditionalIncludeDirectories:%(ClCompile.AdditionalIncludeDirectories)"/>
     <Message Text="#CFLAG#:ClCompile.AdditionalUsingDirectories:%(ClCompile.AdditionalUsingDirectories)"/>
@@ -166,6 +187,7 @@
     <Message Text="#CFLAG#:ClCompile.PrecompiledHeader:%(ClCompile.PrecompiledHeader)"/>
     <Message Text="#CFLAG#:ClCompile.PrecompiledHeaderFile:%(ClCompile.PrecompiledHeaderFile)"/>
 
+    <Message Text="#CFLAG#:ClCompile.CppLanguageStd:%(ClCompile.CppLanguageStd)"/>
 
     <!-- <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)" Condition="'%(Midl.CPreprocessOptions)' != '' AND '%(Midl.CPreprocessOptions)' != 'false'" /> -->
     <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)"/>
@@ -178,6 +200,7 @@
     <Message Text="#CFLAG#:Link.TargetMachine:%(Link.TargetMachine)"/>
 
     <!-- CFLAG_* key begin -->
+    <Message Text="#CFLAG#:CFLAG_CppLanguageStd:%(CFLAG.CppLanguageStd)"/>
     <Message Text="#CFLAG#:CFLAG_TargetMachine:%(CFLAG.TargetMachine)"/>
     <Message Text="#CFLAG#:CFLAG_SystemPreprocessorDefinitions:@(CFLAG_SystemPreprocessorDefinitions)"/>
     <Message Text="#CFLAG#:CFLAG_AdditionalPreprocessorDefinitions:@(CFLAG_AdditionalPreprocessorDefinitions)"/>
@@ -191,7 +214,7 @@
     <Message Text="#CFLAG#:CFLAG_TargetFilesAbs:@(CFLAG_TargetFilesAbs)"/>
     <!-- CFLAG_* key end -->
 
-    
+
     <!-- <Message Text="#CFLAG#:ProjectConfiguration.Platform:%(ProjectConfiguration.Platform)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
     <!-- <Message Text="#CFLAG#:ProjectConfiguration.Configuration:%(ProjectConfiguration.Configuration)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
   </Target>
