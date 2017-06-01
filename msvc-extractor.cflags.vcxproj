@@ -45,6 +45,14 @@
 
       <!-- CFLAG_* item metadatas create, this metadata reference by CFLAG_* item's condition -->
       <CFLAG Include="empty">
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &lt; '10.0')"></CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '10.0')">c++11</CppLanguageStd>
+        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' == '11.0')">c++11</CppLanguageStd> -->
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '12.0')">c++14</CppLanguageStd>
+        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' == '14.0')">c++14</CppLanguageStd> -->
+        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++17</CppLanguageStd> -->
+        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++1z</CppLanguageStd>
+
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM') OR ('$(Platform)' == 'ARM')">MachineARM</TargetMachine>
@@ -179,6 +187,7 @@
     <Message Text="#CFLAG#:ClCompile.PrecompiledHeader:%(ClCompile.PrecompiledHeader)"/>
     <Message Text="#CFLAG#:ClCompile.PrecompiledHeaderFile:%(ClCompile.PrecompiledHeaderFile)"/>
 
+    <Message Text="#CFLAG#:ClCompile.CppLanguageStd:%(ClCompile.CppLanguageStd)"/>
 
     <!-- <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)" Condition="'%(Midl.CPreprocessOptions)' != '' AND '%(Midl.CPreprocessOptions)' != 'false'" /> -->
     <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)"/>
@@ -191,6 +200,7 @@
     <Message Text="#CFLAG#:Link.TargetMachine:%(Link.TargetMachine)"/>
 
     <!-- CFLAG_* key begin -->
+    <Message Text="#CFLAG#:CFLAG_CppLanguageStd:%(CFLAG.CppLanguageStd)"/>
     <Message Text="#CFLAG#:CFLAG_TargetMachine:%(CFLAG.TargetMachine)"/>
     <Message Text="#CFLAG#:CFLAG_SystemPreprocessorDefinitions:@(CFLAG_SystemPreprocessorDefinitions)"/>
     <Message Text="#CFLAG#:CFLAG_AdditionalPreprocessorDefinitions:@(CFLAG_AdditionalPreprocessorDefinitions)"/>
@@ -204,7 +214,7 @@
     <Message Text="#CFLAG#:CFLAG_TargetFilesAbs:@(CFLAG_TargetFilesAbs)"/>
     <!-- CFLAG_* key end -->
 
-    
+
     <!-- <Message Text="#CFLAG#:ProjectConfiguration.Platform:%(ProjectConfiguration.Platform)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
     <!-- <Message Text="#CFLAG#:ProjectConfiguration.Configuration:%(ProjectConfiguration.Configuration)" Condition="'%(ProjectConfiguration.Identity)'=='$(Configuration)|$(Platform)'"/> -->
   </Target>
