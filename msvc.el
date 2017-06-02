@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/02.01:35:38
+;;; last updated : 2017/06/02.18:25:23
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.3
+;; Version: 1.3.4
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.2.0"))
 
 ;; This file is part of MSVC.
@@ -257,7 +257,7 @@
 
 
 
-(defconst msvc-version "1.3.3")
+(defconst msvc-version "1.3.4")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -1518,35 +1518,36 @@
 
 
 
-(cl-defun msvc-mode-feature-build-solution (&optional target)
+(cl-defun msvc-mode-feature-build (&key project-only-p (target "Build"))
   (interactive)
   (let ((db-name (or msvc--db-name msvc--source-code-belonging-db-name)))
     (when db-name
       (let* ((details (msvc--query-project db-name))
              (solution-file (plist-get details :solution-file))
+             (project-file (plist-get details :project-file))
+             (target-file (if project-only-p project-file solution-file))
              (process-bind-buffer (format "*MSVC Build<%s>*" db-name)))
 
-        (unless solution-file
-          (message "The solution name not found on active project.")
-          (cl-return-from msvc-mode-feature-build-solution nil))
+        (unless target-file
+          (message "The solution or project name not found on active project.")
+          (cl-return-from msvc-mode-feature-build nil))
 
         (when (process-live-p (get-buffer-process process-bind-buffer))
           (message "The solution is already building.")
-          (cl-return-from msvc-mode-feature-build-solution nil))
+          (cl-return-from msvc-mode-feature-build nil))
           
-        (let* ((target (or target "Build"))
-               (db-path (plist-get details :db-path))
+        (let* ((db-path (plist-get details :db-path))
                (platform (plist-get details :platform))
                (configuration (plist-get details :configuration))
                (version (plist-get details :version))
                (toolset (plist-get details :toolset))
 
-               (dst-file-base-name (file-name-nondirectory solution-file))
+               (dst-file-base-name (file-name-nondirectory target-file))
                (log-file (expand-file-name (concat dst-file-base-name ".build.log.msvc") db-path))
                (logger-encoding "UTF-8")
 
                (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp.msvc") db-path))
-               (msb-target-file solution-file)
+               (msb-target-file target-file)
                (msb-flags (list
                            (msvc-env--create-msb-flags "/t:"
                                                        `(("%s"               .       ,target)))
@@ -1597,13 +1598,30 @@
         ))))
 
 
+(defun msvc-mode-feature-build-solution ()
+  (interactive)
+  (msvc-mode-feature-build))
+
 (defun msvc-mode-feature-rebuild-solution ()
   (interactive)
-  (msvc-mode-feature-build-solution "Rebuild"))
+  (msvc-mode-feature-build :target "Rebuild"))
 
 (defun msvc-mode-feature-clean-solution ()
   (interactive)
-  (msvc-mode-feature-build-solution "Clean"))
+  (msvc-mode-feature-build :target "Clean"))
+
+
+(defun msvc-mode-feature-build-project ()
+  (interactive)
+  (msvc-mode-feature-build :project-only-p t))
+
+(defun msvc-mode-feature-rebuild-project ()
+  (interactive)
+  (msvc-mode-feature-build :project-only-p t :target "Rebuild"))
+
+(defun msvc-mode-feature-clean-project ()
+  (interactive)
+  (msvc-mode-feature-build :project-only-p t :target "Clean"))
 
 
 
