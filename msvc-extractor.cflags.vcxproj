@@ -45,73 +45,87 @@
 
       <!-- CFLAG_* item metadatas create, this metadata reference by CFLAG_* item's condition -->
       <CFLAG Include="empty">
-        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &lt; '10.0')"></CppLanguageStd>
-        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '10.0')">c++11</CppLanguageStd>
-        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' == '11.0')">c++11</CppLanguageStd> -->
-        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '12.0')">c++14</CppLanguageStd>
-        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' == '14.0')">c++14</CppLanguageStd> -->
-        <!-- <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++17</CppLanguageStd> -->
-        <CppLanguageStd Condition="('%(ClCompile.CppLanguageStd)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++1z</CppLanguageStd>
+        <!-- Microsoft(R) C/C++ Optimizing Compiler Version -->
+        <CompilerVersion Condition="'$(VisualStudioVersion)' == '9.0'">15.00.30729</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' == '10.0'">16.00.40219</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' == '11.0'">17.00.61030</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' == '12.0'">18.00.40629</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' == '14.0'">19.00.24215</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' &gt;= '15.0'">19.10.25017</CompilerVersion>
 
+        <!-- C++ Standard Version -->
+        <CppLanguageStd Condition="'%(ClCompile.LanguageStandard)' == 'stdcpp14'">c++14</CppLanguageStd>
+        <CppLanguageStd Condition="'%(ClCompile.LanguageStandard)' == 'stdcpplatest'">c++1z</CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &lt; '10.0')"></CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '10.0')">c++11</CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '12.0')">c++14</CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++1z</CppLanguageStd>
+
+        <!-- target machine architecture -->
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX86') OR ('%(ImpLib.TargetMachine)' == 'MachineX86') OR ('%(Link.TargetMachine)' == 'MachineX86') OR ('$(Platform)' == 'Win32')">MachineX86</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineARM') OR ('%(ImpLib.TargetMachine)' == 'MachineARM') OR ('%(Link.TargetMachine)' == 'MachineARM') OR ('$(Platform)' == 'ARM')">MachineARM</TargetMachine>
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineIA64') OR ('%(ImpLib.TargetMachine)' == 'MachineIA64') OR ('%(Link.TargetMachine)' == 'MachineIA64') OR ('$(Platform)' == 'Itanium')">MachineIA64</TargetMachine>
+
+        <!-- replace clang value -->
+        <TargetCpu Condition="'%(CFLAG.TargetMachine)' == ''">x86-64</TargetCpu>
+        <TargetCpu Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'">x86-64</TargetCpu>
+        <TargetCpu Condition="'%(CFLAG.TargetMachine)' == 'MachineX86'">i386</TargetCpu>
+        <TargetCpu Condition="'%(CFLAG.TargetMachine)' == 'MachineARM'">arm</TargetCpu>
+        <TargetArchitecture Condition="'%(CFLAG.TargetMachine)' == ''">x86_64</TargetArchitecture>
+        <TargetArchitecture Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'">x86_64</TargetArchitecture>
+        <TargetArchitecture Condition="'%(CFLAG.TargetMachine)' == 'MachineX86'">i386</TargetArchitecture>
+        <TargetArchitecture Condition="'%(CFLAG.TargetMachine)' == 'MachineARM'">arm</TargetArchitecture>
       </CFLAG>
 
 
       <!-- CFLAG_* item create -->
-      <CFLAG_SystemPreprocessorDefinitions Include="_WIN32"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_WIN64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
 
+
+      <!-- Predefined Macros auto generation by clang cc1 option -->
+      <!-- cl option convert to clang cc1 option -->
+
+      <!-- __cplusplus -->
+      <CFLAG_ClangCC1Options Include="-std=%(CFLAG.CppLanguageStd)"/>
+      <!-- _M_X64, _M_AMD64, _M_IX86, _M_.... -->
+      <!-- _WIN32, _WIN64, _INTEGRAL_MAX_BITS -->
+      <CFLAG_ClangCC1Options Include="-target-cpu %(CFLAG.TargetCpu)"/>
+      <CFLAG_ClangCC1Options Include="-triple %(CFLAG.TargetArchitecture)-pc-windows"/>
+      <!-- _MSC_BUILD, __STDC__ -->
+      <CFLAG_ClangCC1Options Include="-fms-compatibility"/>
+      <!-- _MSC_VER, _MSC_FULL_VER -->
+      <CFLAG_ClangCC1Options Include="-fms-compatibility-version=%(CFLAG.CompilerVersion)"/>
+      <!-- _MSC_EXTENSIONS -->
+      <CFLAG_ClangCC1Options Include="-fms-extensions" Condition="'%(ClCompile.DisableLanguageExtensions)' == 'false'"/>
+      <!-- _CPPRTTI -->
+      <CFLAG_ClangCC1Options Include="-fno-rtti" Condition="'%(ClCompile.RuntimeTypeInfo)' == 'false'"/>
+      <!-- _CPPUNWIND -->
+      <CFLAG_ClangCC1Options Include="-fcxx-exceptions" Condition="'%(ClCompile.ExceptionHandling)' == 'SyncCThrow'"/>
+
+
+      <!-- Predefined Macros manual generation -->
+      <!-- Because auto generation is not supported by clang cc1 option  -->
       <CFLAG_SystemPreprocessorDefinitions Include="_ATL_VER=0x1000"/>
       <!-- <CFLAG_SystemPreprocessorDefinitions Include="_CHAR_UNSIGNED"/> -->
       <CFLAG_SystemPreprocessorDefinitions Include="__CLR_VER=0" Condition="('%(ClCompile.CompileAsManaged)' != 'false')"/>
       <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus_cli=200406L" Condition="('%(ClCompile.CompileAsManaged)' == 'true') OR ('%(ClCompile.CompileAsManaged)' == 'Pure') OR ('%(ClCompile.CompileAsManaged)' == 'Safe')"/>
       <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus_winrt=201009L" Condition="('%(ClCompile.CompileAsWinRT)' == 'true')"/>
-      <!-- <CFLAG_SystemPreprocessorDefinitions Include="__cplusplus=201103L" Condition="('%(ClCompile.CompileAs)' == 'Default') OR ('%(ClCompile.CompileAs)' == 'CompileAsCpp')"/> -->
 
       <CFLAG_SystemPreprocessorDefinitions Include="_MT" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreaded') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebug') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDLL') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_DLL" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDLL') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_DEBUG" Condition="('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebug') OR ('%(ClCompile.RuntimeLibrary)' == 'MultiThreadedDebugDLL')"/>
-
-      <CFLAG_SystemPreprocessorDefinitions Include="_CPPRTTI" Condition="'%(ClCompile.RuntimeTypeInfo)' == 'true'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_CPPUNWIND" Condition="'%(ClCompile.ExceptionHandling)' == 'SyncCThrow'"/>
 
       <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86_FP=0" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == '') AND (('%(CFLAG.TargetMachine)' == 'MachineX86') OR ('%(CFLAG.TargetMachine)' == 'MachineX64'))"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86_FP=1" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == 'StreamingSIMDExtensions') AND (('%(CFLAG.TargetMachine)' == 'MachineX86') OR ('%(CFLAG.TargetMachine)' == 'MachineX64'))"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86_FP=2" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == 'StreamingSIMDExtensions2') AND (('%(CFLAG.TargetMachine)' == 'MachineX86') OR ('%(CFLAG.TargetMachine)' == 'MachineX64'))"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_M_ARM_FP" Condition="('%(ClCompile.EnableEnhancedInstructionSet)' == '') AND ('%(CFLAG.TargetMachine)' == 'MachineARM')"/>
 
-      <CFLAG_SystemPreprocessorDefinitions Include="_INTEGRAL_MAX_BITS=64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX86'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_INTEGRAL_MAX_BITS=64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
-
       <CFLAG_SystemPreprocessorDefinitions Include="_M_CEE" Condition="('%(ClCompile.CompileAsManaged)' != 'false') AND ('%(ClCompile.CompileAsManaged)' != '')"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_M_CEE_PURE" Condition="'%(ClCompile.CompileAsManaged)' == 'Pure'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_M_CEE_SAFE" Condition="'%(ClCompile.CompileAsManaged)' == 'Safe'"/>
 
-      <CFLAG_SystemPreprocessorDefinitions Include="_M_IX86=600" Condition="'%(CFLAG.TargetMachine)' == 'MachineX86'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_M_X64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_M_AMD64" Condition="'%(CFLAG.TargetMachine)' == 'MachineX64'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_M_IA64" Condition="'%(CFLAG.TargetMachine)' == 'MachineIA64'"/>
-
       <CFLAG_SystemPreprocessorDefinitions Include="_MANAGED" Condition="'%(ClCompile.CompileAsManaged)' == 'true'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="_MFC_VER=0x0A00"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_BUILD"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_EXTENSIONS" Condition="'%(ClCompile.DisableLanguageExtensions)' != 'true'"/>
-
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1500" Condition="'$(VisualStudioVersion)' == '9.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=150030729" Condition="'$(VisualStudioVersion)' == '9.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1600" Condition="'$(VisualStudioVersion)' == '10.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=160040219" Condition="'$(VisualStudioVersion)' == '10.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1700" Condition="'$(VisualStudioVersion)' == '11.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=170061030" Condition="'$(VisualStudioVersion)' == '11.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1800" Condition="'$(VisualStudioVersion)' == '12.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=180040629" Condition="'$(VisualStudioVersion)' == '12.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1900" Condition="'$(VisualStudioVersion)' == '14.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=190024210" Condition="'$(VisualStudioVersion)' == '14.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_VER=1910" Condition="'$(VisualStudioVersion)' == '15.0'"/>
-      <CFLAG_SystemPreprocessorDefinitions Include="_MSC_FULL_VER=191025017" Condition="'$(VisualStudioVersion)' == '15.0'"/>
 
       <CFLAG_SystemPreprocessorDefinitions Include="_WCHAR_T_DEFINED;_NATIVE_WCHAR_T_DEFINED" Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)' == 'true'"/>
       <CFLAG_SystemPreprocessorDefinitions Include="__MSVC_RUNTIME_CHECKS" Condition="'%(ClCompile.SmallerTypeCheck)' == 'true'"/>
@@ -126,7 +140,7 @@
       <CFLAG_SystemPreprocessorDefinitions Remove="@(CFLAG_SystemPreprocessorDefinitions)" Condition="'%(ClCompile.UndefineAllPreprocessorDefinitions)' == 'true'"/>
       
       <!-- this item exclude remove process -->
-      <CFLAG_SystemPreprocessorDefinitions Include="__STDC__" Condition="'%(ClCompile.DisableLanguageExtensions)' == 'true'"/>
+      <!-- <CFLAG_SystemPreprocessorDefinitions Include="__STDC__" Condition="'%(ClCompile.DisableLanguageExtensions)' == 'true'"/> -->
 
 
       <CFLAG_AdditionalPreprocessorDefinitions Include="%(ClCompile.PreprocessorDefinitions)"/>
@@ -139,6 +153,7 @@
       <CFLAG_ForceIncludeFiles Include="%(ClCompile.ForcedIncludeFiles)"/>
 
       <!-- <CFLAG_TargetFiles Include="@(CFLAG_ForceIncludeFiles)"/> -->
+
     </ItemGroup>
     
     <!-- convert to absolute paths -->
@@ -187,6 +202,7 @@
     <Message Text="#CFLAG#:ClCompile.PrecompiledHeader:%(ClCompile.PrecompiledHeader)"/>
     <Message Text="#CFLAG#:ClCompile.PrecompiledHeaderFile:%(ClCompile.PrecompiledHeaderFile)"/>
 
+    <Message Text="#CFLAG#:ClCompile.LanguageStandard:%(ClCompile.LanguageStandard)"/>
     <Message Text="#CFLAG#:ClCompile.CppLanguageStd:%(ClCompile.CppLanguageStd)"/>
 
     <!-- <Message Text="#CFLAG#:Midl.CPreprocessOptions:%(Midl.CPreprocessOptions)" Condition="'%(Midl.CPreprocessOptions)' != '' AND '%(Midl.CPreprocessOptions)' != 'false'" /> -->
@@ -200,8 +216,11 @@
     <Message Text="#CFLAG#:Link.TargetMachine:%(Link.TargetMachine)"/>
 
     <!-- CFLAG_* key begin -->
+    <Message Text="#CFLAG#:CFLAG_CompilerVersion:%(CFLAG.CompilerVersion)"/>
     <Message Text="#CFLAG#:CFLAG_CppLanguageStd:%(CFLAG.CppLanguageStd)"/>
     <Message Text="#CFLAG#:CFLAG_TargetMachine:%(CFLAG.TargetMachine)"/>
+
+    <Message Text="#CFLAG#:CFLAG_ClangCC1Options:@(CFLAG_ClangCC1Options)"/>
     <Message Text="#CFLAG#:CFLAG_SystemPreprocessorDefinitions:@(CFLAG_SystemPreprocessorDefinitions)"/>
     <Message Text="#CFLAG#:CFLAG_AdditionalPreprocessorDefinitions:@(CFLAG_AdditionalPreprocessorDefinitions)"/>
     <Message Text="#CFLAG#:CFLAG_UndefinePreprocessorDefinitions:@(CFLAG_UndefinePreprocessorDefinitions)"/>
