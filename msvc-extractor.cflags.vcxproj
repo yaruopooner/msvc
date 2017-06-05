@@ -154,6 +154,11 @@
 
       <!-- <CFLAG_TargetFiles Include="@(CFLAG_ForceIncludeFiles)"/> -->
 
+      <!-- <CFLAG_testInc Include="-I%(CFLAG_SystemIncludePath.Identity)"/> -->
+      <!-- <CFLAG_testInc2 Include="$([System.String]::Copy( &apos;%(CFLAG_testInc.Identity)&apos; ).Replace( &apos;\&apos;, &apos;/&apos; ))"/> -->
+      <!-- <CFLAG_testInc2 Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;%(CFLAG_testInc.Identity)&apos;, `\\+`, `/` ))"/> -->
+      <!-- <CFLAG_testInc2 Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;%(CFLAG_testInc.Identity)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_testDef Include="-D %(CFLAG_SystemPreprocessorDefinitions.Identity)"/> -->
     </ItemGroup>
     
     <!-- convert to absolute paths -->
