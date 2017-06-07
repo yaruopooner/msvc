@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/02.18:25:23
+;;; last updated : 2017/06/06.18:56:01
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -814,7 +814,8 @@
          (cedet-spp-table (plist-get details :cedet-spp-table))
          (system-inc-paths (msvc--convert-to-cedet-style-path (msvc-flags--query-cflag db-name "CFLAG_SystemIncludePath")))
          (additional-inc-paths (msvc--convert-to-cedet-style-path (msvc-flags--query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
-         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         ;; (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$")
          (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
          additional-inc-rpaths)
 
