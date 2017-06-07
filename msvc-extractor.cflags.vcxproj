@@ -83,7 +83,7 @@
 
 
       <!-- Predefined Macros auto generation by clang cc1 option -->
-      <!-- cl option convert to clang cc1 option -->
+      <!-- cl options convert to clang cc1 option -->
 
       <!-- __cplusplus -->
       <CFLAG_ClangCC1Options Include="-std=%(CFLAG.CppLanguageStd)"/>
@@ -154,11 +154,6 @@
 
       <!-- <CFLAG_TargetFiles Include="@(CFLAG_ForceIncludeFiles)"/> -->
 
-      <!-- <CFLAG_testInc Include="-I%(CFLAG_SystemIncludePath.Identity)"/> -->
-      <!-- <CFLAG_testInc2 Include="$([System.String]::Copy( &apos;%(CFLAG_testInc.Identity)&apos; ).Replace( &apos;\&apos;, &apos;/&apos; ))"/> -->
-      <!-- <CFLAG_testInc2 Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;%(CFLAG_testInc.Identity)&apos;, `\\+`, `/` ))"/> -->
-      <!-- <CFLAG_testInc2 Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;%(CFLAG_testInc.Identity)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
-      <!-- <CFLAG_testDef Include="-D %(CFLAG_SystemPreprocessorDefinitions.Identity)"/> -->
     </ItemGroup>
     
     <!-- convert to absolute paths -->
@@ -166,8 +161,49 @@
        <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_TargetFilesAbs"/>
     </ConvertToAbsolutePath>
 
+    <ConvertToAbsolutePath Paths="@(CFLAG_SystemIncludePath)">
+      <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_SystemIncludeAbsPath"/>
+    </ConvertToAbsolutePath>
+    <ConvertToAbsolutePath Paths="@(CFLAG_AdditionalIncludePath)">
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_AdditionalIncludeAbsPath"/>
+    </ConvertToAbsolutePath>
+    <ConvertToAbsolutePath Paths="@(CFLAG_ExcludePath)">
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_ExcludeAbsPath"/>
+    </ConvertToAbsolutePath>
+    <ConvertToAbsolutePath Paths="@(CFLAG_ForceIncludeFiles)">
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_ForceIncludeFilesAbs"/>
+    </ConvertToAbsolutePath>
+
+    <ItemGroup>
+      <!-- remove unnormalize path -->
+      <CFLAG_SystemIncludePath Remove="@(CFLAG_SystemIncludePath)"/>
+      <CFLAG_AdditionalIncludePath Remove="@(CFLAG_AdditionalIncludePath)"/>
+      <CFLAG_ExcludePath Remove="@(CFLAG_ExcludePath)"/>
+      <CFLAG_ForceIncludeFiles Remove="@(CFLAG_ForceIncludeFiles)"/>
+
+      <!-- store normalized path -->
+      <CFLAG_SystemIncludePath Include="@(CFLAG_SystemIncludeAbsPath)"/>
+      <CFLAG_AdditionalIncludePath Include="@(CFLAG_AdditionalIncludeAbsPath)"/>
+      <CFLAG_ExcludePath Include="@(CFLAG_ExcludeAbsPath)"/>
+      <CFLAG_ForceIncludeFiles Include="@(CFLAG_ForceIncludeFilesAbs)"/>
+
+      <!-- replace path separator \ to / -->
+      <!-- <CFLAG_SystemIncludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_SystemIncludeAbsPath)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_AdditionalIncludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_AdditionalIncludeAbsPath)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_ExcludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_ExcludeAbsPath)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_ForceIncludeFiles Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_ForceIncludeFilesAbs)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+
+      <!-- generate clang options -->
+      <CFLAG_ClangCC1Options Include="-I%(CFLAG_SystemIncludePath.Identity)" Condition="'@(CFLAG_SystemIncludePath)' != ''"/>
+      <CFLAG_ClangCC1Options Include="-I%(CFLAG_AdditionalIncludePath.Identity)" Condition="'@(CFLAG_AdditionalIncludePath)' != ''"/>
+      <CFLAG_ClangCC1Options Include="-include %(CFLAG_ForceIncludeFiles.Identity)" Condition="'@(CFLAG_ForceIncludeFiles)' != ''"/>
+      <CFLAG_ClangCC1Options Include="-D %(CFLAG_SystemPreprocessorDefinitions.Identity)" Condition="'@(CFLAG_SystemPreprocessorDefinitions)' != ''"/>
+      <CFLAG_ClangCC1Options Include="-D %(CFLAG_AdditionalPreprocessorDefinitions.Identity)" Condition="'@(CFLAG_AdditionalPreprocessorDefinitions)' != ''"/>
+      <CFLAG_ClangCC1Options Include="-U %(CFLAG_UndefinePreprocessorDefinitions.Identity)" Condition="'@(CFLAG_UndefinePreprocessorDefinitions)' != ''"/>
+    </ItemGroup>
 
     <!-- output message to STDOUT for msvc-flags's parser -->
+    <Message Text="--------------------CL Details--------------------"/>
     <Message Text="#CFLAG#:VisualStudioVersion:$(VisualStudioVersion)"/>
     <Message Text="#CFLAG#:IncludePath:$(IncludePath)"/>
     <Message Text="#CFLAG#:ClCompile.AdditionalIncludeDirectories:%(ClCompile.AdditionalIncludeDirectories)"/>
@@ -220,6 +256,7 @@
     <Message Text="#CFLAG#:ImpLib.TargetMachine:%(ImpLib.TargetMachine)"/>
     <Message Text="#CFLAG#:Link.TargetMachine:%(Link.TargetMachine)"/>
 
+    <Message Text="--------------------Clang Details--------------------"/>
     <!-- CFLAG_* key begin -->
     <Message Text="#CFLAG#:CFLAG_CompilerVersion:%(CFLAG.CompilerVersion)"/>
     <Message Text="#CFLAG#:CFLAG_CppLanguageStd:%(CFLAG.CppLanguageStd)"/>
