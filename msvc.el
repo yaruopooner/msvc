@@ -1,14 +1,14 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/05/30.17:50:18
+;;; last updated : 2017/06/06.18:56:01
 
 
-;; Copyright (C) 2013-2015  yaruopooner
+;; Copyright (C) 2013-2017  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.2.2
+;; Version: 1.3.4
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.2.0"))
 
 ;; This file is part of MSVC.
@@ -39,7 +39,7 @@
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
-;;     2015/2013/2012/2010
+;;     2017/2015/2013/2012/2010
 ;;   - code completion (auto / manual)
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
@@ -58,9 +58,9 @@
 ;; 
 ;; * REQUIRED ENVIRONMENT
 ;;   - Microsoft Windows 64/32bit
-;;     8/7/Vista
-;;   - Microsoft Visual Studio Professional
-;;     2015/2013/2012/2010
+;;     10/8/7/Vista
+;;   - Microsoft Visual Studio Community/Professional/Enterprise
+;;     2017/2015/2013/2012/2010
 ;;   - Shell 64/32bit
 ;;     CYGWIN/MSYS/CMD(cmdproxy)
 ;;     CYGWIN's bash recommended
@@ -214,8 +214,10 @@
 ;;     `<TAB>`
 ;;   - jump to definition / return from definition
 ;;     this is nestable jump.
+;;     target is type, function, enum, macro, include, misc.
+;;     visit to definition file / return from definition file.
 ;;     `M-.` / `M-,`
-;;   - visit to include file / return from include file
+;;   - visit to include file / return from include file(CEDET)
 ;;     `M-i` / `M-I`
 ;;   - goto error line prev / next
 ;;     `M-[` / `M-]`
@@ -255,7 +257,7 @@
 
 
 
-(defconst msvc-version "1.2.2")
+(defconst msvc-version "1.3.4")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -812,7 +814,8 @@
          (cedet-spp-table (plist-get details :cedet-spp-table))
          (system-inc-paths (msvc--convert-to-cedet-style-path (msvc-flags--query-cflag db-name "CFLAG_SystemIncludePath")))
          (additional-inc-paths (msvc--convert-to-cedet-style-path (msvc-flags--query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
-         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         ;; (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$")
          (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
          additional-inc-rpaths)
 
@@ -840,6 +843,9 @@
        ;; (print project-header-match-regexp)
        ;; (print cedet-spp-table)
 
+       (semantic-reset-system-include 'c-mode)
+       (semantic-reset-system-include 'c++-mode)
+       (setq semantic-c-dependency-system-include-path nil)
        (ede-cpp-root-project db-name ;ok
                              :file ede-proj-file ;ok
                              :directory cedet-root-path ; ok
@@ -1513,35 +1519,36 @@
 
 
 
-(cl-defun msvc-mode-feature-build-solution (&optional target)
+(cl-defun msvc-mode-feature-build (&key project-only-p (target "Build"))
   (interactive)
   (let ((db-name (or msvc--db-name msvc--source-code-belonging-db-name)))
     (when db-name
       (let* ((details (msvc--query-project db-name))
              (solution-file (plist-get details :solution-file))
+             (project-file (plist-get details :project-file))
+             (target-file (if project-only-p project-file solution-file))
              (process-bind-buffer (format "*MSVC Build<%s>*" db-name)))
 
-        (unless solution-file
-          (message "The solution name not found on active project.")
-          (cl-return-from msvc-mode-feature-build-solution nil))
+        (unless target-file
+          (message "The solution or project name not found on active project.")
+          (cl-return-from msvc-mode-feature-build nil))
 
         (when (process-live-p (get-buffer-process process-bind-buffer))
           (message "The solution is already building.")
-          (cl-return-from msvc-mode-feature-build-solution nil))
+          (cl-return-from msvc-mode-feature-build nil))
           
-        (let* ((target (or target "Build"))
-               (db-path (plist-get details :db-path))
+        (let* ((db-path (plist-get details :db-path))
                (platform (plist-get details :platform))
                (configuration (plist-get details :configuration))
                (version (plist-get details :version))
                (toolset (plist-get details :toolset))
 
-               (dst-file-base-name (file-name-nondirectory solution-file))
+               (dst-file-base-name (file-name-nondirectory target-file))
                (log-file (expand-file-name (concat dst-file-base-name ".build.log.msvc") db-path))
                (logger-encoding "UTF-8")
 
                (msb-rsp-file (expand-file-name (concat dst-file-base-name ".build.rsp.msvc") db-path))
-               (msb-target-file solution-file)
+               (msb-target-file target-file)
                (msb-flags (list
                            (msvc-env--create-msb-flags "/t:"
                                                        `(("%s"               .       ,target)))
@@ -1592,13 +1599,30 @@
         ))))
 
 
+(defun msvc-mode-feature-build-solution ()
+  (interactive)
+  (msvc-mode-feature-build))
+
 (defun msvc-mode-feature-rebuild-solution ()
   (interactive)
-  (msvc-mode-feature-build-solution "Rebuild"))
+  (msvc-mode-feature-build :target "Rebuild"))
 
 (defun msvc-mode-feature-clean-solution ()
   (interactive)
-  (msvc-mode-feature-build-solution "Clean"))
+  (msvc-mode-feature-build :target "Clean"))
+
+
+(defun msvc-mode-feature-build-project ()
+  (interactive)
+  (msvc-mode-feature-build :project-only-p t))
+
+(defun msvc-mode-feature-rebuild-project ()
+  (interactive)
+  (msvc-mode-feature-build :project-only-p t :target "Rebuild"))
+
+(defun msvc-mode-feature-clean-project ()
+  (interactive)
+  (msvc-mode-feature-build :project-only-p t :target "Clean"))
 
 
 

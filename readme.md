@@ -6,6 +6,23 @@
 
 # What's New?
 
+## MSVC 2017-06-09 was released
+
+### new feature
+
+-   Supported Visual Studio 2017.
+
+### others
+
+-   Refactoring and optimization.
+-   Small bug fixes.
+
+## MSVC 2016-12-21 was released
+
+### new feature
+
+-   Supported Visual Studio 2017RC.
+
 ## MSVC 2015-04-21 was released
 
 ### new feature

@@ -72,7 +72,7 @@ Visual Studio プロジェクトファイルをパースすることにより、
 
 ## バージョンの異なるVisual Studio共存と利用<a id="sec-1-2" name="sec-1-2"></a>
 
-Visual Studio 2015/2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも  
+Visual Studio [2017|2015|2013|2012|2010] などバージョンの異なるVisual Studioが複数インストールされている場合でも  
 msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。  
 これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。  
 
@@ -124,11 +124,11 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
     24.1以降でのみ動作保証
 -   shell  
     以下のいずれか  
-    CYGWIN 64/32bit(推奨)  
+    CYGWIN [64|32] bit (推奨)  
     MSYS  
     CMD
--   Microsoft Windows 64/32bit
--   Microsoft Visual Studio Professional 2015/2013/2012/2010  
+-   Microsoft Windows [64|32] bit
+-   Microsoft Visual Studio [2017|2015|2013|2012|2010]  
     CL.exe/MSBuild.exe 等を使います
 
 # 必須パッケージ<a id="sec-3" name="sec-3"></a>
@@ -145,49 +145,43 @@ msvcを M-x list-packages でインストールした場合は自動インスト
 
 # 対応範囲<a id="sec-4" name="sec-4"></a>
 
--   Emacs 64/32bit  
+-   Emacs [64|32]bit  
     CEDETが標準built-inになったバージョン以降で動作  
     
     Emacs は以下でテスト  
     <http://www.gnu.org/software/emacs/>  
-    <https://github.com/chuntaro/NTEmacs64>  
-    <http://sourceforge.jp/projects/gnupack/releases/?package_id=10839>
+    <https://github.com/yaruopooner/emacs-build-shells>  
+    <https://github.com/chuntaro/NTEmacs64>
 
 -   Shell  
-    -   CYGWIN 64/32bit  
+    -   CYGWIN [64|32] bit  
         $ uname -r  
         1.7.29(0.272/5/3)  
-        CYGWINは64/32bit動作チェック済み
-    -   MSYS  
-        32bitのみ動作チェック済み
+        CYGWINは[64|32]bit動作チェック済み
+    -   MSYS2 [64|32] bit  
+        OK
     -   CMD  
         cmdproxy,cmd動作チェック済み
 
--   Microsoft Windows 32bit/64bit  
-    -   Vista/XP  
-        未検証
-    -   7  
+-   Microsoft Windows [64|32] bit  
+    -   [10|8.x|7]  
         Professional 64 bit でのみ動作テスト
-    -   8 & 8.1  
-        Professional 64 bit でのみ動作テスト  
-        CYGWIN動作に難アリ。  
-        私の環境ではmakeやその他ツールが実行するたびにcoredumpしまくっていたので動作状況が芳しくありません。  
-        msvcはbashしか使わないので動作に問題はないでしょうが、  
-        grepなど他のツールを使ったりするでしょうから、8ではCYGWINがまともに動く方のみ使用するとよいでしょう。
+    -   [Vista|XP]  
+        サポート対象外
 
--   Microsoft Visual Studio Professional  
-    2015/2013/2012/2010 のみ動作チェック済み
+-   Microsoft Visual Studio [Community|Professional|Enterprise]  
+    [2017|2015|2013|2012|2010] 動作チェック済み
 
 -   SDK  
     下記SDKのサンプルプロジェクトでテスト。  
     対象SDKのAPIがac-clangにより補完されることを確認。  
-    -   Windows SDK 7.0A/7.1  
-        Visual Studio 2008のプロジェクトは2010に変換してテスト
+    -   Windows SDK 10.0.15.x
     -   Direct X SDK(June 2010)  
         いくつかのサンプルでビルドテスト
-    -   STL,std::tr1  
-        テンプレートの展開などをテスト  
-        boostは未テスト
+    -   ISO C++ Standard [C++11|C++14|C++1z]  
+        ライブラリやテンプレートの展開などをテスト
+    -   Boost  
+        Nuget Package でテスト
 
 # 制限事項<a id="sec-5" name="sec-5"></a>
 
@@ -525,10 +519,13 @@ includeのライン上で"M-i" すると対象ファイルへジャンプしま�
 C-f5 でプロジェクト・ソリューションのビルドが起動します。  
 コマンドからの呼び出しは  
 `(msvc-mode-feature-build-solution)`  
+`(msvc-mode-feature-build-project)`  
 
 コマンドのみで提供されている機能  
 `(msvc-mode-feature-rebuild-solution)`  
+`(msvc-mode-feature-rebuild-project)`  
 `(msvc-mode-feature-clean-solution)`  
+`(msvc-mode-feature-clean-project)`  
 
 -   操作  
     -   プロジェクト・ソリューションのビルド  

@@ -1,8 +1,8 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2015/04/12.02:57:08
+;;; last updated : 2017/06/07.19:55:37
 
-;; Copyright (C) 2013-2015  yaruopooner
+;; Copyright (C) 2013-2017  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -54,7 +54,11 @@
 ;; search keywords
 (defconst msvc-flags--collect-pattern "#CFLAG#:\\([^:]*\\):\\(.*\\)$")
 (defconst msvc-flags--collect-keys '(
+                                     "CFLAG_CompilerVersion"
+                                     "CFLAG_CppLanguageStd"
                                      "CFLAG_TargetMachine"
+
+                                     "CFLAG_ClangCC1Options"
                                      "CFLAG_SystemPreprocessorDefinitions"
                                      "CFLAG_AdditionalPreprocessorDefinitions"
                                      "CFLAG_UndefinePreprocessorDefinitions"
@@ -66,10 +70,6 @@
                                      ;; "CFLAG_TargetHeaderFiles"
                                      "CFLAG_TargetFilesAbs"
 
-                                     "ClCompile.DisableLanguageExtensions"
-                                     "ClCompile.ExceptionHandling"
-                                     "ClCompile.RuntimeTypeInfo"
-                                     "ClCompile.CompileAs"
                                      "ClCompile.PrecompiledHeader"
                                      "ClCompile.PrecompiledHeaderFile"
                                      ))
@@ -620,9 +620,14 @@ attributes
 
 
 ;; utility
+(defun msvc-flags-create-clang-cc1-cflags (db-name)
+  (msvc-flags--query-cflag db-name "CFLAG_ClangCC1Options"))
+
 (defun msvc-flags-create-clang-cflags (db-name)
   (let* (clang-cflags
          (project-path (msvc-flags--create-project-path db-name))
+
+         (clang-cc1-options (msvc-flags--query-cflag db-name "CFLAG_ClangCC1Options"))
 
          (system-ppdefs (msvc-flags--query-cflag db-name "CFLAG_SystemPreprocessorDefinitions"))
          (additional-ppdefs (msvc-flags--query-cflag db-name "CFLAG_AdditionalPreprocessorDefinitions"))
@@ -634,20 +639,12 @@ attributes
          ;; (target-cpp-files (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_TargetSourceFiles")))
          ;; (target-hpp-files (msvc-flags--convert-to-clang-style-path (msvc-flags--query-cflag db-name "CFLAG_TargetHeaderFiles")))
 
-         (opt-msc-extensions-disable (car (msvc-flags--query-cflag db-name "ClCompile.DisableLanguageExtensions")))
-         (opt-exception-handling-enable (car (msvc-flags--query-cflag db-name "ClCompile.ExceptionHandling")))
-         (opt-rtti-enable (car (msvc-flags--query-cflag db-name "ClCompile.RuntimeTypeInfo")))
-         ;; (opt-compile-as (car (msvc-flags--query-cflag db-name "ClCompile.CompileAs")))
          ;; (opt-pch-enable (car (msvc-flags--query-cflag db-name "ClCompile.PrecompiledHeader")))
          ;; (opt-pch-file (car (msvc-flags--query-cflag db-name "ClCompile.PrecompiledHeaderFile")))
          )
 
-    (when (and opt-msc-extensions-disable (string-match "false" opt-msc-extensions-disable))
-      (setq clang-cflags (append clang-cflags '("-fms-compatibility" "-fms-extensions" "-fmsc-version=1600"))))
-    (unless (and opt-exception-handling-enable (string-match "false" opt-exception-handling-enable))
-      (push "-fcxx-exceptions" clang-cflags))
-    (when (and opt-rtti-enable (string-match "false" opt-rtti-enable))
-      (push "-fno-rtti" clang-cflags))
+    (when clang-cc1-options
+      (setq clang-cflags (reverse clang-cc1-options)))
 
     ;; (unless (and opt-pch-enable (string-match "NotUsing" opt-pch-enable))
     ;;   (when opt-pch-file
@@ -698,7 +695,7 @@ attributes
 
 (defun msvc-flags-create-ac-clang-cflags (db-name &optional additional-options)
   (let* ((default-options '(
-                            "-std=c++11"
+                            ;; -cc1 options
                             ;; libclang3.1 は↓の渡し方しないとだめ(3.2/3.3は未調査)
                             ;; -no*inc系オプションを個別に渡すと include サーチの動作がおかしくなる
                             ;; -isystem で正常なパスを渡していても Windows.h は見に行けるが、 stdio.h vector などを見に行っていないなど
@@ -707,14 +704,15 @@ attributes
                             ;; "-nobuiltininc -nostdinc -nostdinc++ -nostdsysteminc"
                             ;; "-nobuiltininc -nostdinc++ -nostdsysteminc"
                             "-nobuiltininc" "-nostdinc++" "-nostdsysteminc"
+
                             "-code-completion-macros" "-code-completion-patterns"
+                            ;; "-code-completion-brief-comments"
+
                             "-fdelayed-template-parsing"
                             "-Wno-unused-value" "-Wno-#warnings" "-Wno-microsoft" "-Wc++11-extensions"
                             ;; undef all system defines
-                            "-target-cpu x86-64"
-                            "-triple x86_64-pc-win32"
                             ))
-         (db-clang-cflags (msvc-flags-create-clang-cflags db-name))
+         (db-clang-cflags (msvc-flags-create-clang-cc1-cflags db-name))
          (clang-cflags (append default-options db-clang-cflags additional-options)))
 
     clang-cflags))
@@ -725,7 +723,6 @@ attributes
                             ;; -emit-pch               Generate pre-compiled header file
                             "-cc1" "-x" "c++-header" "-emit-pch"
 
-                            "-std=c++11"
                             ;; なんか -nostdinc だめなので外しておく(Clang3.1)
                             ;; "-nobuiltininc" "-nostdinc" "-nostdinc++" "-nostdsysteminc"
                             "-nobuiltininc" "-nostdinc++" "-nostdsysteminc"
