@@ -1,6 +1,6 @@
 
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2016/12/21.20:10:35
+# last updated : 2017/06/09.22:06:44
 
 
 [[http://melpa.org/#/msvc][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/msvc][file:http://stable.melpa.org/packages/msvc-badge.svg]]
@@ -16,6 +16,13 @@
 
 
 * What's New?
+** MSVC 2017-06-09 was released
+*** new feature
+    - Supported Visual Studio 2017.
+*** others
+    - Refactoring and optimization.
+    - Small bug fixes.
+
 ** MSVC 2016-12-21 was released
 *** new feature
     - Supported Visual Studio 2017RC.
