@@ -441,11 +441,7 @@ Available places: msvc-mode on source code buffer
 
 -   operation  
     -   Completion  
-        Key Bind    : .  
-        
-            ->
-            ::
-        
+        Key Bind    : . or -> or ::  
         Explanation : Completion starts automatically.
 
 ## Syntax check<a id="sec-7-5" name="sec-7-5"></a>

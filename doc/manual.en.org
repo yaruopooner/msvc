@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2017/06/11.02:33:17
+# last updated : 2017/06/11.02:35:17
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -380,9 +380,7 @@
 
    - operation
      - Completion
-       Key Bind    : .
-                   : ->
-                   : ::
+       Key Bind    : . or -> or ::
        Explanation : Completion starts automatically.
 
 ** Syntax check
