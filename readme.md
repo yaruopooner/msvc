@@ -2,11 +2,12 @@
 
 # Main Document
 
-[MSVC User Manual](./doc/manual.ja.md)  
+[MSVC User Manual (English)](./doc/manual.en.md)  
+[MSVC User Manual (Japanese)](./doc/manual.ja.md)  
 
 # What's New?
 
-## MSVC 2017-06-09 was released
+## MSVC 2017-06-11 was released
 
 ### new feature
 
@@ -14,6 +15,7 @@
 
 ### others
 
+-   Supported English Manual
 -   Refactoring and optimization.
 -   Small bug fixes.
 
