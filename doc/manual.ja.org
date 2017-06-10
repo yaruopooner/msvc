@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2017/06/11.02:16:47
+# last updated : 2017/06/11.02:32:14
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -370,7 +370,9 @@
 
    - 操作
      - 補完
-       キー : `.`, `->`, `::`
+       キー : .
+            : ->
+            : ::
        説明 : 補完が自動起動します。
 
 ** シンタックスチェック
@@ -438,7 +440,7 @@
    またジャンプできず
    =semantic-decoration-include-visit: Point is not on an include tag=
    というメッセージが表示される場合は
-   ="C-c , ,"= という操作を行い semantic に該当バッファの reparse を行わせます。
+   "C-c , ," という操作を行い semantic に該当バッファの reparse を行わせます。
    これによりジャンプ可能になるはずです。
 
    - 操作

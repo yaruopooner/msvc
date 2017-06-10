@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2017/06/11.02:20:21
+# last updated : 2017/06/11.02:33:17
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -380,7 +380,9 @@
 
    - operation
      - Completion
-       Key Bind    : `.`, `->`, `::`
+       Key Bind    : .
+                   : ->
+                   : ::
        Explanation : Completion starts automatically.
 
 ** Syntax check
@@ -448,7 +450,7 @@
    Please return it manually. For example standard libraries stdio.h, vectors and other SDK include.
 
    =semantic-decoration-include-visit: Point is not on an include tag=
-   If the above message is displayed, ="C-c , ,"=, let semantic reparse the corresponding buffer.
+   If the above message is displayed, "C-c , ,", let semantic reparse the corresponding buffer.
 
    - operation
      - Jump to include file

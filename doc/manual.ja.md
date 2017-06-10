@@ -431,7 +431,11 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 
 -   操作  
     -   補完  
-        キー : \`.\`, \`->\`, \`::\`  
+        キー : .  
+        
+            ->
+            ::
+        
         説明 : 補完が自動起動します。
 
 ## シンタックスチェック<a id="sec-7-5" name="sec-7-5"></a>
@@ -502,7 +506,7 @@ includeのライン上で"M-i" すると対象ファイルへジャンプしま�
 またジャンプできず  
 `semantic-decoration-include-visit: Point is not on an include tag`  
 というメッセージが表示される場合は  
-="C-c , ,"= という操作を行い semantic に該当バッファの reparse を行わせます。  
+"C-c , ," という操作を行い semantic に該当バッファの reparse を行わせます。  
 これによりジャンプ可能になるはずです。  
 
 -   操作  

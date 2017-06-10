@@ -441,7 +441,11 @@ Available places: msvc-mode on source code buffer
 
 -   operation  
     -   Completion  
-        Key Bind    : \`.\`, \`->\`, \`::\`  
+        Key Bind    : .  
+        
+            ->
+            ::
+        
         Explanation : Completion starts automatically.
 
 ## Syntax check<a id="sec-7-5" name="sec-7-5"></a>
@@ -512,7 +516,7 @@ Restriction: If you jump to an include file not managed by the project, you can 
 Please return it manually. For example standard libraries stdio.h, vectors and other SDK include.  
 
 `semantic-decoration-include-visit: Point is not on an include tag`  
-If the above message is displayed, ="C-c , ,"=, let semantic reparse the corresponding buffer.  
+If the above message is displayed, "C-c , ,", let semantic reparse the corresponding buffer.  
 
 -   operation  
     -   Jump to include file  
