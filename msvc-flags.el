@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/03.21:33:00
+;;; last updated : 2017/06/07.19:55:37
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -620,6 +620,9 @@ attributes
 
 
 ;; utility
+(defun msvc-flags-create-clang-cc1-cflags (db-name)
+  (msvc-flags--query-cflag db-name "CFLAG_ClangCC1Options"))
+
 (defun msvc-flags-create-clang-cflags (db-name)
   (let* (clang-cflags
          (project-path (msvc-flags--create-project-path db-name))
@@ -709,7 +712,7 @@ attributes
                             "-Wno-unused-value" "-Wno-#warnings" "-Wno-microsoft" "-Wc++11-extensions"
                             ;; undef all system defines
                             ))
-         (db-clang-cflags (msvc-flags-create-clang-cflags db-name))
+         (db-clang-cflags (msvc-flags-create-clang-cc1-cflags db-name))
          (clang-cflags (append default-options db-clang-cflags additional-options)))
 
     clang-cflags))

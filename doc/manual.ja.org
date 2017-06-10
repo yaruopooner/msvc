@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2016/12/21.20:23:17
+# last updated : 2017/06/11.02:34:58
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -25,7 +25,7 @@
    [[./sample-pic-project-buffers.png]]
 
 ** バージョンの異なるVisual Studio共存と利用
-   Visual Studio 2017/2015/2013/2012/2010 などバージョンの異なるVisual Studioが複数インストールされている場合でも
+   Visual Studio [2017|2015|2013|2012|2010] などバージョンの異なるVisual Studioが複数インストールされている場合でも
    msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。
    これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。
 
@@ -70,11 +70,11 @@
     24.1以降でのみ動作保証
   - shell
     以下のいずれか
-    CYGWIN 64/32bit(推奨)
+    CYGWIN [64|32] bit (推奨) 
     MSYS
     CMD
-  - Microsoft Windows 64/32bit
-  - Microsoft Visual Studio 2017/2015/2013/2012/2010
+  - Microsoft Windows [64|32] bit
+  - Microsoft Visual Studio [2017|2015|2013|2012|2010]
     CL.exe/MSBuild.exe 等を使います
 
 * 必須パッケージ
@@ -89,46 +89,44 @@
   - ac-clang
 
 * 対応範囲
-  - Emacs 64/32bit
+  - Emacs [64|32]bit
     CEDETが標準built-inになったバージョン以降で動作
 
     Emacs は以下でテスト
     http://www.gnu.org/software/emacs/
+    https://github.com/yaruopooner/emacs-build-shells
     https://github.com/chuntaro/NTEmacs64
-    http://sourceforge.jp/projects/gnupack/releases/?package_id=10839
 
   - Shell
-    - CYGWIN 64/32bit
+    - CYGWIN [64|32] bit
       $ uname -r
       1.7.29(0.272/5/3)
-      CYGWINは64/32bit動作チェック済み
-    - MSYS
-      32bitのみ動作チェック済み
+      CYGWINは[64|32]bit動作チェック済み
+    - MSYS2 [64|32] bit
+      OK
     - CMD
       cmdproxy,cmd動作チェック済み
       
-  - Microsoft Windows 32bit/64bit
-    - 10
-    - 8.x
-    - 7
+  - Microsoft Windows [64|32] bit
+    - [10|8.x|7]
       Professional 64 bit でのみ動作テスト
-    - Vista/XP
+    - [Vista|XP]
       サポート対象外
 
-  - Microsoft Visual Studio Community/Professional/Enterprise
-    2017/2015/2013/2012/2010 動作チェック済み
+  - Microsoft Visual Studio [Community|Professional|Enterprise]
+    [2017|2015|2013|2012|2010] 動作チェック済み
 
   - SDK
     下記SDKのサンプルプロジェクトでテスト。
     対象SDKのAPIがac-clangにより補完されることを確認。
     
-    - Windows SDK 7.0A/7.1
-      Visual Studio 2008のプロジェクトは2010に変換してテスト
+    - Windows SDK 10.0.15.x
     - Direct X SDK(June 2010)
       いくつかのサンプルでビルドテスト
-    - STL,std::tr1
-      テンプレートの展開などをテスト
-      boostは未テスト
+    - ISO C++ Standard [C++11|C++14|C++1z]
+      ライブラリやテンプレートの展開などをテスト
+    - Boost
+      Nuget Package でテスト
 
 * 制限事項
   1) プリコンパイル済みヘッダ(PCH)は使用不可
@@ -372,7 +370,7 @@
 
    - 操作
      - 補完
-       キー : `.`, `->`, `::`
+       キー : . or -> or ::
        説明 : 補完が自動起動します。
 
 ** シンタックスチェック
@@ -407,7 +405,7 @@
        キー : M-]
        説明 : エラー行へジャンプしてエラー内容をポップアップ表示します
 
-** 定義/宣言へのジャンプ＆リターン
+** 定義/宣言/includeへのジャンプ＆リターン
    利用可能な場所：msvc-mode onのソースコードバッファ上
 
    ソースコードバッファでジャンプしたいワード上にカーソルをポイントしてジャンプします。
@@ -417,7 +415,7 @@
    ですので、 luaなどその他スクリプト言語も使用しており GTAGS + CTAGS を利用するような場合はそれらと併用するのがよいでしょう。
 
    - 操作
-     - 定義/宣言へジャンプ
+     - 定義/宣言/includeへジャンプ
        キー : M-.
        説明 : ジャンプしたいワード上にカーソルをポイントしてキー操作をすると
               定義/宣言がされているソースファイルをオープンし該当バッファの定義/宣言場所へカーソルをポイントします
@@ -429,6 +427,9 @@
 ** includeファイルへのジャンプ＆リターン
    利用可能な場所：msvc-mode onのソースコードバッファ上
 
+   semanticの機能を利用したジャンプです。
+   ※特に理由がない限り、前節の =定義/宣言/includeへのジャンプ＆リターン= 機能を利用するべきです。
+
    includeのライン上で"M-i" すると対象ファイルへジャンプします。
    ジャンプ履歴はスタックされており複数回ジャンプ後に最初のジャンプ元へ戻る事が可能です。
    ※制限事項：プロジェクトで管理されていないインクルードファイルへジャンプするとM-Iで戻れません。
@@ -437,7 +438,7 @@
    またジャンプできず
    =semantic-decoration-include-visit: Point is not on an include tag=
    というメッセージが表示される場合は
-   ="C-c , ,"= という操作を行い semantic に該当バッファの reparse を行わせます。
+   "C-c , ," という操作を行い semantic に該当バッファの reparse を行わせます。
    これによりジャンプ可能になるはずです。
 
    - 操作
@@ -456,10 +457,13 @@
    C-f5 でプロジェクト・ソリューションのビルドが起動します。
    コマンドからの呼び出しは
    =(msvc-mode-feature-build-solution)=
+   =(msvc-mode-feature-build-project)=
    
    コマンドのみで提供されている機能
    =(msvc-mode-feature-rebuild-solution)=
+   =(msvc-mode-feature-rebuild-project)=
    =(msvc-mode-feature-clean-solution)=
+   =(msvc-mode-feature-clean-project)=
 
    - 操作
      - プロジェクト・ソリューションのビルド
@@ -467,8 +471,20 @@
        説明 : プロジェクト・ソリューションのビルドが起動します
 
 
+   以下の設定を.msvcあたりで記述しておく
+
+   ビルドログ報告フレームを設定可能
+   =(setq msvc-solution-build-report-display-target TARGET-SYMBOL)=
+   - =TARGET-SYMBOL=
+     ビルドログバッファを表示するウィンドウを指定
+     - 'other-frame
+       自フレームとは別フレームを生成して表示する
+     - nil
+       自フレームに表示
+
+
    ビルドログ報告スタイルを設定可能
-   以下の変数にシンボルをセットすることにより変更が可能です。(.msvcあたりで記述しておく)
+   以下の変数にシンボルをセットすることにより変更が可能です。
    =(setq msvc-solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)=
 
    - =DISPLAY-TIMING-SYMBOL=
@@ -520,6 +536,7 @@
    Visual Studio上でプロジェクトファイルを編集したり、
    バージョンコントロールによるアップデートでプロジェクトファイルが更新された場合に使用します。
    現在Emacs上でアクティブになっている全てのプロジェクトを再パース・再アクティブ化します。
+   再パースは前回解析時より日付の新しいプロジェクトに対してのみ行われます。
    =(msvc-reparse-active-projects)=
 
 ** Visual Studio の起動

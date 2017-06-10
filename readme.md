@@ -2,9 +2,22 @@
 
 # Main Document
 
-[MSVC User Manual](./doc/manual.ja.md)  
+[MSVC User Manual (English)](./doc/manual.en.md)  
+[MSVC User Manual (Japanese)](./doc/manual.ja.md)  
 
 # What's New?
+
+## MSVC 2017-06-11 was released
+
+### new feature
+
+-   Supported Visual Studio 2017.
+
+### others
+
+-   Supported English Manual
+-   Refactoring and optimization.
+-   Small bug fixes.
 
 ## MSVC 2016-12-21 was released
 

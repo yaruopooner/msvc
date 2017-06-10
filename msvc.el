@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/02.18:25:23
+;;; last updated : 2017/06/11.02:43:02
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.4
+;; Version: 1.3.5
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.2.0"))
 
 ;; This file is part of MSVC.
@@ -257,7 +257,7 @@
 
 
 
-(defconst msvc-version "1.3.4")
+(defconst msvc-version "1.3.5")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -814,7 +814,8 @@
          (cedet-spp-table (plist-get details :cedet-spp-table))
          (system-inc-paths (msvc--convert-to-cedet-style-path (msvc-flags--query-cflag db-name "CFLAG_SystemIncludePath")))
          (additional-inc-paths (msvc--convert-to-cedet-style-path (msvc-flags--query-cflag db-name "CFLAG_AdditionalIncludePath") project-path))
-         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         ;; (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$\\|\\<\\w+$")
+         (project-header-match-regexp "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|inl\\)$")
          (ede-proj-file (expand-file-name (concat db-name ".ede") cedet-root-path))
          additional-inc-rpaths)
 
