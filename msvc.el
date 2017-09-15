@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/11.02:43:02
+;;; last updated : 2017/09/15.18:18:55
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -319,6 +319,7 @@
                                         :allow-flymake-p
                                         :cedet-root-path
                                         :cedet-spp-table
+                                        :flymake-back-end
                                         :flymake-manually-p
                                         :flymake-manually-back-end
                                         :target-buffers))
@@ -338,6 +339,7 @@
                                        :allow-flymake-p value
                                        :cedet-root-path path
                                        :cedet-spp-table value
+                                       :flymake-back-end value
                                        :flymake-manually-p value
                                        :flymake-manually-back-end value
                                        :target-buffers buffer))
@@ -371,7 +373,7 @@
 `nil'         : user default style")
 
 
-(defvar-local msvc--flymake-back-end nil
+(defvar-local msvc--flymake-back-end 'msbuild
   "flymake back-end symbols
 `msbuild'     : MSBuild
 `clang'       : clang
@@ -650,9 +652,13 @@
 
 
 (defadvice flymake-start-syntax-check-process (around flymake-start-syntax-check-process-msbuild-custom (cmd args dir) activate)
-  (if msvc--flymake-back-end
-      (msvc--flymake-start-syntax-check-process cmd args dir)
-    ad-do-it))
+  (cl-case msvc--flymake-back-end
+    (msbuild
+     (msvc--flymake-start-syntax-check-process cmd args dir))
+    (clang
+     (ac-clang-diagnostics))
+    (t
+     ad-do-it)))
 
 
 (defconst msvc--flymake-allowed-file-name-masks '(("\\.\\(?:[ch]\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" msvc--flymake-command-generator)))
@@ -903,13 +909,15 @@
 
 (defun msvc--setup-buffer-feature-flymake (db-name status)
   (let* ((details (msvc--query-project db-name))
+         (back-end (plist-get details :flymake-back-end))
          (manually-p (plist-get details :flymake-manually-p))
          (manually-back-end (plist-get details :flymake-manually-back-end)))
 
     (cl-case status
       (enable
-       (setq msvc--flymake-back-end 'msbuild)
-       (setq msvc--flymake-manually-back-end (if manually-back-end manually-back-end msvc--flymake-back-end))
+       (when back-end
+         (setq msvc--flymake-back-end back-end))
+       (setq msvc--flymake-manually-back-end (or manually-back-end msvc--flymake-back-end))
        (set (make-local-variable 'flymake-allowed-file-name-masks) msvc--flymake-allowed-file-name-masks)
        (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc--flymake-err-line-patterns msvc--flymake-manually-back-end))
        ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
@@ -1080,6 +1088,7 @@
 :allow-flymake-p
 :cedet-root-path
 :cedet-spp-table
+:flymake-back-end
 :flymake-manually-p
 :flymake-manually-back-end
 "
@@ -1137,6 +1146,7 @@
 :allow-flymake-p
 :cedet-root-path
 :cedet-spp-table
+:flymake-back-end
 :flymake-manually-p
 :flymake-manually-back-end
 "
@@ -1172,6 +1182,7 @@
          (allow-flymake-p (plist-get args :allow-flymake-p))
          (cedet-root-path (plist-get args :cedet-root-path))
          (cedet-spp-table (plist-get args :cedet-spp-table))
+         (flymake-back-end (plist-get args :flymake-back-end))
          (flymake-manually-p (plist-get args :flymake-manually-p))
          (flymake-manually-back-end (plist-get args :flymake-manually-back-end))
 
@@ -1208,6 +1219,7 @@
                                     :allow-flymake-p ,allow-flymake-p
                                     :cedet-root-path ,cedet-root-path
                                     :cedet-spp-table ,cedet-spp-table
+                                    :flymake-back-end ,flymake-back-end
                                     :flymake-manually-p ,flymake-manually-p
                                     :flymake-manually-back-end ,flymake-manually-back-end
                                     :target-buffers ,target-buffers
