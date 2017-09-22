@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/09/15.18:18:55
+;;; last updated : 2017/09/20.12:48:08
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -651,7 +651,7 @@
        (flymake-report-fatal-status "PROCERR" err-str)))))
 
 
-(defadvice flymake-start-syntax-check-process (around flymake-start-syntax-check-process-msbuild-custom (cmd args dir) activate)
+(defadvice flymake-start-syntax-check-process (around msvc--flymake-start-syntax-check-process-advice (cmd args dir) activate)
   (cl-case msvc--flymake-back-end
     (msbuild
      (msvc--flymake-start-syntax-check-process cmd args dir))
@@ -676,20 +676,6 @@
     clang
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
-
-
-(defvar-local msvc--suspend-syntax-check-p nil)
-
-(defun msvc--suspend-syntax-check ()
-  (when (and (not msvc--suspend-syntax-check-p) (assoc-default 'flymake-mode (buffer-local-variables)))
-    (flymake-mode-off)
-    (setq msvc--suspend-syntax-check-p t)))
-
-(defun msvc--resume-syntax-check ()
-  (when msvc--suspend-syntax-check-p
-    (flymake-mode-on)
-    (msvc-mode-feature-manually-flymake)
-    (setq msvc--suspend-syntax-check-p nil)))
 
 
 (defun msvc--flymake-command-generator ()
@@ -923,22 +909,21 @@
        ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
        (set (make-local-variable 'flymake-start-syntax-check-on-find-file) nil)
 
-       (when (featurep 'yasnippet)
-         (add-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check nil t)
-         (add-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check nil t))
-
-       (unless manually-p
-         (flymake-mode-on)))
+       (flymake-mode-on)
+       (when manually-p
+         (defadvice flymake-on-timer-event (around msvc--flymake-suspend-advice last activate)
+           (let* ((details (msvc--query-current-project))
+                  (manually-p (plist-get details :flymake-manually-p)))
+             ;; (when (and details (not manually-p))
+             (unless manually-p
+               ad-do-it)))))
       ;; (let ((flymake-start-syntax-check-on-find-file nil))
       ;;   (flymake-mode-on)))
       (disable
-       (if manually-p
-           (flymake-delete-own-overlays)
-         (flymake-mode-off))
-
-       (when (featurep 'yasnippet)
-         (remove-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check t)
-         (remove-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check t))
+       (when manually-p
+         (flymake-delete-own-overlays)
+         (ad-disable-advice 'flymake-on-timer-event 'around 'msvc--flymake-suspend-advice))
+       (flymake-mode-off)
 
        (setq msvc--flymake-back-end nil)
        (setq msvc--flymake-manually-back-end nil)
