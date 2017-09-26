@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/09/20.12:48:08
+;;; last updated : 2017/09/26.10:46:11
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -106,7 +106,7 @@
 ;;   (setq w32-pipe-read-delay 0)
 ;;   (when (msvc-initialize)
 ;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
-;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
+;;     (add-hook 'c-mode-common-hook #'msvc-mode-on t))
 ;; 
 ;;   For more samples, please refer the following URL.
 ;;   [https://github.com/yaruopooner/msvc/tree/master/minimal-config-sample]
@@ -424,11 +424,11 @@
 ;; for Project Buffer keymap
 (defvar msvc-mode-filter-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET") 'msvc--keyboard-visit-target)
-    (define-key map (kbd "C-z") 'msvc--keyboard-visit-target-other-window)
-    ;; (define-key map [(mouse-1)] 'ibuffer-mouse-toggle-mark)
-    (define-key map [(mouse-1)] 'msvc--mouse-visit-target)
-    ;; (define-key map [down-mouse-3] 'ibuffer-mouse-popup-menu)
+    (define-key map (kbd "RET") #'msvc--keyboard-visit-target)
+    (define-key map (kbd "C-z") #'msvc--keyboard-visit-target-other-window)
+    ;; (define-key map [(mouse-1)] #'ibuffer-mouse-toggle-mark)
+    (define-key map [(mouse-1)] #'msvc--mouse-visit-target)
+    ;; (define-key map [down-mouse-3] #'ibuffer-mouse-popup-menu)
     map))
 
 
@@ -529,9 +529,9 @@
 
   (cl-case (get-text-property (point) 'target)
     (buffer
-     (msvc--visit-buffer (point) 'switch-to-buffer))
+     (msvc--visit-buffer (point) #'switch-to-buffer))
     (path
-     (msvc--visit-path (point) 'find-file))))
+     (msvc--visit-path (point) #'find-file))))
      
 
 (defun msvc--keyboard-visit-target-other-window ()
@@ -540,9 +540,9 @@
 
   (cl-case (get-text-property (point) 'target)
     (buffer
-     (msvc--visit-buffer (point) 'msvc--split-window))
+     (msvc--visit-buffer (point) #'msvc--split-window))
     (path
-     (msvc--visit-path (point) 'find-file-other-window))))
+     (msvc--visit-path (point) #'find-file-other-window))))
     
 
 (defun msvc--mouse-visit-target (_event)
@@ -551,9 +551,9 @@
 
   (cl-case (get-text-property (point) 'target)
     (buffer
-     (msvc--visit-buffer (point) 'switch-to-buffer))
+     (msvc--visit-buffer (point) #'switch-to-buffer))
     (path
-     (msvc--visit-path (point) 'find-file))))
+     (msvc--visit-path (point) #'find-file))))
 
 
 
@@ -626,7 +626,7 @@
               (let ((default-directory (or dir default-directory)))
                 (when dir
                   (flymake-log 3 "starting process on dir %s" dir))
-                (apply 'start-file-process
+                (apply #'start-file-process
                        "flymake-proc" (current-buffer) cmd args))))
         (set-process-sentinel process 'flymake-process-sentinel)
         (set-process-filter process 'flymake-process-filter)
@@ -956,10 +956,10 @@
       (setq details (plist-put details :target-buffers target-buffers))
       ;; (print target-buffers)
 
-      ;; (add-hook 'kill-buffer-hook 'msvc--detach-from-project nil t)
-      ;; (add-hook 'before-revert-hook 'msvc--detach-from-project nil t)
-      (add-hook 'kill-buffer-hook 'msvc-mode-off nil t)
-      (add-hook 'before-revert-hook 'msvc-mode-off nil t)
+      ;; (add-hook 'kill-buffer-hook #'msvc--detach-from-project nil t)
+      ;; (add-hook 'before-revert-hook #'msvc--detach-from-project nil t)
+      (add-hook 'kill-buffer-hook #'msvc-mode-off nil t)
+      (add-hook 'before-revert-hook #'msvc-mode-off nil t)
 
       ;; launch allow features(launch order low > high)
 
@@ -999,8 +999,8 @@
       (setq target-buffers (delete (current-buffer) target-buffers))
       (setq details (plist-put details :target-buffers target-buffers))
 
-      (remove-hook 'kill-buffer-hook 'msvc-mode-off t)
-      (remove-hook 'before-revert-hook 'msvc-mode-off t)
+      (remove-hook 'kill-buffer-hook #'msvc-mode-off t)
+      (remove-hook 'before-revert-hook #'msvc-mode-off t)
 
       ;; shutdown allow features(order hight > low)
 
@@ -1044,7 +1044,7 @@
       (let ((db-names (plist-get request :db-names))
             (args (plist-get request :args)))
         (cl-dolist (db-name db-names)
-          (apply 'msvc-activate-project db-name args))))
+          (apply #'msvc-activate-project db-name args))))
     (setq msvc--activation-requests nil)
 
     (when msvc--activation-timer
@@ -1106,16 +1106,16 @@
     
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
-      (setq db-names (apply 'msvc-flags-parse-vcx-solution args)))
+      (setq db-names (apply #'msvc-flags-parse-vcx-solution args)))
 
     (when project-file
-      (setq db-names (apply 'msvc-flags-parse-vcx-project args))
+      (setq db-names (apply #'msvc-flags-parse-vcx-project args))
       (setq db-names (when db-names (list db-names))))
 
     (when db-names
       (add-to-list 'msvc--activation-requests `(:db-names ,db-names :args ,args) t)
       (unless msvc--activation-timer
-        (setq msvc--activation-timer (run-at-time nil 1 'msvc--parsed-activator))))
+        (setq msvc--activation-timer (run-at-time nil 1 #'msvc--parsed-activator))))
 
     db-names))
 
@@ -1300,7 +1300,7 @@
                             (car project))
                           msvc--active-projects)))
     (cl-dolist (db-name db-names)
-      (apply 'msvc-activate-projects-after-parse (msvc--query-project db-name)))))
+      (apply #'msvc-activate-projects-after-parse (msvc--query-project db-name)))))
 
 
 
@@ -1355,7 +1355,7 @@
 (defun msvc--mode-feature-reparse-project ()
   (interactive)
   (let* ((details (msvc--query-current-project)))
-    (apply 'msvc-activate-projects-after-parse details)))
+    (apply #'msvc-activate-projects-after-parse details)))
 
 
 (defun msvc-mode-feature-launch-msvs-by-project ()
@@ -1476,13 +1476,13 @@
          log-end
          (map (make-sparse-keymap)))
 
-    (define-key map (kbd "[") 'msvc-mode-feature-solution-goto-prev-error)
-    (define-key map (kbd "]") 'msvc-mode-feature-solution-goto-next-error)
-    (define-key map (kbd "C-z") 'msvc-mode-feature-solution-view-error-file)
-    (define-key map (kbd "M-[") 'msvc-mode-feature-solution-view-prev-error)
-    (define-key map (kbd "M-]") 'msvc-mode-feature-solution-view-next-error)
-    (define-key map (kbd "RET") 'msvc-mode-feature-solution-jump-to-error-file)
-    (define-key map [(mouse-1)] 'msvc-mode-feature-solution-jump-to-error-file-by-mouse)
+    (define-key map (kbd "[") #'msvc-mode-feature-solution-goto-prev-error)
+    (define-key map (kbd "]") #'msvc-mode-feature-solution-goto-next-error)
+    (define-key map (kbd "C-z") #'msvc-mode-feature-solution-view-error-file)
+    (define-key map (kbd "M-[") #'msvc-mode-feature-solution-view-prev-error)
+    (define-key map (kbd "M-]") #'msvc-mode-feature-solution-view-next-error)
+    (define-key map (kbd "RET") #'msvc-mode-feature-solution-jump-to-error-file)
+    (define-key map [(mouse-1)] #'msvc-mode-feature-solution-jump-to-error-file-by-mouse)
 
     (with-current-buffer buffer
       (use-local-map map)
@@ -1580,8 +1580,8 @@
           (when (get-buffer process-bind-buffer)
             (kill-buffer process-bind-buffer))
 
-          (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-            (set-process-sentinel process 'msvc--build-solution-sentinel))
+          (let ((process (apply #'start-process process-name process-bind-buffer command command-args)))
+            (set-process-sentinel process #'msvc--build-solution-sentinel))
 
           ;; プロセスバッファを最初に表示
           (when (eq msvc-solution-build-report-display-timing 'before)
@@ -1630,16 +1630,16 @@
 
 (defvar msvc--mode-key-map 
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-i") 'msvc-mode-feature-visit-to-include)
-    (define-key map (kbd "M-I") 'msvc-mode-feature-return-from-include)
-    (define-key map (kbd "M-[") 'msvc-mode-feature-flymake-goto-prev-error)
-    (define-key map (kbd "M-]") 'msvc-mode-feature-flymake-goto-next-error)
-    (define-key map (kbd "<f5>") 'msvc-mode-feature-manually-flymake)
-    (define-key map (kbd "<C-f5>") 'msvc-mode-feature-build-solution)
-    ;; (define-key map (kbd "<f6>") 'msvc-mode-feature-manually-ac-clang-complete)
-    ;; (define-key map (kbd "<f7>") 'semantic-force-refresh)
-    ;; (define-key map (kbd "C-j") 'msvc-mode-feature-jump-to-project-buffer)
-    ;; (define-key map (kbd "C-j") 'msvc-mode-feature-launch-msvs)
+    (define-key map (kbd "M-i") #'msvc-mode-feature-visit-to-include)
+    (define-key map (kbd "M-I") #'msvc-mode-feature-return-from-include)
+    (define-key map (kbd "M-[") #'msvc-mode-feature-flymake-goto-prev-error)
+    (define-key map (kbd "M-]") #'msvc-mode-feature-flymake-goto-next-error)
+    (define-key map (kbd "<f5>") #'msvc-mode-feature-manually-flymake)
+    (define-key map (kbd "<C-f5>") #'msvc-mode-feature-build-solution)
+    ;; (define-key map (kbd "<f6>") #'msvc-mode-feature-manually-ac-clang-complete)
+    ;; (define-key map (kbd "<f7>") #'semantic-force-refresh)
+    ;; (define-key map (kbd "C-j") #'msvc-mode-feature-jump-to-project-buffer)
+    ;; (define-key map (kbd "C-j") #'msvc-mode-feature-launch-msvs)
     map)
   "MSVC mode key map")
 
