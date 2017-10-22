@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/09/26.10:49:06
+;;; last updated : 2017/10/22.23:30:47
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -312,6 +312,10 @@ attributes
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
+
+    (unless (msvc-env--query-detected-version-p version)
+      (message "msvc-flags : product version %s not detected : Microsoft Visual Studio" version)
+      (cl-return-from msvc-flags-parse-vcx-project nil))
 
     ;; file extension check
     (unless (eq (compare-strings (file-name-extension project-file) nil nil "vcxproj" nil nil t) t)

@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/09/20.12:45:46
+;;; last updated : 2017/10/22.23:34:47
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -167,6 +167,10 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
      (msvc-env--detect-product-from-registry))
     (env-var
      (msvc-env--detect-product-from-env-var))))
+
+
+(defun msvc-env--query-detected-version-p (version)
+  (member version msvc-env--product-version))
 
 
 
