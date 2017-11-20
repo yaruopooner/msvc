@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/10/22.23:30:47
+;;; last updated : 2017/11/20.17:46:26
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -318,7 +318,7 @@ attributes
       (cl-return-from msvc-flags-parse-vcx-project nil))
 
     ;; file extension check
-    (unless (eq (compare-strings (file-name-extension project-file) nil nil "vcxproj" nil nil t) t)
+    (unless (string= (downcase (or (file-name-extension project-file) "")) "vcxproj")
       (message "msvc-flags : This file is not project file. : %s" project-file)
       (cl-return-from msvc-flags-parse-vcx-project nil))
 
@@ -485,7 +485,7 @@ attributes
   (let ((solution-file (plist-get args :solution-file)))
 
     ;; file extension check
-    (unless (eq (compare-strings (file-name-extension solution-file) nil nil "sln" nil nil t) t)
+    (unless (string= (downcase (or (file-name-extension solution-file) "")) "sln")
       (message "msvc-flags : This file is not solution file. : %s" solution-file)
       (cl-return-from msvc-flags-parse-vcx-solution nil))
 
@@ -500,6 +500,7 @@ attributes
            projects
            ;; project-name
            project-path
+           project-extension
            db-names)
 
       (when (get-buffer-create parse-buffer)
@@ -515,8 +516,9 @@ attributes
             ;; パスのバックスラッシュ等は再置換
             (setq project-path (replace-regexp-in-string "[\\\\]+" "/" project-path))
             (setq project-path (expand-file-name project-path sln-directory))
+            (setq project-extension (downcase (or (file-name-extension project-path) "")))
 
-            (when (file-readable-p project-path)
+            (when (and (file-readable-p project-path) (string= project-extension "vcxproj"))
               (msvc-env--add-to-list projects project-path) t))
           (kill-buffer)))
 
