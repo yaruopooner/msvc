@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/03/15.03:02:14
+;;; last updated : 2017/10/22.23:34:47
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -169,6 +169,10 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
      (msvc-env--detect-product-from-env-var))))
 
 
+(defun msvc-env--query-detected-version-p (version)
+  (member version msvc-env--product-version))
+
+
 
 
 ;; utilities
@@ -241,10 +245,13 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
 
 
 (cl-defun msvc-env--initialize ()
-  (if (eq system-type 'windows-nt)
-      (when (and (boundp 'w32-pipe-read-delay) (> w32-pipe-read-delay 0))
-        (display-warning 'msvc "Please set the appropriate value for `w32-pipe-read-delay'. Because a pipe delay value is large value. Ideal value is 0. see help of `w32-pipe-read-delay'."))
-    (display-warning 'msvc "This environment is not a Microsoft Windows."))
+  (unless (eq system-type 'windows-nt)
+    ;; (display-warning 'msvc "msvc-env : This environment is not a Microsoft Windows.")
+    (message "msvc-env : This environment is not a Microsoft Windows.")
+    (cl-return-from msvc-env--initialize nil))
+
+  (when (and (boundp 'w32-pipe-read-delay) (> w32-pipe-read-delay 0))
+    (display-warning 'msvc "Please set the appropriate value for `w32-pipe-read-delay'. Because a pipe delay value is large value. Ideal value is 0. see help of `w32-pipe-read-delay'."))
 
   (unless (msvc-env--detect-product)
     (display-warning 'msvc "msvc-env : product not detected : Microsoft Visual Studio")

@@ -7,6 +7,12 @@
 
 # What's New?
 
+## MSVC 2017-12-04 was released
+
+### others
+
+-   Small bug fixes.
+
 ## MSVC 2017-06-11 was released
 
 ### new feature

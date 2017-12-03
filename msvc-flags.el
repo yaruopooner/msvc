@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/07.19:55:37
+;;; last updated : 2017/11/20.17:46:26
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -236,12 +236,12 @@
     ;; next parse search & exec
     (let (request)
       (while (and (not msvc-flags--parsing-p) (setq request (pop msvc-flags--parse-requests)))
-        (apply 'msvc-flags-parse-vcx-project request))
+        (apply #'msvc-flags-parse-vcx-project request))
       ;; final request check
       (when (and (not msvc-flags--parsing-p) (null msvc-flags--parse-requests))
         ;; this sentinel is final request.
         ;; final sentinel hook exec
-        ;; (apply final-hook args)
+        ;; (apply #'final-hook args)
         (run-hooks 'msvc-flags-after-all-parse-hook)
         ))))
 
@@ -313,8 +313,12 @@ attributes
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
 
+    (unless (msvc-env--query-detected-version-p version)
+      (message "msvc-flags : product version %s not detected : Microsoft Visual Studio" version)
+      (cl-return-from msvc-flags-parse-vcx-project nil))
+
     ;; file extension check
-    (unless (eq (compare-strings (file-name-extension project-file) nil nil "vcxproj" nil nil t) t)
+    (unless (string= (downcase (or (file-name-extension project-file) "")) "vcxproj")
       (message "msvc-flags : This file is not project file. : %s" project-file)
       (cl-return-from msvc-flags-parse-vcx-project nil))
 
@@ -439,13 +443,13 @@ attributes
         (if sync-p
             ;; sync
             (progn
-              (when (eq (apply 'call-process command nil process-bind-buffer nil command-args) 0)
+              (when (eq (apply #'call-process command nil process-bind-buffer nil command-args) 0)
                 (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-buffer process-bind-buffer)))
               ;; parsing flag off
               (setq msvc-flags--parsing-p nil))
           ;; async
-          (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-            (set-process-sentinel process 'msvc-flags--process-sentinel)))
+          (let ((process (apply #'start-process process-name process-bind-buffer command command-args)))
+            (set-process-sentinel process #'msvc-flags--process-sentinel)))
 
 
         (cl-return-from msvc-flags-parse-vcx-project db-name)))))
@@ -481,7 +485,7 @@ attributes
   (let ((solution-file (plist-get args :solution-file)))
 
     ;; file extension check
-    (unless (eq (compare-strings (file-name-extension solution-file) nil nil "sln" nil nil t) t)
+    (unless (string= (downcase (or (file-name-extension solution-file) "")) "sln")
       (message "msvc-flags : This file is not solution file. : %s" solution-file)
       (cl-return-from msvc-flags-parse-vcx-solution nil))
 
@@ -494,8 +498,9 @@ attributes
            (parse-buffer (format msvc-flags--process-buffer-name-fmt solution-file))
            (pattern "Project([^)]+)\\s-+=\\s-+\"\\([^\"]+\\)\"[^\"]+\"\\([^\"]+\\)\"")
            projects
-           project-name
+           ;; project-name
            project-path
+           project-extension
            db-names)
 
       (when (get-buffer-create parse-buffer)
@@ -505,19 +510,20 @@ attributes
 
           (goto-char (point-min))
           (while (re-search-forward pattern nil t)
-            (setq project-name (match-string 1))
+            ;; (setq project-name (match-string 1))
             (setq project-path (match-string 2))
 
             ;; パスのバックスラッシュ等は再置換
             (setq project-path (replace-regexp-in-string "[\\\\]+" "/" project-path))
             (setq project-path (expand-file-name project-path sln-directory))
+            (setq project-extension (downcase (or (file-name-extension project-path) "")))
 
-            (when (file-readable-p project-path)
+            (when (and (file-readable-p project-path) (string= project-extension "vcxproj"))
               (msvc-env--add-to-list projects project-path) t))
           (kill-buffer)))
 
       (cl-dolist (path projects)
-        (let ((db-name (apply 'msvc-flags-parse-vcx-project :project-file path args)))
+        (let ((db-name (apply #'msvc-flags-parse-vcx-project :project-file path args)))
           (when db-name
             (msvc-env--add-to-list db-names db-name t))))
 
@@ -577,7 +583,7 @@ attributes
           ;; (version (plist-get property :version))
           ;; (toolset (plist-get property :toolset)))
           (when parse-p
-            (when (apply 'msvc-flags-parse-vcx-project :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p property)
+            (when (apply #'msvc-flags-parse-vcx-project :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p property)
               (setq count (1+ count)))))))
     count))
 
@@ -738,7 +744,7 @@ attributes
          (db-clang-cflags (msvc-flags-create-clang-cflags db-name))
          (clang-cflags (append default-options db-clang-cflags additional-options `(,input-pch))))
     
-    (apply 'start-process "clang" "*Clang PCH-Log*" "clang" clang-cflags)
+    (apply #'start-process "clang" "*Clang PCH-Log*" "clang" clang-cflags)
     clang-cflags))
 
 

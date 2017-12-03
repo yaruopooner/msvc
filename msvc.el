@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/06/11.02:43:02
+;;; last updated : 2017/12/04.02:19:37
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -8,7 +8,7 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.5
+;; Version: 1.3.6
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.2.0"))
 
 ;; This file is part of MSVC.
@@ -106,7 +106,7 @@
 ;;   (setq w32-pipe-read-delay 0)
 ;;   (when (msvc-initialize)
 ;;     (msvc-flags-load-db :parsing-buffer-delete-p t)
-;;     (add-hook 'c-mode-common-hook 'msvc-mode-on t))
+;;     (add-hook 'c-mode-common-hook #'msvc-mode-on t))
 ;; 
 ;;   For more samples, please refer the following URL.
 ;;   [https://github.com/yaruopooner/msvc/tree/master/minimal-config-sample]
@@ -257,7 +257,7 @@
 
 
 
-(defconst msvc-version "1.3.5")
+(defconst msvc-version "1.3.6")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -319,6 +319,7 @@
                                         :allow-flymake-p
                                         :cedet-root-path
                                         :cedet-spp-table
+                                        :flymake-back-end
                                         :flymake-manually-p
                                         :flymake-manually-back-end
                                         :target-buffers))
@@ -338,6 +339,7 @@
                                        :allow-flymake-p value
                                        :cedet-root-path path
                                        :cedet-spp-table value
+                                       :flymake-back-end value
                                        :flymake-manually-p value
                                        :flymake-manually-back-end value
                                        :target-buffers buffer))
@@ -371,7 +373,7 @@
 `nil'         : user default style")
 
 
-(defvar-local msvc--flymake-back-end nil
+(defvar-local msvc--flymake-back-end 'msbuild
   "flymake back-end symbols
 `msbuild'     : MSBuild
 `clang'       : clang
@@ -422,11 +424,11 @@
 ;; for Project Buffer keymap
 (defvar msvc-mode-filter-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET") 'msvc--keyboard-visit-target)
-    (define-key map (kbd "C-z") 'msvc--keyboard-visit-target-other-window)
-    ;; (define-key map [(mouse-1)] 'ibuffer-mouse-toggle-mark)
-    (define-key map [(mouse-1)] 'msvc--mouse-visit-target)
-    ;; (define-key map [down-mouse-3] 'ibuffer-mouse-popup-menu)
+    (define-key map (kbd "RET") #'msvc--keyboard-visit-target)
+    (define-key map (kbd "C-z") #'msvc--keyboard-visit-target-other-window)
+    ;; (define-key map [(mouse-1)] #'ibuffer-mouse-toggle-mark)
+    (define-key map [(mouse-1)] #'msvc--mouse-visit-target)
+    ;; (define-key map [down-mouse-3] #'ibuffer-mouse-popup-menu)
     map))
 
 
@@ -527,9 +529,9 @@
 
   (cl-case (get-text-property (point) 'target)
     (buffer
-     (msvc--visit-buffer (point) 'switch-to-buffer))
+     (msvc--visit-buffer (point) #'switch-to-buffer))
     (path
-     (msvc--visit-path (point) 'find-file))))
+     (msvc--visit-path (point) #'find-file))))
      
 
 (defun msvc--keyboard-visit-target-other-window ()
@@ -538,9 +540,9 @@
 
   (cl-case (get-text-property (point) 'target)
     (buffer
-     (msvc--visit-buffer (point) 'msvc--split-window))
+     (msvc--visit-buffer (point) #'msvc--split-window))
     (path
-     (msvc--visit-path (point) 'find-file-other-window))))
+     (msvc--visit-path (point) #'find-file-other-window))))
     
 
 (defun msvc--mouse-visit-target (_event)
@@ -549,9 +551,9 @@
 
   (cl-case (get-text-property (point) 'target)
     (buffer
-     (msvc--visit-buffer (point) 'switch-to-buffer))
+     (msvc--visit-buffer (point) #'switch-to-buffer))
     (path
-     (msvc--visit-path (point) 'find-file))))
+     (msvc--visit-path (point) #'find-file))))
 
 
 
@@ -624,7 +626,7 @@
               (let ((default-directory (or dir default-directory)))
                 (when dir
                   (flymake-log 3 "starting process on dir %s" dir))
-                (apply 'start-file-process
+                (apply #'start-file-process
                        "flymake-proc" (current-buffer) cmd args))))
         (set-process-sentinel process 'flymake-process-sentinel)
         (set-process-filter process 'flymake-process-filter)
@@ -649,10 +651,14 @@
        (flymake-report-fatal-status "PROCERR" err-str)))))
 
 
-(defadvice flymake-start-syntax-check-process (around flymake-start-syntax-check-process-msbuild-custom (cmd args dir) activate)
-  (if msvc--flymake-back-end
-      (msvc--flymake-start-syntax-check-process cmd args dir)
-    ad-do-it))
+(defadvice flymake-start-syntax-check-process (around msvc--flymake-start-syntax-check-process-advice (cmd args dir) activate)
+  (cl-case msvc--flymake-back-end
+    (msbuild
+     (msvc--flymake-start-syntax-check-process cmd args dir))
+    (clang
+     (ac-clang-diagnostics))
+    (t
+     ad-do-it)))
 
 
 (defconst msvc--flymake-allowed-file-name-masks '(("\\.\\(?:[ch]\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" msvc--flymake-command-generator)))
@@ -670,20 +676,6 @@
     clang
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
-
-
-(defvar-local msvc--suspend-syntax-check-p nil)
-
-(defun msvc--suspend-syntax-check ()
-  (when (and (not msvc--suspend-syntax-check-p) (assoc-default 'flymake-mode (buffer-local-variables)))
-    (flymake-mode-off)
-    (setq msvc--suspend-syntax-check-p t)))
-
-(defun msvc--resume-syntax-check ()
-  (when msvc--suspend-syntax-check-p
-    (flymake-mode-on)
-    (msvc-mode-feature-manually-flymake)
-    (setq msvc--suspend-syntax-check-p nil)))
 
 
 (defun msvc--flymake-command-generator ()
@@ -903,34 +895,35 @@
 
 (defun msvc--setup-buffer-feature-flymake (db-name status)
   (let* ((details (msvc--query-project db-name))
+         (back-end (plist-get details :flymake-back-end))
          (manually-p (plist-get details :flymake-manually-p))
          (manually-back-end (plist-get details :flymake-manually-back-end)))
 
     (cl-case status
       (enable
-       (setq msvc--flymake-back-end 'msbuild)
-       (setq msvc--flymake-manually-back-end (if manually-back-end manually-back-end msvc--flymake-back-end))
+       (when back-end
+         (setq msvc--flymake-back-end back-end))
+       (setq msvc--flymake-manually-back-end (or manually-back-end msvc--flymake-back-end))
        (set (make-local-variable 'flymake-allowed-file-name-masks) msvc--flymake-allowed-file-name-masks)
        (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc--flymake-err-line-patterns msvc--flymake-manually-back-end))
        ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
        (set (make-local-variable 'flymake-start-syntax-check-on-find-file) nil)
 
-       (when (featurep 'yasnippet)
-         (add-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check nil t)
-         (add-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check nil t))
-
-       (unless manually-p
-         (flymake-mode-on)))
+       (flymake-mode-on)
+       (when manually-p
+         (defadvice flymake-on-timer-event (around msvc--flymake-suspend-advice last activate)
+           (let* ((details (msvc--query-current-project))
+                  (manually-p (plist-get details :flymake-manually-p)))
+             ;; (when (and details (not manually-p))
+             (unless manually-p
+               ad-do-it)))))
       ;; (let ((flymake-start-syntax-check-on-find-file nil))
       ;;   (flymake-mode-on)))
       (disable
-       (if manually-p
-           (flymake-delete-own-overlays)
-         (flymake-mode-off))
-
-       (when (featurep 'yasnippet)
-         (remove-hook 'yas-before-expand-snippet-hook 'msvc--suspend-syntax-check t)
-         (remove-hook 'yas-after-exit-snippet-hook 'msvc--resume-syntax-check t))
+       (when manually-p
+         (flymake-delete-own-overlays)
+         (ad-disable-advice 'flymake-on-timer-event 'around 'msvc--flymake-suspend-advice))
+       (flymake-mode-off)
 
        (setq msvc--flymake-back-end nil)
        (setq msvc--flymake-manually-back-end nil)
@@ -963,10 +956,10 @@
       (setq details (plist-put details :target-buffers target-buffers))
       ;; (print target-buffers)
 
-      ;; (add-hook 'kill-buffer-hook 'msvc--detach-from-project nil t)
-      ;; (add-hook 'before-revert-hook 'msvc--detach-from-project nil t)
-      (add-hook 'kill-buffer-hook 'msvc-mode-off nil t)
-      (add-hook 'before-revert-hook 'msvc-mode-off nil t)
+      ;; (add-hook 'kill-buffer-hook #'msvc--detach-from-project nil t)
+      ;; (add-hook 'before-revert-hook #'msvc--detach-from-project nil t)
+      (add-hook 'kill-buffer-hook #'msvc-mode-off nil t)
+      (add-hook 'before-revert-hook #'msvc-mode-off nil t)
 
       ;; launch allow features(launch order low > high)
 
@@ -1006,8 +999,8 @@
       (setq target-buffers (delete (current-buffer) target-buffers))
       (setq details (plist-put details :target-buffers target-buffers))
 
-      (remove-hook 'kill-buffer-hook 'msvc-mode-off t)
-      (remove-hook 'before-revert-hook 'msvc-mode-off t)
+      (remove-hook 'kill-buffer-hook #'msvc-mode-off t)
+      (remove-hook 'before-revert-hook #'msvc-mode-off t)
 
       ;; shutdown allow features(order hight > low)
 
@@ -1051,7 +1044,7 @@
       (let ((db-names (plist-get request :db-names))
             (args (plist-get request :args)))
         (cl-dolist (db-name db-names)
-          (apply 'msvc-activate-project db-name args))))
+          (apply #'msvc-activate-project db-name args))))
     (setq msvc--activation-requests nil)
 
     (when msvc--activation-timer
@@ -1080,6 +1073,7 @@
 :allow-flymake-p
 :cedet-root-path
 :cedet-spp-table
+:flymake-back-end
 :flymake-manually-p
 :flymake-manually-back-end
 "
@@ -1112,16 +1106,16 @@
     
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
-      (setq db-names (apply 'msvc-flags-parse-vcx-solution args)))
+      (setq db-names (apply #'msvc-flags-parse-vcx-solution args)))
 
     (when project-file
-      (setq db-names (apply 'msvc-flags-parse-vcx-project args))
+      (setq db-names (apply #'msvc-flags-parse-vcx-project args))
       (setq db-names (when db-names (list db-names))))
 
     (when db-names
       (add-to-list 'msvc--activation-requests `(:db-names ,db-names :args ,args) t)
       (unless msvc--activation-timer
-        (setq msvc--activation-timer (run-at-time nil 1 'msvc--parsed-activator))))
+        (setq msvc--activation-timer (run-at-time nil 1 #'msvc--parsed-activator))))
 
     db-names))
 
@@ -1137,6 +1131,7 @@
 :allow-flymake-p
 :cedet-root-path
 :cedet-spp-table
+:flymake-back-end
 :flymake-manually-p
 :flymake-manually-back-end
 "
@@ -1172,6 +1167,7 @@
          (allow-flymake-p (plist-get args :allow-flymake-p))
          (cedet-root-path (plist-get args :cedet-root-path))
          (cedet-spp-table (plist-get args :cedet-spp-table))
+         (flymake-back-end (plist-get args :flymake-back-end))
          (flymake-manually-p (plist-get args :flymake-manually-p))
          (flymake-manually-back-end (plist-get args :flymake-manually-back-end))
 
@@ -1208,6 +1204,7 @@
                                     :allow-flymake-p ,allow-flymake-p
                                     :cedet-root-path ,cedet-root-path
                                     :cedet-spp-table ,cedet-spp-table
+                                    :flymake-back-end ,flymake-back-end
                                     :flymake-manually-p ,flymake-manually-p
                                     :flymake-manually-back-end ,flymake-manually-back-end
                                     :target-buffers ,target-buffers
@@ -1303,7 +1300,7 @@
                             (car project))
                           msvc--active-projects)))
     (cl-dolist (db-name db-names)
-      (apply 'msvc-activate-projects-after-parse (msvc--query-project db-name)))))
+      (apply #'msvc-activate-projects-after-parse (msvc--query-project db-name)))))
 
 
 
@@ -1358,7 +1355,7 @@
 (defun msvc--mode-feature-reparse-project ()
   (interactive)
   (let* ((details (msvc--query-current-project)))
-    (apply 'msvc-activate-projects-after-parse details)))
+    (apply #'msvc-activate-projects-after-parse details)))
 
 
 (defun msvc-mode-feature-launch-msvs-by-project ()
@@ -1479,13 +1476,13 @@
          log-end
          (map (make-sparse-keymap)))
 
-    (define-key map (kbd "[") 'msvc-mode-feature-solution-goto-prev-error)
-    (define-key map (kbd "]") 'msvc-mode-feature-solution-goto-next-error)
-    (define-key map (kbd "C-z") 'msvc-mode-feature-solution-view-error-file)
-    (define-key map (kbd "M-[") 'msvc-mode-feature-solution-view-prev-error)
-    (define-key map (kbd "M-]") 'msvc-mode-feature-solution-view-next-error)
-    (define-key map (kbd "RET") 'msvc-mode-feature-solution-jump-to-error-file)
-    (define-key map [(mouse-1)] 'msvc-mode-feature-solution-jump-to-error-file-by-mouse)
+    (define-key map (kbd "[") #'msvc-mode-feature-solution-goto-prev-error)
+    (define-key map (kbd "]") #'msvc-mode-feature-solution-goto-next-error)
+    (define-key map (kbd "C-z") #'msvc-mode-feature-solution-view-error-file)
+    (define-key map (kbd "M-[") #'msvc-mode-feature-solution-view-prev-error)
+    (define-key map (kbd "M-]") #'msvc-mode-feature-solution-view-next-error)
+    (define-key map (kbd "RET") #'msvc-mode-feature-solution-jump-to-error-file)
+    (define-key map [(mouse-1)] #'msvc-mode-feature-solution-jump-to-error-file-by-mouse)
 
     (with-current-buffer buffer
       (use-local-map map)
@@ -1583,8 +1580,8 @@
           (when (get-buffer process-bind-buffer)
             (kill-buffer process-bind-buffer))
 
-          (let ((process (apply 'start-process process-name process-bind-buffer command command-args)))
-            (set-process-sentinel process 'msvc--build-solution-sentinel))
+          (let ((process (apply #'start-process process-name process-bind-buffer command command-args)))
+            (set-process-sentinel process #'msvc--build-solution-sentinel))
 
           ;; プロセスバッファを最初に表示
           (when (eq msvc-solution-build-report-display-timing 'before)
@@ -1633,16 +1630,16 @@
 
 (defvar msvc--mode-key-map 
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-i") 'msvc-mode-feature-visit-to-include)
-    (define-key map (kbd "M-I") 'msvc-mode-feature-return-from-include)
-    (define-key map (kbd "M-[") 'msvc-mode-feature-flymake-goto-prev-error)
-    (define-key map (kbd "M-]") 'msvc-mode-feature-flymake-goto-next-error)
-    (define-key map (kbd "<f5>") 'msvc-mode-feature-manually-flymake)
-    (define-key map (kbd "<C-f5>") 'msvc-mode-feature-build-solution)
-    ;; (define-key map (kbd "<f6>") 'msvc-mode-feature-manually-ac-clang-complete)
-    ;; (define-key map (kbd "<f7>") 'semantic-force-refresh)
-    ;; (define-key map (kbd "C-j") 'msvc-mode-feature-jump-to-project-buffer)
-    ;; (define-key map (kbd "C-j") 'msvc-mode-feature-launch-msvs)
+    (define-key map (kbd "M-i") #'msvc-mode-feature-visit-to-include)
+    (define-key map (kbd "M-I") #'msvc-mode-feature-return-from-include)
+    (define-key map (kbd "M-[") #'msvc-mode-feature-flymake-goto-prev-error)
+    (define-key map (kbd "M-]") #'msvc-mode-feature-flymake-goto-next-error)
+    (define-key map (kbd "<f5>") #'msvc-mode-feature-manually-flymake)
+    (define-key map (kbd "<C-f5>") #'msvc-mode-feature-build-solution)
+    ;; (define-key map (kbd "<f6>") #'msvc-mode-feature-manually-ac-clang-complete)
+    ;; (define-key map (kbd "<f7>") #'semantic-force-refresh)
+    ;; (define-key map (kbd "C-j") #'msvc-mode-feature-jump-to-project-buffer)
+    ;; (define-key map (kbd "C-j") #'msvc-mode-feature-launch-msvs)
     map)
   "MSVC mode key map")
 
