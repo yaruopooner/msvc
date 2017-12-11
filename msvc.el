@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/04.02:19:37
+;;; last updated : 2017/12/09.18:32:10
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -87,9 +87,6 @@
 ;; * DETAILED MANUAL:
 ;;   For more information and detailed usage, refer to the project page:
 ;;   [https://github.com/yaruopooner/msvc]
-;; 
-;;   sorry, reference manual is japanese version only.
-;;   please help english version reference manual. 
 ;; 
 ;; * INSTALLATION:
 ;;   If you use auto-complete by ac-clang, you will need an external program.
