@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/09.18:32:10
+;;; last updated : 2017/12/12.14:17:59
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -678,8 +678,7 @@
 (defun msvc--flymake-command-generator ()
   (interactive)
   (let* ((db-name msvc--source-code-belonging-db-name)
-         (compile-file (flymake-init-create-temp-buffer-copy
-                        'flymake-create-temp-inplace))
+         (compile-file (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))
 
          (cedet-file-name (cedet-directory-name-to-file-name compile-file))
          (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags--create-project-path db-name)))
