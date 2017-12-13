@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/13.18:39:38
+;;; last updated : 2017/12/13.20:46:12
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -313,6 +313,7 @@ attributes
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
 
+    ;; product check
     (unless (msvc-env--query-detected-version-p version)
       (message "msvc-flags : product version %s not detected : Microsoft Visual Studio" version)
       (cl-return-from msvc-flags-parse-vcx-project nil))
@@ -336,7 +337,9 @@ attributes
            (db-path (msvc-flags--create-db-path dir-name))
 
            (log-file (expand-file-name msvc-flags--db-log-cflags db-path))
-           (parse-p (or force-parse-p (file-newer-than-file-p project-file log-file))))
+           ;; The log-file regeneration condition.
+           ;; target project update, extract project update
+           (parse-p (or force-parse-p (file-newer-than-file-p project-file log-file) (file-newer-than-file-p msvc-flags--vcx-proj-file log-file))))
 
       ;; project file and db-log file compare date check
       (unless parse-p

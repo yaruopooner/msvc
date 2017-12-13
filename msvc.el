@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/12.14:17:59
+;;; last updated : 2017/12/13.20:12:30
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -198,9 +198,17 @@
 ;;                          ("DLL_EXPORT"         . "")
 ;;                          ("RESTRICT"           . ""))
 ;;     For details, refer to CEDET manual.
+;;   - :flymake-back-end
+;;     nil recommended. 
+;;     specifiable : `msbuild' `clang' `nil'
+;;     refer to `msvc--flymake-back-end'
 ;;   - :flymake-manually-p
 ;;     nil recommended. 
 ;;     If value is t, manual syntax check only.
+;;   - :flymake-manually-back-end
+;;     nil recommended.
+;;     specifiable : `msbuild' `clang' `nil'
+;;     refer to `msvc--flymake-manually-back-end'
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
 ;;   - start auto completion

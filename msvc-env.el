@@ -1,6 +1,6 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/10/22.23:34:47
+;;; last updated : 2017/12/13.20:21:09
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -30,7 +30,8 @@
 (defvar msvc-env-product-detected-p nil)
 (defvar msvc-env--product-version nil)
 (defvar msvc-env-default-use-version nil
-  "MSVC default use version string
+  "MSVC default use version
+Specifiable type [String]
 `2017'
 `2015'
 `2013'
@@ -52,8 +53,9 @@ If the value is nil, latest version will be used.
 
 (defvar msvc-env--product-info-source 'registry
   "MSVC product information source
-`registry'     : search from Windows registry
-`env-var'      : search from environment variable
+Specifiable type [Symbol]
+`registry'       : search from Windows registry
+`env-var'        : search from environment variable
 ")
 
 
@@ -61,7 +63,8 @@ If the value is nil, latest version will be used.
 ;; Microsoft Visual C/C++ Toolset Shell List &  Toolset type
 (defvar msvc-env--toolset-shells nil)
 (defvar msvc-env-default-use-toolset "x86_amd64"
-  "MSVC toolset shell argument string
+  "MSVC toolset shell argument
+Specifiable type [String]
 toolset-name   : support product
 `x86'          : (2017/2015/2013/2012/2010)
 `x86_x64'      : (2017)
