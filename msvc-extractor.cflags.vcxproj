@@ -79,27 +79,44 @@
       </CFLAG>
 
 
-      <!-- CFLAG_* item create -->
+      <!-- CFLAG_* item create section -->
 
 
+      <!-- Syntax Control options for MSVC language extension -->
       <!-- Predefined Macros auto generation by clang cc1 option -->
       <!-- cl options convert to clang cc1 option -->
 
-      <!-- __cplusplus -->
+      <!-- Syntax Control -->
+      <!-- Predefined Macro: __cplusplus -->
       <CFLAG_ClangCC1Options Include="-std=%(CFLAG.CppLanguageStd)"/>
-      <!-- _M_X64, _M_AMD64, _M_IX86, _M_.... -->
-      <!-- _WIN32, _WIN64, _INTEGRAL_MAX_BITS -->
+
+      <!-- Predefined Macro: _M_X64, _M_AMD64, _M_IX86, _M_.... -->
+      <!-- Predefined Macro: _WIN32, _WIN64, _INTEGRAL_MAX_BITS -->
       <CFLAG_ClangCC1Options Include="-target-cpu %(CFLAG.TargetCpu)"/>
       <CFLAG_ClangCC1Options Include="-triple %(CFLAG.TargetArchitecture)-pc-windows"/>
-      <!-- _MSC_BUILD, __STDC__ -->
+
+      <!-- Syntax Control -->
+      <!-- Predefined Macro: _MSC_BUILD, __STDC__ -->
       <CFLAG_ClangCC1Options Include="-fms-compatibility"/>
-      <!-- _MSC_VER, _MSC_FULL_VER -->
+      <!-- Predefined Macro: _MSC_VER, _MSC_FULL_VER -->
       <CFLAG_ClangCC1Options Include="-fms-compatibility-version=%(CFLAG.CompilerVersion)"/>
-      <!-- _MSC_EXTENSIONS -->
+
+      <!-- Syntax Control -->
+      <!-- Predefined Macro: _MSC_EXTENSIONS -->
       <CFLAG_ClangCC1Options Include="-fms-extensions" Condition="'%(ClCompile.DisableLanguageExtensions)' == 'false'"/>
-      <!-- _CPPRTTI -->
+
+      <!-- Syntax Control -->
+      <!-- Parse templated function definitions at the end of the translation unit(for MSVC language extension) -->
+      <!-- MSVC allows many invalid constructs in class templates that Clang has historically rejected.  -->
+      <!-- In order to parse widely distributed headers for libraries such as  -->
+      <!-- the Active Template Library (ATL) and Windows Runtime Library (WRL),  -->
+      <!-- some template rules have been relaxed or extended in Clang on Windows. -->
+      <!-- Use -fms-compatibility and -fdelayed-template-parsing in pairs? -->
+      <CFLAG_ClangCC1Options Include="-fdelayed-template-parsing"/>
+
+      <!-- Predefined Macro: _CPPRTTI -->
       <CFLAG_ClangCC1Options Include="-fno-rtti" Condition="'%(ClCompile.RuntimeTypeInfo)' == 'false'"/>
-      <!-- _CPPUNWIND -->
+      <!-- Predefined Macro: _CPPUNWIND -->
       <CFLAG_ClangCC1Options Include="-fcxx-exceptions" Condition="'%(ClCompile.ExceptionHandling)' == 'SyncCThrow'"/>
 
 

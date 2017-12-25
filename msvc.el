@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/04.02:19:37
+;;; last updated : 2017/12/26.00:32:01
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -8,8 +8,8 @@
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.6
-;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "1.2.0"))
+;; Version: 1.3.7
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
 
@@ -87,9 +87,6 @@
 ;; * DETAILED MANUAL:
 ;;   For more information and detailed usage, refer to the project page:
 ;;   [https://github.com/yaruopooner/msvc]
-;; 
-;;   sorry, reference manual is japanese version only.
-;;   please help english version reference manual. 
 ;; 
 ;; * INSTALLATION:
 ;;   If you use auto-complete by ac-clang, you will need an external program.
@@ -201,9 +198,17 @@
 ;;                          ("DLL_EXPORT"         . "")
 ;;                          ("RESTRICT"           . ""))
 ;;     For details, refer to CEDET manual.
+;;   - :flymake-back-end
+;;     nil recommended. 
+;;     specifiable : `msbuild' `clang' `nil'
+;;     refer to `msvc--flymake-back-end'
 ;;   - :flymake-manually-p
 ;;     nil recommended. 
 ;;     If value is t, manual syntax check only.
+;;   - :flymake-manually-back-end
+;;     nil recommended.
+;;     specifiable : `msbuild' `clang' `nil'
+;;     refer to `msvc--flymake-manually-back-end'
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
 ;;   - start auto completion
@@ -257,7 +262,7 @@
 
 
 
-(defconst msvc-version "1.3.6")
+(defconst msvc-version "1.3.7")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -681,8 +686,7 @@
 (defun msvc--flymake-command-generator ()
   (interactive)
   (let* ((db-name msvc--source-code-belonging-db-name)
-         (compile-file (flymake-init-create-temp-buffer-copy
-                        'flymake-create-temp-inplace))
+         (compile-file (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))
 
          (cedet-file-name (cedet-directory-name-to-file-name compile-file))
          (cedet-project-path (cedet-directory-name-to-file-name (msvc-flags--create-project-path db-name)))
