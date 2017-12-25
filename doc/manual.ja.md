@@ -296,6 +296,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                                         :allow-flymake-p t
                                         :cedet-root-path "d:/DirectXSamples/SubD11"
                                         :cedet-spp-table nil
+                                        :flymake-back-end nil
                                         :flymake-manually-p nil
                                         :flymake-manually-back-end nil)
 
@@ -355,12 +356,12 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     t 推奨  
     CEDET機能を利用する  
     CEDETのプロジェクト管理に登録されsemanticが有効化されます。  
-    nil の場合はincludeファイルへのジャンプが利用できなくなります。
+    nil の場合はsemanticによるincludeファイルへのジャンプが利用できなくなります。
 -   `:allow-ac-clang-p`  
     t 推奨  
     ac-clang機能を利用する  
-    libclangによるコード補完と宣言/定義へのジャンプが可能になります。  
-    nil の場合はジャンプは利用不可になり、補完は情報源としてsemanticを利用するようになります。
+    Clangによるコード補完と宣言/定義へのジャンプが可能になります。  
+    nil の場合はClangによるジャンプは利用不可になり、補完は情報源としてsemanticを利用するようになります。
 -   `:allow-flymake-p`  
     t 推奨  
     flymake機能を利用する  
@@ -390,19 +391,25 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                            ("RESTRICT"           . ""))
     
     詳細はCEDETマニュアル参照。
+-   `:flymake-back-end`  
+    nil 推奨(msbuild)  
+    `:allow-flymake-p t` の時だけ参照される  
+    flymakeのバックエンドを指定する  
+    以下は指定可能なシンボル  
+    'msbuild  
+    'clang
 -   `:flymake-manually-p`  
     nil 推奨  
     `:allow-flymake-p t` の時だけ参照される  
     flymake のシンタックスチェックを自動起動しない  
     マニュアルチェックのみ有効
 -   `:flymake-manually-back-end`  
-    nil 推奨  
+    nil 推奨(msbuild)  
     `:allow-flymake-p t` の時だけ参照される  
-    MSBuild 以外を使用する場合のみ指定する  
-    現在は 'clang のみ対応  
-    ac-clang の clang-server を利用してシンタックスチェックをする。  
-    ※この場合マニュアル操作のみ  
-    ※現在動作不良なので使用は非推奨
+    flymake-manuallyのバックエンドを指定する  
+    以下は指定可能なシンボル  
+    'msbuild  
+    'clang
 
 ## プロジェクトのパースと登録2<a id="sec-7-2" name="sec-7-2"></a>
 

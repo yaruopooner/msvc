@@ -304,6 +304,7 @@ The buffer itself holds which projects are active and what platforms and configu
                                         :allow-flymake-p t
                                         :cedet-root-path "d:/DirectXSamples/SubD11"
                                         :cedet-spp-table nil
+                                        :flymake-back-end nil
                                         :flymake-manually-p nil
                                         :flymake-manually-back-end nil)
 
@@ -367,12 +368,12 @@ The buffer itself holds which projects are active and what platforms and configu
     t (recommended)  
     Use the CEDET feature.  
     It is registered in CEDET project management and semantic is activated.  
-    If it is nil, the jump to the include file can not be used.
+    If it is nil, the jump to the include file by semantic can not be used.
 -   `:allow-ac-clang-p`  
     t (recommended)  
     Use the ac-clang feature.  
-    Code completion by libclang and jump to declaration/definition become possible.  
-    If it is nil, the jump becomes unusable, and completion will use semantic as the information source.
+    Code completion by Clang and jump to declaration/definition become possible.  
+    If it is nil, the jump by Clang becomes unusable, and completion will use semantic as the information source.
 -   `:allow-flymake-p`  
     t (recommended)  
     Use the flymake feature.  
@@ -402,6 +403,14 @@ The buffer itself holds which projects are active and what platforms and configu
                            ("RESTRICT"           . ""))
     
     See the CEDET manual for details.
+-   `:flymake-back-end`  
+    If no key is specified, it becomes nil. (recommended)  
+    `:allow-flymake-p` It is referred to only when this value is t.  
+    Specify the back-end of flymake.  
+    Specify it only when using other than MSBuild.  
+    The following are possible symbols  
+    'msbuild  
+    'clang
 -   `:flymake-manually-p`  
     If no key is specified, it becomes nil. (recommended)  
     `:allow-flymake-p` It is referred to only when this value is t.  
@@ -410,11 +419,11 @@ The buffer itself holds which projects are active and what platforms and configu
 -   `:flymake-manually-back-end`  
     If no key is specified, it becomes nil. (recommended)  
     `:allow-flymake-p` It is referred to only when this value is t.  
+    Specify the back-end of flymake-manually.  
     Specify it only when using other than MSBuild.  
-    Currently only 'clang correspondence.  
-    Use syntax check with ac-clang's clang-server.  
-    In this case only manual operation.  
-    Since it is currently malfunctioning, use is deprecated.
+    The following are possible symbols  
+    'msbuild  
+    'clang
 
 ## Project parsing and registration 2<a id="sec-7-2" name="sec-7-2"></a>
 
