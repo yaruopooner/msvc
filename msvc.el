@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/26.00:32:01
+;;; last updated : 2018/01/05.23:33:54
 
 
 ;; Copyright (C) 2013-2017  yaruopooner
@@ -443,11 +443,11 @@
 
 
 
-(defun msvc--regist-project (db-name details)
-  (msvc--unregist-project db-name)
+(defun msvc--register-project (db-name details)
+  (msvc--unregister-project db-name)
   (add-to-list 'msvc--active-projects `(,db-name . ,details)))
 
-(defun msvc--unregist-project (db-name)
+(defun msvc--unregister-project (db-name)
   (setq msvc--active-projects (delete (assoc-string db-name msvc--active-projects) msvc--active-projects)))
 
 
@@ -1193,26 +1193,26 @@
     ;; dbへ登録のみ
     ;; value が最初はnilだとわかっていても変数を入れておかないと評価時におかしくなる・・
     ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
-    (msvc--regist-project db-name `(
-                                    :db-path ,db-path
-                                    :project-buffer ,project-buffer
-                                    :solution-file ,solution-file
-                                    :project-file ,project-file
-                                    :platform ,platform
-                                    :configuration ,configuration
-                                    :version ,version
-                                    :toolset ,toolset
-                                    :md5-name-p ,md5-name-p
-                                    :allow-cedet-p ,allow-cedet-p
-                                    :allow-ac-clang-p ,allow-ac-clang-p
-                                    :allow-flymake-p ,allow-flymake-p
-                                    :cedet-root-path ,cedet-root-path
-                                    :cedet-spp-table ,cedet-spp-table
-                                    :flymake-back-end ,flymake-back-end
-                                    :flymake-manually-p ,flymake-manually-p
-                                    :flymake-manually-back-end ,flymake-manually-back-end
-                                    :target-buffers ,target-buffers
-                                    ))
+    (msvc--register-project db-name `(
+                                      :db-path ,db-path
+                                      :project-buffer ,project-buffer
+                                      :solution-file ,solution-file
+                                      :project-file ,project-file
+                                      :platform ,platform
+                                      :configuration ,configuration
+                                      :version ,version
+                                      :toolset ,toolset
+                                      :md5-name-p ,md5-name-p
+                                      :allow-cedet-p ,allow-cedet-p
+                                      :allow-ac-clang-p ,allow-ac-clang-p
+                                      :allow-flymake-p ,allow-flymake-p
+                                      :cedet-root-path ,cedet-root-path
+                                      :cedet-spp-table ,cedet-spp-table
+                                      :flymake-back-end ,flymake-back-end
+                                      :flymake-manually-p ,flymake-manually-p
+                                      :flymake-manually-back-end ,flymake-manually-back-end
+                                      :target-buffers ,target-buffers
+                                      ))
 
     ;; setup project buffer
     (with-current-buffer project-buffer
@@ -1289,7 +1289,7 @@
 
       ;; a project is removed from database.
       ;; (print (format "msvc--deactivate-project %s" db-name))
-      (msvc--unregist-project db-name)
+      (msvc--unregister-project db-name)
       t)))
 
 

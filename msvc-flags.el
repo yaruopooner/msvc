@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/13.20:46:12
+;;; last updated : 2018/01/05.23:32:11
 
 ;; Copyright (C) 2013-2017  yaruopooner
 ;; 
@@ -127,7 +127,7 @@
 
 
 
-(defun msvc-flags--regist-db (db-name cflags)
+(defun msvc-flags--register-db (db-name cflags)
   ;; if already exist on database > remove element
   (setq msvc-flags--cflags-db (delete (assoc-string db-name msvc-flags--cflags-db) msvc-flags--cflags-db))
   (add-to-list 'msvc-flags--cflags-db `(,db-name . ,cflags) t))
@@ -226,7 +226,7 @@
            (cflags (msvc-flags--parse-compilation-buffer bind-buffer)))
 
       (when db-name
-        (msvc-flags--regist-db db-name cflags)
+        (msvc-flags--register-db db-name cflags)
         (run-hook-with-args 'msvc-flags-after-parse-hooks db-name)))
     ;; parse finished
 
@@ -447,7 +447,7 @@ attributes
             ;; sync
             (progn
               (when (eq (apply #'call-process command nil process-bind-buffer nil command-args) 0)
-                (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-buffer process-bind-buffer)))
+                (msvc-flags--register-db db-name (msvc-flags--parse-compilation-buffer process-bind-buffer)))
               ;; parsing flag off
               (setq msvc-flags--parsing-p nil))
           ;; async
@@ -539,7 +539,7 @@ attributes
                               (db-name-pattern nil))
   (interactive)
   
-  ;; msvc-flags-db-root-path 以下にある全ての db をリロードして regist-db しなおす
+  ;; msvc-flags-db-root-path 以下にある全ての db をリロードして register-db しなおす
   ;; 直下のディレクトリリストを foreach して directory-name を取り出す
   ;; name がそのまま db-name
   (let* ((msvc-flags-parsing-buffer-delete-p parsing-buffer-delete-p)
@@ -552,7 +552,7 @@ attributes
                (db-name (plist-get property :db-name))
                (load-p (and db-name (if db-name-pattern (string-match db-name-pattern db-name) t))))
           (when load-p
-            (msvc-flags--regist-db db-name (msvc-flags--parse-compilation-db dir-name db-name))
+            (msvc-flags--register-db db-name (msvc-flags--parse-compilation-db dir-name db-name))
             (setq count (1+ count))))))
     count))
 
