@@ -1,10 +1,11 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/13.20:21:09
+;;; last updated : 2018/01/05.23:53:29
 
-;; Copyright (C) 2013-2017  yaruopooner
+;; Copyright (C) 2013-2018  yaruopooner
 ;; 
 ;; This file is part of MSVC.
+
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
