@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/06.19:31:18
+;;; last updated : 2018/01/06.20:44:57
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -199,14 +199,14 @@
 ;;     For details, refer to CEDET manual.
 ;;   - :flymake-back-end
 ;;     nil recommended. 
-;;     specifiable : `msbuild' `clang' `nil'
+;;     specifiable : `msbuild' `clang-server' `nil'
 ;;     refer to `msvc--flymake-back-end'
 ;;   - :flymake-manually-p
 ;;     nil recommended. 
 ;;     If value is t, manual syntax check only.
 ;;   - :flymake-manually-back-end
 ;;     nil recommended.
-;;     specifiable : `msbuild' `clang' `nil'
+;;     specifiable : `msbuild' `clang-server' `nil'
 ;;     refer to `msvc--flymake-manually-back-end'
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
@@ -372,22 +372,22 @@
 
 (defvar msvc-flymake-error-display-style 'popup
   "flymake error message display style symbols
-`popup'       : popup display
-`mini-buffer' : mini-buffer display
-`nil'         : user default style")
+`popup'        : popup display
+`mini-buffer'  : mini-buffer display
+`nil'          : user default style")
 
 
 (defvar-local msvc--flymake-back-end 'msbuild
   "flymake back-end symbols
-`msbuild'     : MSBuild
-`clang'       : clang
-`nil'         : native back-end")
+`msbuild'      : MSBuild
+`clang-server' : clang-server
+`nil'          : native back-end")
 
 (defvar-local msvc--flymake-manually-back-end nil
   "flymake manually mode back-end symbols
-`msbuild'     : MSBuild
-`clang'       : clang
-`nil'         : inherit msvc--flymake-back-end value")
+`msbuild'      : MSBuild
+`clang-server' : clang-server
+`nil'          : inherit msvc--flymake-back-end value")
 
 
 
@@ -659,7 +659,7 @@
   (cl-case msvc--flymake-back-end
     (msbuild
      (msvc--flymake-start-syntax-check-process cmd args dir))
-    (clang
+    (clang-server
      (ac-clang-diagnostics))
     (t
      ad-do-it)))
@@ -677,8 +677,9 @@
     (("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
 
     ;; clang 3.3.0 - 5.0.0
-    clang
+    clang-server
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
+
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
 
 
@@ -1344,8 +1345,8 @@
     (msbuild
      ;; back end : MSBuild
      (flymake-start-syntax-check))
-    (clang
-     ;; back end : clang
+    (clang-server
+     ;; back end : clang-server
      (ac-clang-diagnostics))))
 
 (defun msvc-mode-feature-jump-to-project-buffer ()
