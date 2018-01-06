@@ -397,7 +397,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     flymakeのバックエンドを指定する  
     以下は指定可能なシンボル  
     'msbuild  
-    'clang
+    'clang-server
 -   `:flymake-manually-p`  
     nil 推奨  
     `:allow-flymake-p t` の時だけ参照される  
@@ -409,7 +409,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
     flymake-manuallyのバックエンドを指定する  
     以下は指定可能なシンボル  
     'msbuild  
-    'clang
+    'clang-server
 
 ## プロジェクトのパースと登録2<a id="sec-7-2" name="sec-7-2"></a>
 

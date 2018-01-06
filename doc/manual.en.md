@@ -410,7 +410,7 @@ The buffer itself holds which projects are active and what platforms and configu
     Specify it only when using other than MSBuild.  
     The following are possible symbols  
     'msbuild  
-    'clang
+    'clang-server
 -   `:flymake-manually-p`  
     If no key is specified, it becomes nil. (recommended)  
     `:allow-flymake-p` It is referred to only when this value is t.  
@@ -423,7 +423,7 @@ The buffer itself holds which projects are active and what platforms and configu
     Specify it only when using other than MSBuild.  
     The following are possible symbols  
     'msbuild  
-    'clang
+    'clang-server
 
 ## Project parsing and registration 2<a id="sec-7-2" name="sec-7-2"></a>
 

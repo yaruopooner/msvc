@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2017/12/26.00:00:24
+# last updated : 2018/01/06.20:47:48
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -352,7 +352,7 @@
       Specify it only when using other than MSBuild.
       The following are possible symbols
       'msbuild
-      'clang
+      'clang-server
     - =:flymake-manually-p=
       If no key is specified, it becomes nil. (recommended)
       =:allow-flymake-p= It is referred to only when this value is t.
@@ -365,7 +365,7 @@
       Specify it only when using other than MSBuild.
       The following are possible symbols
       'msbuild
-      'clang
+      'clang-server
 
 ** Project parsing and registration 2
    If you create a file '.msvc' in '~/.emacs.d/', it will be executed at initialization.

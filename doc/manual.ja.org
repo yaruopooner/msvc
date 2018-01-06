@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2017/12/25.23:59:01
+# last updated : 2018/01/06.20:46:50
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -339,7 +339,7 @@
       flymakeのバックエンドを指定する
       以下は指定可能なシンボル
       'msbuild
-      'clang
+      'clang-server
     - =:flymake-manually-p=
       nil 推奨
       =:allow-flymake-p t= の時だけ参照される
@@ -351,7 +351,7 @@
       flymake-manuallyのバックエンドを指定する
       以下は指定可能なシンボル
       'msbuild
-      'clang
+      'clang-server
 
 ** プロジェクトのパースと登録2
    ~/.emacs.d/

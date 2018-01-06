@@ -7,6 +7,14 @@
 
 # What's New?
 
+## MSVC 2018-01-06 was released
+
+### others
+
+-   Renamed the symbol used in msvc-activate-projects-after-parse and msvc&#x2013;flymake-back-end and msvc&#x2013;flymake-manually-back-end.  
+    'clang -> 'clang-server
+-   Small refactoring.
+
 ## MSVC 2017-12-26 was released
 
 ### others
