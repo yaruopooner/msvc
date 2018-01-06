@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/05.23:54:26
+;;; last updated : 2018/01/06.19:31:18
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -669,14 +669,14 @@
 
 (defconst msvc--flymake-err-line-patterns
   '(
-    ;; Visual C/C++ 2013/2012/2010
+    ;; Visual C/C++ 2010 - 2017
     msbuild
     ;; (1:file, 2:line, 3:error-text) flymake only support
     ;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
     ;; (1:file, 2:line, 3:error-text, 4:project) flymake & solution build both support
     (("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
 
-    ;; clang 3.3
+    ;; clang 3.3.0 - 5.0.0
     clang
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
