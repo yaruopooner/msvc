@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/05.23:53:23
+;;; last updated : 2018/01/07.00:22:38
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -123,7 +123,7 @@
 
 
 (defun msvc-flags--create-project-path (db-name)
-  ;; project-path/project-file-name/platform/configuration/version/toolset -> project-path/project-file-name/
+  ;; project-path/project-file-name/platform/configuration/version/toolset -> project-path/
   (expand-file-name "../../../../../" (cedet-file-name-to-directory-name db-name)))
 
 
