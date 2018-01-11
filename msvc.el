@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/11.18:40:25
+;;; last updated : 2018/01/11.19:35:16
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -1029,12 +1029,15 @@
 (cl-defun msvc--evaluate-buffer ()
   (interactive)
 
-  (unless msvc--source-code-belonging-db-name
-    (cl-dolist (project msvc--active-projects)
-      (let* ((db-name (car project)))
-        (when (msvc--target-buffer-p db-name)
-          (msvc--attach-to-project db-name)
-          (cl-return-from msvc--evaluate-buffer t))))))
+  ;; This buffer already active
+  (when msvc--source-code-belonging-db-name
+    (cl-return-from msvc--evaluate-buffer t))
+
+  (cl-dolist (project msvc--active-projects)
+    (let* ((db-name (car project)))
+      (when (msvc--target-buffer-p db-name)
+        (msvc--attach-to-project db-name)
+        (cl-return-from msvc--evaluate-buffer t)))))
 
 
 
