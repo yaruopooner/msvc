@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/06.20:44:57
+;;; last updated : 2018/01/11.18:40:25
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -1667,11 +1667,11 @@
                    (configuration (plist-get property :configuration)))
               (msvc--update-mode-line version platform configuration))
           (progn
-            (msvc--update-mode-line "" "-" "-")
-            (message "This buffer don't belonging to the active projects.")
+            (message "msvc : This buffer don't belonging to the active projects.")
             (msvc-mode-off))))
     (progn
-      (msvc--detach-from-project))))
+      (msvc--detach-from-project)
+      (msvc--update-mode-line "" "-" "-"))))
 
 
 (defun msvc-mode-on ()
