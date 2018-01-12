@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/07.00:22:38
+;;; last updated : 2018/01/11.21:34:19
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -715,7 +715,7 @@ attributes
                             ;; "-nobuiltininc -nostdinc++ -nostdsysteminc"
                             "-nobuiltininc" "-nostdinc++" "-nostdsysteminc"
 
-                            "-code-completion-macros" "-code-completion-patterns"
+                            ;; "-code-completion-macros" "-code-completion-patterns"
                             ;; "-code-completion-brief-comments"
 
                             "-Wno-unused-value" "-Wno-#warnings" "-Wno-microsoft" "-Wc++11-extensions"
