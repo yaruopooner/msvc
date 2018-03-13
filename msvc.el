@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/11.19:35:16
+;;; last updated : 2018/03/13.11:01:22
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -964,6 +964,9 @@
       ;; (add-hook 'before-revert-hook #'msvc--detach-from-project nil t)
       (add-hook 'kill-buffer-hook #'msvc-mode-off nil t)
       (add-hook 'before-revert-hook #'msvc-mode-off nil t)
+      ;; msvc-mode-on don't add to after-revert-hook. 
+      ;; because it will call from c-mode-common-hook.
+      ;; sequence is revert-buffer -> c-mode-common-hook.
 
       ;; launch allow features(launch order low > high)
 
