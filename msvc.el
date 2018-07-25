@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/03/13.11:01:22
+;;; last updated : 2018/07/25.17:23:03
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -613,8 +613,9 @@
                   )"))))
 
 
-
-
+(if (version< emacs-version "26.1")
+(progn
+;; ~ emacs-25.3
 ;; replace start-file-process => start-file-process-shell-command (flymake original function)
 (defun msvc--flymake-start-syntax-check-process (cmd args dir)
   "Start syntax check process."
@@ -663,6 +664,107 @@
      (ac-clang-diagnostics))
     (t
      ad-do-it)))
+)
+
+(progn
+;; emacs-26.1~
+(defun msvc--flymake-proc-legacy-flymake (report-fn &rest args)
+  "Flymake backend based on the original Flymake implementation.
+This function is suitable for inclusion in
+`flymake-diagnostic-functions'. For backward compatibility, it
+can also be executed interactively independently of
+`flymake-mode'."
+  ;; Interactively, behave as if flymake had invoked us through its
+  ;; `flymake-diagnostic-functions' with a suitable ID so flymake can
+  ;; clean up consistently
+  (interactive (list
+                (lambda (diags &rest args)
+                  (apply (flymake-make-report-fn 'flymake-proc-legacy-flymake)
+                         diags
+                         (append args '(:force t))))
+                :interactive t))
+  (let ((interactive (plist-get args :interactive))
+        (proc flymake-proc--current-process)
+        (flymake-proc--report-fn report-fn))
+    (when (processp proc)
+      (process-put proc 'flymake-proc--obsolete t)
+      (flymake-log 3 "marking %s obsolete" (process-id proc))
+      (when (process-live-p proc)
+        (when interactive
+          (user-error
+           "There's already a Flymake process running in this buffer")
+          (kill-process proc))))
+    (when
+        ;; This particular situation make us not want to error right
+        ;; away (and disable ourselves), in case the situation changes
+        ;; in the near future.
+        (and (or (not flymake-proc-compilation-prevents-syntax-check)
+                 (not (flymake-proc--compilation-is-running))))
+      (let ((init-f
+             (and
+              buffer-file-name
+              ;; Since we write temp files in current dir, there's no point
+              ;; trying if the directory is read-only (bug#8954).
+              (file-writable-p (file-name-directory buffer-file-name))
+              (flymake-proc--get-init-function buffer-file-name))))
+        (unless init-f (error "Can't find a suitable init function"))
+        (flymake-proc--clear-buildfile-cache)
+        (flymake-proc--clear-project-include-dirs-cache)
+
+        (let ((cleanup-f (flymake-proc--get-cleanup-function buffer-file-name))
+              (success nil))
+          (unwind-protect
+              (let* ((cmd-and-args (funcall init-f))
+                     (cmd          (nth 0 cmd-and-args))
+                     (args         (nth 1 cmd-and-args))
+                     (dir          (nth 2 cmd-and-args)))
+                (cond
+                 ((not cmd-and-args)
+                  (flymake-log 1 "init function %s for %s failed, cleaning up"
+                               init-f buffer-file-name))
+                 (t
+                  (setq proc
+                        (let ((default-directory (or dir default-directory)))
+                          (when dir
+                            (flymake-log 3 "starting process on dir %s" dir))
+                          (make-process
+                           :name "flymake-proc"
+                           :buffer (current-buffer)
+                           :command (cons cmd args)
+                           :coding '(utf-8-dos . utf-8-unix)
+                           :connection-type nil
+                           :noquery t
+                           :filter
+                           (lambda (proc string)
+                             (let ((flymake-proc--report-fn report-fn))
+                               (flymake-proc--process-filter proc string)))
+                           :sentinel
+                           (lambda (proc event)
+                             (let ((flymake-proc--report-fn report-fn))
+                               (flymake-proc--process-sentinel proc event))))))
+                  (process-put proc 'flymake-proc--output-buffer
+                               (generate-new-buffer
+                                (format " *flymake output for %s*" (current-buffer))))
+                  (setq flymake-proc--current-process proc)
+                  (flymake-log 2 "started process %d, command=%s, dir=%s"
+                               (process-id proc) (process-command proc)
+                               default-directory)
+                  (setq success t))))
+            (unless success
+              (funcall cleanup-f))))))))
+
+
+(defadvice flymake-proc-legacy-flymake (around msvc--flymake-proc-legacy-flymake-advice (report-fn &rest args) activate)
+  (cl-case msvc--flymake-back-end
+    (msbuild
+     (msvc--flymake-proc-legacy-flymake report-fn args))
+    (clang-server
+     (ac-clang-diagnostics))
+    (t
+     ad-do-it)))
+))
+
+
 
 
 (defconst msvc--flymake-allowed-file-name-masks '(("\\.\\(?:[ch]\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" msvc--flymake-command-generator)))
@@ -915,18 +1017,29 @@
 
        (flymake-mode-on)
        (when manually-p
-         (defadvice flymake-on-timer-event (around msvc--flymake-suspend-advice last activate)
-           (let* ((details (msvc--query-current-project))
-                  (manually-p (plist-get details :flymake-manually-p)))
-             ;; (when (and details (not manually-p))
-             (unless manually-p
-               ad-do-it)))))
+         (if (version< emacs-version "26.1")
+             (defadvice flymake-on-timer-event (around msvc--flymake-suspend-advice last activate)
+               (let* ((details (msvc--query-current-project))
+                      (manually-p (plist-get details :flymake-manually-p)))
+                 ;; (when (and details (not manually-p))
+                 (unless manually-p
+                   ad-do-it)))
+           (defadvice flymake--schedule-timer-maybe (around msvc--flymake--schedule-timer-maybe last activate)
+             (let* ((details (msvc--query-current-project))
+                    (manually-p (plist-get details :flymake-manually-p)))
+               ;; (when (and details (not manually-p))
+               (unless manually-p
+                 ad-do-it)))))
+
+       )
       ;; (let ((flymake-start-syntax-check-on-find-file nil))
       ;;   (flymake-mode-on)))
       (disable
        (when manually-p
          (flymake-delete-own-overlays)
-         (ad-disable-advice 'flymake-on-timer-event 'around 'msvc--flymake-suspend-advice))
+         (if (version< emacs-version "26.1")
+             (ad-disable-advice 'flymake-on-timer-event 'around 'msvc--flymake-suspend-advice)
+           (ad-disable-advice 'flymake--schedule-timer-maybe 'around 'msvc--flymake--schedule-timer-maybe)))
        (flymake-mode-off)
 
        (setq msvc--flymake-back-end nil)
@@ -1350,7 +1463,12 @@
   (cl-case msvc--flymake-manually-back-end
     (msbuild
      ;; back end : MSBuild
-     (flymake-start-syntax-check))
+     (if (version< emacs-version "26.1")
+         ;; emacs 25.3
+         (flymake-start-syntax-check)
+       ;; emacs 26.1
+       (flymake-start t))
+       )
     (clang-server
      ;; back end : clang-server
      (ac-clang-diagnostics))))
