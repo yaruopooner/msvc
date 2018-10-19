@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/07/25.17:23:03
+;;; last updated : 2018/10/19.19:33:59
 
 ;; Copyright (C) 2013-2018  yaruopooner
 ;; 
@@ -377,14 +377,16 @@
 `nil'          : user default style")
 
 
-(defvar-local msvc--flymake-back-end 'msbuild
-  "flymake back-end symbols
+(defvar-local msvc--flymake-back-end nil
+  "flymake back-end symbols. 
+This variable don't direct set.
 `msbuild'      : MSBuild
 `clang-server' : clang-server
 `nil'          : native back-end")
 
 (defvar-local msvc--flymake-manually-back-end nil
-  "flymake manually mode back-end symbols
+  "flymake manually mode back-end symbols.
+This variable don't direct set.
 `msbuild'      : MSBuild
 `clang-server' : clang-server
 `nil'          : inherit msvc--flymake-back-end value")
@@ -683,6 +685,8 @@ can also be executed interactively independently of
                          diags
                          (append args '(:force t))))
                 :interactive t))
+
+  (backtrace)
   (let ((interactive (plist-get args :interactive))
         (proc flymake-proc--current-process)
         (flymake-proc--report-fn report-fn))
@@ -700,6 +704,8 @@ can also be executed interactively independently of
         ;; in the near future.
         (and (or (not flymake-proc-compilation-prevents-syntax-check)
                  (not (flymake-proc--compilation-is-running))))
+
+      (message "msvc--flymake-proc-legacy-flymake : 0")
       (let ((init-f
              (and
               buffer-file-name
@@ -720,9 +726,11 @@ can also be executed interactively independently of
                      (dir          (nth 2 cmd-and-args)))
                 (cond
                  ((not cmd-and-args)
+                  (message "msvc--flymake-proc-legacy-flymake : 1")
                   (flymake-log 1 "init function %s for %s failed, cleaning up"
                                init-f buffer-file-name))
                  (t
+                  (message "msvc--flymake-proc-legacy-flymake : 2")
                   (setq proc
                         (let ((default-directory (or dir default-directory)))
                           (when dir
@@ -737,10 +745,11 @@ can also be executed interactively independently of
                            :filter
                            (lambda (proc string)
                              (let ((flymake-proc--report-fn report-fn))
-                               (flymake-proc--process-filter proc string)))
+                               (msvc--flymake-proc--process-filter proc string)))
                            :sentinel
                            (lambda (proc event)
                              (let ((flymake-proc--report-fn report-fn))
+                               (message "flymake-proc-legacy-flymake: flymake-proc--report-fn : %S" flymake-proc--report-fn)
                                (flymake-proc--process-sentinel proc event))))))
                   (process-put proc 'flymake-proc--output-buffer
                                (generate-new-buffer
@@ -751,7 +760,53 @@ can also be executed interactively independently of
                                default-directory)
                   (setq success t))))
             (unless success
+              (message "msvc--flymake-proc-legacy-flymake : 3")
               (funcall cleanup-f))))))))
+
+
+(defun msvc--flymake-proc--process-filter (proc string)
+  "Parse STRING and collect diagnostics info."
+  (flymake-log 3 "received %d byte(s) of output from process %d"
+               (length string) (process-id proc))
+  (let ((output-buffer (process-get proc 'flymake-proc--output-buffer))
+        (source-buffer (process-buffer proc))
+        new-flymake-proc-err-line-patterns)
+    (when (and (buffer-live-p source-buffer) output-buffer)
+
+      (with-current-buffer source-buffer
+        (setq new-flymake-proc-err-line-patterns flymake-proc-err-line-patterns))
+
+      (with-current-buffer output-buffer
+        (let ((moving (= (point) (process-mark proc)))
+              (inhibit-read-only t)
+              (unprocessed-mark
+               (or (process-get proc 'flymake-proc--unprocessed-mark)
+                   (set-marker (make-marker) (point-min)))))
+          (save-excursion
+            ;; Insert the text, advancing the process marker.
+            (goto-char (process-mark proc))
+            (insert string)
+            (set-marker (process-mark proc) (point)))
+          (if moving (goto-char (process-mark proc)))
+
+          ;; check for new diagnostics
+          ;;
+          (message "msvc--flymake-proc--process-filter: output-buffer : %S" output-buffer)
+          (save-excursion
+            (goto-char unprocessed-mark)
+            (dolist (pattern new-flymake-proc-err-line-patterns)
+              (let ((new (flymake-proc--diagnostics-for-pattern proc pattern)))
+                ;; (message "msvc--flymake-proc--process-filter: pattern : %S" pattern)
+                (message "msvc--flymake-proc--process-filter: new : %S" new)
+
+                (process-put
+                 proc
+                 'flymake-proc--collected-diagnostics
+                 (append new
+                         (process-get proc
+                                      'flymake-proc--collected-diagnostics)))))
+            (process-put proc 'flymake-proc--unprocessed-mark
+                         (point-marker))))))))
 
 
 (defadvice flymake-proc-legacy-flymake (around msvc--flymake-proc-legacy-flymake-advice (report-fn &rest args) activate)
@@ -778,7 +833,7 @@ can also be executed interactively independently of
     ;; (1:file, 2:line, 3:error-text, 4:project) flymake & solution build both support
     (("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
 
-    ;; clang 3.3.0 - 5.0.0
+    ;; clang 3.3.0 - 7.0.0
     clang-server
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
 
@@ -855,11 +910,15 @@ can also be executed interactively independently of
 (defun msvc--flymake-display-current-line-error-by-popup ()
   "Display a menu with errors/warnings for current line if it has errors and/or warnings."
 
-  (let* ((line-no (line-number-at-pos))
-         (errors (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (texts (mapconcat (lambda (x) (flymake-ler-text x)) errors "\n")))
-    (when texts
-      (popup-tip texts))))
+  (if (version< emacs-version "26.1")
+      (let* ((line-no (line-number-at-pos))
+             (errors (nth 0 (flymake-find-err-info flymake-err-info line-no)))
+             (texts (mapconcat (lambda (x) (flymake-ler-text x)) errors "\n")))
+        (when texts
+          (popup-tip texts)))
+    (let* ((texts (mapconcat #'flymake--diag-text (flymake-diagnostics (point)) "\n")))
+      (when texts
+        (popup-tip texts)))))
 
 (defun msvc--flymake-display-current-line-error ()
   (cl-case msvc-flymake-error-display-style
@@ -1007,9 +1066,8 @@ can also be executed interactively independently of
 
     (cl-case status
       (enable
-       (when back-end
-         (setq msvc--flymake-back-end back-end))
-       (setq msvc--flymake-manually-back-end (or manually-back-end msvc--flymake-back-end))
+       (setq msvc--flymake-back-end back-end)
+       (setq msvc--flymake-manually-back-end manually-back-end)
        (set (make-local-variable 'flymake-allowed-file-name-masks) msvc--flymake-allowed-file-name-masks)
        (set (make-local-variable 'flymake-err-line-patterns) (plist-get msvc--flymake-err-line-patterns msvc--flymake-manually-back-end))
        ;; 複数バッファのflymakeが同時にenableになるとflymake-processでpipe errorになるのを抑制
@@ -1219,6 +1277,8 @@ can also be executed interactively independently of
     ;; add force delete
     (setq args (plist-put args :parsing-buffer-delete-p t))
 
+    ;; ---- arguments validation begin ----
+
     ;; check version
     (unless (plist-get args :version)
       (setq args (plist-put args :version msvc-env-default-use-version)))
@@ -1227,6 +1287,16 @@ can also be executed interactively independently of
     (unless (plist-get args :toolset)
       (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
     
+    ;; check flymake back-end
+    (unless (plist-get args :flymake-back-end)
+      (setq args (plist-put args :flymake-back-end 'msbuild)))
+
+    ;; check flymake-manually back-end
+    (unless (plist-get args :flymake-manually-back-end)
+      (setq args (plist-put args :flymake-manually-back-end (plist-get args :flymake-back-end))))
+
+    ;; ---- arguments validation end ----
+
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
       (setq db-names (apply #'msvc-flags-parse-vcx-solution args)))
