@@ -1,13 +1,13 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/03/13.11:01:22
+;;; last updated : 2019/04/11.20:50:25
 
-;; Copyright (C) 2013-2018  yaruopooner
+;; Copyright (C) 2013-2019  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.8
+;; Version: 1.3.9
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
@@ -38,7 +38,7 @@
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
-;;     2017/2015/2013/2012/2010
+;;     2019/2017/2015/2013/2012/2010
 ;;   - code completion (auto / manual)
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
@@ -59,7 +59,7 @@
 ;;   - Microsoft Windows 64/32bit
 ;;     10/8/7/Vista
 ;;   - Microsoft Visual Studio Community/Professional/Enterprise
-;;     2017/2015/2013/2012/2010
+;;     2019/2017/2015/2013/2012/2010
 ;;   - Shell 64/32bit
 ;;     CYGWIN/MSYS/CMD(cmdproxy)
 ;;     CYGWIN's bash recommended
@@ -115,7 +115,7 @@
 ;;                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                       :platform "x64"
 ;;                                       :configuration "Release" 
-;;                                       :version "2013" 
+;;                                       :product-name "2013" 
 ;;                                       :toolset 'x86_amd64
 ;;                                       :md5-name-p nil
 ;;                                       :force-parse-p nil
@@ -130,7 +130,7 @@
 ;;   The project buffer name is based on the following format.
 ;;   *MSVC Project <`db-name`>*
 ;;   msvc-mode will be applied automatically when source code belonging to the project has been opened.
-;;   msvc-mode has been applied buffer in the mode line MSVC`version`[platform|configuration] and will be displayed.
+;;   msvc-mode has been applied buffer in the mode line MSVC`product-name`[platform|configuration] and will be displayed.
 ;;   You can activate a lot of projects.
 ;; 
 ;; * REQUIRED PROPERTIES
@@ -151,9 +151,9 @@
 ;;      Must be a configuration that exists in the project file.
 ;; 
 ;; * OPTIONAL PROPERTIES
-;;   - :version
-;;     Specifies the version of Visual Studio to be used.
-;;     If you do not specify or nil used, the value used is `msvc-env-default-use-version'.
+;;   - :product-name
+;;     Specifies the product-name of Visual Studio to be used.
+;;     If you do not specify or nil used, the value used is `msvc-env-default-use-product-name'.
 ;;   - :toolset
 ;;     Specifies the toolset of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
@@ -261,7 +261,7 @@
 
 
 
-(defconst msvc-version "1.3.8")
+(defconst msvc-version "1.3.9")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -276,7 +276,7 @@
 ;;          (project-file . project-file)
 ;;          (platform . nil)
 ;;          (configuration . nil)
-;;          (version . nil)
+;;          (product-name . nil)
 ;;          (toolset . nil)
 ;;          (allow-cedet-p . t)
 ;;          (allow-ac-clang-p . t)
@@ -315,7 +315,7 @@
                                         :project-file
                                         :platform
                                         :configuration
-                                        :version
+                                        :product-name
                                         :toolset
                                         :md5-name-p
                                         :allow-cedet-p
@@ -335,7 +335,7 @@
                                        :project-file path
                                        :platform value
                                        :configuration value
-                                       :version value
+                                       :product-name value
                                        :toolset value
                                        :md5-name-p value
                                        :allow-cedet-p value
@@ -694,7 +694,7 @@
 
          (details (msvc--query-project db-name))
          (db-path (plist-get details :db-path))
-         (version (plist-get details :version))
+         (product-name (plist-get details :product-name))
          (toolset (plist-get details :toolset))
          (md5-name-p (plist-get details :md5-name-p))
          (fix-file-name (if md5-name-p (md5 extract-file-name) extract-file-name))
@@ -731,7 +731,7 @@
 
     (list 
      msvc-env--invoke-command
-     (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file))))
+     (msvc-env--build-msb-command-args product-name toolset msb-rsp-file log-file))))
 
 
 ;; error message display to Minibuf
@@ -1073,7 +1073,7 @@
 :configuration
 
 -optionals
-:version
+:product-name
 :toolset
 :md5-name-p
 :force-parse-p
@@ -1106,9 +1106,9 @@
     ;; add force delete
     (setq args (plist-put args :parsing-buffer-delete-p t))
 
-    ;; check version
-    (unless (plist-get args :version)
-      (setq args (plist-put args :version msvc-env-default-use-version)))
+    ;; check product
+    (unless (plist-get args :product-name)
+      (setq args (plist-put args :product-name msvc-env-default-use-product-name)))
     
     ;; check toolset
     (unless (plist-get args :toolset)
@@ -1156,22 +1156,22 @@
   ;; DBリストからプロジェクトマネージャーを生成
   (let* ((property (msvc-flags--create-project-property db-name))
 
-         ;; project basic information(from property)
+         ;; project basic informations(from property)
          (project-buffer (format msvc--project-buffer-name-fmt db-name))
          (project-file (plist-get property :project-file))
          (platform (plist-get property :platform))
          (configuration (plist-get property :configuration))
-         (version (plist-get property :version))
+         (product-name (plist-get property :product-name))
          (toolset (plist-get property :toolset))
 
-         ;; project basic information(from args)
+         ;; project basic informations(from args)
          (md5-name-p (plist-get args :md5-name-p))
          (dir-name (if md5-name-p (md5 db-name) db-name))
          (db-path (msvc-flags--create-db-path dir-name))
 
          (solution-file (plist-get args :solution-file))
 
-         ;; project allow feature(from args)
+         ;; project allow features(from args)
          (allow-cedet-p (plist-get args :allow-cedet-p))
          (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
          (allow-flymake-p (plist-get args :allow-flymake-p))
@@ -1206,7 +1206,7 @@
                                       :project-file ,project-file
                                       :platform ,platform
                                       :configuration ,configuration
-                                      :version ,version
+                                      :product-name ,product-name
                                       :toolset ,toolset
                                       :md5-name-p ,md5-name-p
                                       :allow-cedet-p ,allow-cedet-p
@@ -1547,7 +1547,7 @@
         (let* ((db-path (plist-get details :db-path))
                (platform (plist-get details :platform))
                (configuration (plist-get details :configuration))
-               (version (plist-get details :version))
+               (product-name (plist-get details :product-name))
                (toolset (plist-get details :toolset))
 
                (dst-file-base-name (file-name-nondirectory target-file))
@@ -1582,7 +1582,7 @@
                (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
 
                (command msvc-env--invoke-command)
-               (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file display-file)))
+               (command-args (msvc-env--build-msb-command-args product-name toolset msb-rsp-file display-file)))
 
           ;; create rsp file(always create)
           (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
@@ -1654,8 +1654,8 @@
   "MSVC mode key map")
 
 
-(defun msvc--update-mode-line (version platform configuration)
-  (setq msvc--mode-line (format " MSVC%s[%s|%s]" version platform configuration))
+(defun msvc--update-mode-line (product-name platform configuration)
+  (setq msvc--mode-line (format " MSVC%s[%s|%s]" product-name platform configuration))
   (force-mode-line-update))
 
 
@@ -1668,10 +1668,10 @@
       (progn
         (if (msvc--evaluate-buffer)
             (let* ((property (msvc-flags--create-project-property msvc--source-code-belonging-db-name))
-                   (version (plist-get property :version))
+                   (product-name (plist-get property :product-name))
                    (platform (plist-get property :platform))
                    (configuration (plist-get property :configuration)))
-              (msvc--update-mode-line version platform configuration))
+              (msvc--update-mode-line product-name platform configuration))
           (progn
             (message "msvc : This buffer don't belonging to the active projects.")
             (msvc-mode-off))))

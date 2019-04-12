@@ -1,8 +1,8 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2018/01/11.21:34:19
+;;; last updated : 2019/04/11.21:02:31
 
-;; Copyright (C) 2013-2018  yaruopooner
+;; Copyright (C) 2013-2019  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -89,7 +89,7 @@
 
 
 ;; CFLAGS/CXXFLAGS Database : Microsoft Visual C/C++ Project's CFLAGS/CXXFLAGS
-(defvar msvc-flags--cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + Version + Toolset.")
+(defvar msvc-flags--cflags-db nil "Generated CFLAGS/CXXFLAGS Database per vcx-project + Platform + Configuration + ProductName + Toolset.")
 
 
 ;; delete the buffer after end of parse.
@@ -103,9 +103,9 @@
 
 
 
-(defun msvc-flags--create-db-name (vcx-proj-path platform configuration version toolset)
+(defun msvc-flags--create-db-name (vcx-proj-path platform configuration product-name toolset)
   (cedet-directory-name-to-file-name 
-   (expand-file-name toolset (expand-file-name version (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path)))))))
+   (expand-file-name toolset (expand-file-name product-name (expand-file-name configuration (expand-file-name platform (file-name-sans-extension vcx-proj-path)))))))
 
 (defun msvc-flags--create-db-path (dir-name)
   (file-name-as-directory (expand-file-name dir-name msvc-flags-db-root-path)))
@@ -114,16 +114,16 @@
 (defun msvc-flags--create-project-property (db-name)
   (let* ((parsing-path (cedet-file-name-to-directory-name db-name))
          (toolset (file-name-nondirectory parsing-path))
-         (version (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
+         (product-name (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (configuration (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (platform (file-name-nondirectory (setq parsing-path (directory-file-name (file-name-directory parsing-path)))))
          (project-file (concat (setq parsing-path (directory-file-name (file-name-directory parsing-path))) ".vcxproj")))
 
-    `(:db-name ,db-name :project-file ,project-file :platform ,platform :configuration ,configuration :version ,version :toolset ,toolset)))
+    `(:db-name ,db-name :project-file ,project-file :platform ,platform :configuration ,configuration :product-name ,product-name :toolset ,toolset)))
 
 
 (defun msvc-flags--create-project-path (db-name)
-  ;; project-path/project-file-name/platform/configuration/version/toolset -> project-path/
+  ;; project-path/project-file-name/platform/configuration/product-name/toolset -> project-path/
   (expand-file-name "../../../../../" (cedet-file-name-to-directory-name db-name)))
 
 
@@ -286,7 +286,7 @@ attributes
 :project-file
 :platform
 :configuration
-:version
+:product-name
 :toolset
 
 -optionals
@@ -307,7 +307,7 @@ attributes
   (let ((project-file (plist-get args :project-file))
         (platform (plist-get args :platform))
         (configuration (plist-get args :configuration))
-        (version (plist-get args :version))
+        (product-name (plist-get args :product-name))
         (toolset (plist-get args :toolset))
         (md5-name-p (plist-get args :md5-name-p))
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
@@ -315,8 +315,8 @@ attributes
         (sync-p (plist-get args :sync-p)))
 
     ;; product check
-    (unless (msvc-env--query-detected-version-p version)
-      (message "msvc-flags : product version %s not detected : Microsoft Visual Studio" version)
+    (unless (msvc-env--query-detected-product-name-p product-name)
+      (message "msvc-flags : product-name %s not detected : Microsoft Visual Studio" product-name)
       (cl-return-from msvc-flags-parse-vcx-project nil))
 
     ;; file extension check
@@ -333,7 +333,7 @@ attributes
     (unless (file-accessible-directory-p msvc-flags-db-root-path)
       (make-directory msvc-flags-db-root-path))
 
-    (let* ((db-name (msvc-flags--create-db-name project-file platform configuration version toolset))
+    (let* ((db-name (msvc-flags--create-db-name project-file platform configuration product-name toolset))
            (dir-name (if md5-name-p (md5 db-name) db-name))
            (db-path (msvc-flags--create-db-path dir-name))
 
@@ -374,7 +374,7 @@ attributes
              (default-process-coding-system '(utf-8-dos . utf-8-unix))
 
              (command msvc-env--invoke-command)
-             (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file)))
+             (command-args (msvc-env--build-msb-command-args product-name toolset msb-rsp-file log-file)))
 
         ;; db-path ディレクトリはあらかじめ作成しておく必要がある
         ;; プロセス開始前に *.rsp を生成・保存する必要がある
@@ -468,7 +468,7 @@ attributes
 :solution-file
 :platform
 :configuration
-:version
+:product-name
 :toolset
 
 -optionals
@@ -584,7 +584,7 @@ attributes
           ;; (project-file (plist-get property :project-file))
           ;; (platform (plist-get property :platform))
           ;; (configuration (plist-get property :configuration))
-          ;; (version (plist-get property :version))
+          ;; (product-name (plist-get property :product-name))
           ;; (toolset (plist-get property :toolset)))
           (when parse-p
             (when (apply #'msvc-flags-parse-vcx-project :force-parse-p force-parse-p :sync-p sync-p :parsing-buffer-delete-p parsing-buffer-delete-p property)
