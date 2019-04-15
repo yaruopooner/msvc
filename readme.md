@@ -5,7 +5,18 @@
 [MSVC User Manual (English)](./doc/manual.en.md)  
 [MSVC User Manual (Japanese)](./doc/manual.ja.md)  
 
+# Notice
+
+Preparing to support Emacs 26.x  
+Because flymake has changed a lot with 26.x .  
+
 # What's New?
+
+## MSVC 2019-04-15 was released
+
+### new feature
+
+-   Supported Visual Studio 2019.
 
 ## MSVC 2018-01-06 was released
 

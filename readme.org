@@ -1,6 +1,6 @@
 
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2018/01/06.20:58:51
+# last updated : 2019/04/15.10:28:55
 
 
 [[http://melpa.org/#/msvc][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/msvc][file:http://stable.melpa.org/packages/msvc-badge.svg]]
@@ -15,8 +15,15 @@
   [[./doc/manual.en.org][MSVC User Manual (English)]]
   [[./doc/manual.ja.org][MSVC User Manual (Japanese)]]
 
+* Notice
+  Preparing to support Emacs 26.x
+  Because flymake has changed a lot with 26.x .
 
 * What's New?
+** MSVC 2019-04-15 was released
+*** new feature
+    - Supported Visual Studio 2019.
+
 ** MSVC 2018-01-06 was released
 *** others
     - Renamed the symbol used in msvc-activate-projects-after-parse and msvc--flymake-back-end and msvc--flymake-manually-back-end.
