@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/11.20:50:25
+;;; last updated : 2019/04/17.19:54:05
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -1314,6 +1314,35 @@
 
 
 
+(defcustom msvc-mode-feature-source-code-relate-extensions '("c" "cpp" "h" "hpp" "inl")
+  "The list of relate extension of source code file."
+  :group 'msvc
+  :type 'file-extension)
+
+(defun msvc-mode-feature-visit-to-related-source-code-buffer (&optional reverse-p)
+  (interactive)
+
+  (let* ((current-file-name (buffer-file-name))
+         (extension (file-name-extension current-file-name))
+         (found-index (or (cl-position extension msvc-mode-feature-source-code-relate-extensions :test 'equal) 0))
+         (access-index found-index)
+         (max-count (length msvc-mode-feature-source-code-relate-extensions))
+         (try-count 1)
+         (direction (if reverse-p -1 +1))
+         next-file-name
+         exist-p)
+
+    (while (and (< try-count max-count) (not exist-p))
+      (setq access-index (% (+ access-index max-count direction) max-count))
+      (setq next-file-name (format "%s.%s" (file-name-sans-extension current-file-name) (nth access-index msvc-mode-feature-source-code-relate-extensions)))
+      (setq exist-p (file-exists-p next-file-name))
+      (when exist-p
+        (find-file next-file-name))
+      (setq try-count (1+ try-count)))))
+
+
+
+
 (defvar msvc--mode-feature-include-visit-stack nil)
 
 (defun msvc-mode-feature-visit-to-include ()
@@ -1640,6 +1669,7 @@
 
 (defvar msvc--mode-key-map 
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c @") #'msvc-mode-feature-visit-to-related-source-code-buffer)
     (define-key map (kbd "M-i") #'msvc-mode-feature-visit-to-include)
     (define-key map (kbd "M-I") #'msvc-mode-feature-return-from-include)
     (define-key map (kbd "M-[") #'msvc-mode-feature-flymake-goto-prev-error)

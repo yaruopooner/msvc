@@ -17,6 +17,10 @@ Because flymake has changed a lot with 26.x .
 ### new feature
 
 -   Supported Visual Studio 2019.
+-   Can visit buffer to the related source file.  
+    `msvc-mode-feature-visit-to-related-source-code-buffer`  
+    This function visits the buffer associated with the current buffer.  
+    foo.cpp -> foo.h -> foo.inl -> foo.cpp -> &#x2026;
 
 ## MSVC 2018-01-06 was released
 
