@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/22.13:45:01
+;;; last updated : 2019/04/22.14:00:27
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -1109,8 +1109,8 @@
                        (format "Obsolete key-name detect in the arguments of msvc-activate-projects-after-parse!!
                   If you using :version in arguments, please change the key name to :product-name. 
                   And please delete msvc-db directory once. 
-                  msvc-db default location is msvc-flags-db-root-path.
-                  args is %S" args)))
+                  The location of msvc-db is %S.
+                  args is %S" msvc-flags-db-root-path args))
       (cl-return-from msvc-activate-projects-after-parse nil))
 
     ;; add force delete
