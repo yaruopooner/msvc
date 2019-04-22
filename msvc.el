@@ -1,13 +1,13 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/17.19:54:05
+;;; last updated : 2019/04/22.13:45:01
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.9
+;; Version: 1.4.0
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
@@ -115,7 +115,7 @@
 ;;                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                       :platform "x64"
 ;;                                       :configuration "Release" 
-;;                                       :product-name "2013" 
+;;                                       :product-name "2019" 
 ;;                                       :toolset 'x86_amd64
 ;;                                       :md5-name-p nil
 ;;                                       :force-parse-p nil
@@ -261,7 +261,7 @@
 
 
 
-(defconst msvc-version "1.3.9")
+(defconst msvc-version "1.4.0")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -1102,6 +1102,16 @@
       (cl-return-from msvc-activate-projects-after-parse nil))
 
     ;; args check & modify
+
+    ;; check obsolete key
+    (when (plist-get args :version)
+      (display-warning 'msvc
+                       (format "Obsolete key-name detect in the arguments of msvc-activate-projects-after-parse!!
+                  If you using :version in arguments, please change the key name to :product-name. 
+                  And please delete msvc-db directory once. 
+                  msvc-db default location is msvc-flags-db-root-path.
+                  args is %S" args)))
+      (cl-return-from msvc-activate-projects-after-parse nil))
 
     ;; add force delete
     (setq args (plist-put args :parsing-buffer-delete-p t))
