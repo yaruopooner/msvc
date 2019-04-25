@@ -22,6 +22,11 @@ Because flymake has changed a lot with 26.x .
     This function visits the buffer associated with the current buffer.  
     foo.cpp -> foo.h -> foo.inl -> foo.cpp -> &#x2026;
 
+### others
+
+-   Property name :version is obsolete.  
+    Please replace :version to :product-name.
+
 ## MSVC 2018-01-06 was released
 
 ### others

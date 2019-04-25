@@ -1,6 +1,6 @@
 
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2019/04/17.19:59:29
+# last updated : 2019/04/25.14:07:10
 
 
 [[http://melpa.org/#/msvc][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/msvc][file:http://stable.melpa.org/packages/msvc-badge.svg]]
@@ -27,6 +27,9 @@
       =msvc-mode-feature-visit-to-related-source-code-buffer=
       This function visits the buffer associated with the current buffer.
       foo.cpp -> foo.h -> foo.inl -> foo.cpp -> ...
+*** others
+    - Property name :version is obsolete.
+      Please replace :version to :product-name.
 
 ** MSVC 2018-01-06 was released
 *** others

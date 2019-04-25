@@ -1,11 +1,11 @@
 ;;; -*- mode: emacs-lisp ; coding: utf-8-unix -*-
-;;; last updated : 2015/04/04.21:35:21
+;;; last updated : 2019/04/25.13:52:22
 
 
 ;; (setq msvc-solution-build-report-display-timing 'after)
 
 ;; パース&アクティブ前にデフォルトで使用する Visual Studio を指定可能
-;; (setq msvc-env-default-use-version "2013")
+;; (setq msvc-env-default-use-product-name "2013")
 
 
 ;; 複数のプロジェクトを同時にアクティブ化
@@ -13,7 +13,7 @@
 ;; (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
 ;;                                     :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                     :platform "x64" :configuration "Release" 
-;;                                     :version "2013"
+;;                                     :product-name "2013"
 ;;                                     :toolset "amd64"
 ;;                                     :md5-name-p nil
 ;;                                     :force-parse-p nil
@@ -28,7 +28,7 @@
 ;; (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.sln"
 ;;                                     :project-file "d:/DirectXSamples/DecalTessellation11/DecalTessellation11_2010.vcxproj"
 ;;                                     :platform "x64" :configuration "Release" 
-;;                                     :version "2010"
+;;                                     :product-name "2010"
 ;;                                     :toolset "x86_amd64"
 ;;                                     :md5-name-p nil
 ;;                                     :force-parse-p nil
