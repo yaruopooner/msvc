@@ -71,8 +71,8 @@ In management buffer
 
 ## Coexistence and use of Visual Studio with different versions<a id="sec-1-2" name="sec-1-2"></a>
 
-You can specify the version of Visual Studio to be used for each solution / project handled  
-by msvc even when multiple Visual Studio [2017|2015|2013|2012|2010] versions of different Visual Studio are installed.  
+You can specify the product name of Visual Studio to be used for each solution / project handled  
+by msvc even when multiple Visual Studio [2019/2017|2015|2013|2012|2010] versions of different Visual Studio are installed.  
 This makes the old version of Visual Studio available only for specific projects.  
 
 ## IntelliSense-like Code Completion<a id="sec-1-3" name="sec-1-3"></a>
@@ -121,14 +121,15 @@ I am testing whether it can be done via powershell.
 # Essential environment<a id="sec-2" name="sec-2"></a>
 
 -   GNU Emacs 24.1 or higher  
-    Operation guaranteed only after 24.1
+    Operation guaranteed only after 24.1  
+    26.x is not yet supported
 -   shell  
     One of the following  
     CYGWIN [64|32] bit (recommended)  
     MSYS  
     CMD
 -   Microsoft Windows [64|32] bit
--   Microsoft Visual Studio [2017|2015|2013|2012|2010]  
+-   Microsoft Visual Studio [2019/2017|2015|2013|2012|2010]  
     Use CL.exe/MSBuild.exe
 
 # Required package<a id="sec-3" name="sec-3"></a>
@@ -170,7 +171,7 @@ Manual installation Only the following packages need to be installed.
         Not supported
 
 -   Microsoft Visual Studio [Community|Professional|Enterprise]  
-    [2017|2015|2013|2012|2010] Operation checked
+    [2019/2017|2015|2013|2012|2010] Operation checked
 
 -   SDK  
     Tested in the sample project of SDK below.  
@@ -178,7 +179,7 @@ Manual installation Only the following packages need to be installed.
     -   Windows SDK 10.0.15.x
     -   Direct X SDK(June 2010)  
         Build test with some samples
-    -   ISO C++ Standard [C++11|C++14|C++1z]  
+    -   ISO C++ Standard [C++11|C++14|C++17]  
         Test library and template completion
     -   Boost  
         Test with Nuget Package
@@ -275,7 +276,7 @@ The project buffer name is based on the following format.
 **MSVC Project<\`db-name\`>**  
 
 Also, msvc-mode is automatically applied when the source code belonging to the project is open or opened while active.  
-Buffers with msvc-mode applied will be displayed in the mode line as **MSVC\`version\`[platform|configuration]** .  
+Buffers with msvc-mode applied will be displayed in the mode line as **MSVC\`product-name\`[platform|configuration]** .  
 
 We will parse & activate with the following function.  
 `(msvc-activate-projects-after-parse &rest args)`  
@@ -295,7 +296,7 @@ The buffer itself holds which projects are active and what platforms and configu
                                         :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
                                         :platform "x64"
                                         :configuration "Release" 
-                                        :version "2013" 
+                                        :product-name "2013" 
                                         :toolset "x86_amd64"
                                         :md5-name-p nil
                                         :force-parse-p nil
@@ -335,13 +336,16 @@ The buffer itself holds which projects are active and what platforms and configu
 ### Option property<a id="sec-7-1-3" name="sec-7-1-3"></a>
 
 -   `:version`  
-    Specify the version of Visual Studio used for CFLAGS creation, syntax check, and solution build passed to project parse, ac-clang.  
+    It has been discontinued because it has been renamed.  
+    Use the following :product-name .
+-   `:product-name`  
+    Specify the product name of Visual Studio used for CFLAGS creation, syntax check, and solution build passed to project parse, ac-clang.  
     The designation is made with a character string.  
     Note that it is not an integer.  
     Designated as "2013".  
-    If not specified, the value of msvc-env-default-use-version is set.  
-    msvc-env-default-use-version is assigned the latest Visual Studio detected at startup.  
-    You can change the version used in the standard by resetting the value of msvc-env-default-use-version after executing msvc-initialize.
+    If not specified, the value of msvc-env-default-use-product-name is set.  
+    msvc-env-default-use-product-name is assigned the latest Visual Studio detected at startup.  
+    You can change the product-name used in the standard by resetting the value of msvc-env-default-use-product-name after executing msvc-initialize.
 -   `:toolset`  
     Specify the compiler platform.  
     The designation is made with a character string. Be careful as it is not a symbol.  
@@ -410,7 +414,7 @@ The buffer itself holds which projects are active and what platforms and configu
     Specify it only when using other than MSBuild.  
     The following are possible symbols  
     'msbuild  
-    'clang
+    'clang-server
 -   `:flymake-manually-p`  
     If no key is specified, it becomes nil. (recommended)  
     `:allow-flymake-p` It is referred to only when this value is t.  
@@ -423,7 +427,7 @@ The buffer itself holds which projects are active and what platforms and configu
     Specify it only when using other than MSBuild.  
     The following are possible symbols  
     'msbuild  
-    'clang
+    'clang-server
 
 ## Project parsing and registration 2<a id="sec-7-2" name="sec-7-2"></a>
 

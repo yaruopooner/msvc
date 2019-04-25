@@ -5,7 +5,35 @@
 [MSVC User Manual (English)](./doc/manual.en.md)  
 [MSVC User Manual (Japanese)](./doc/manual.ja.md)  
 
+# Notice
+
+Preparing to support Emacs 26.x  
+Because flymake has changed a lot with 26.x .  
+
 # What's New?
+
+## MSVC 2019-04-15 was released
+
+### new feature
+
+-   Supported Visual Studio 2019.
+-   Can visit buffer to the related source file.  
+    `msvc-mode-feature-visit-to-related-source-code-buffer`  
+    This function visits the buffer associated with the current buffer.  
+    foo.cpp -> foo.h -> foo.inl -> foo.cpp -> &#x2026;
+
+### others
+
+-   Property name :version is obsolete.  
+    Please replace :version to :product-name.
+
+## MSVC 2018-01-06 was released
+
+### others
+
+-   Renamed the symbol used in msvc-activate-projects-after-parse and msvc&#x2013;flymake-back-end and msvc&#x2013;flymake-manually-back-end.  
+    'clang -> 'clang-server
+-   Small refactoring.
 
 ## MSVC 2017-12-26 was released
 

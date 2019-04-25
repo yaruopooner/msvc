@@ -1,14 +1,13 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2017/12/26.00:32:01
+;;; last updated : 2019/04/23.10:53:02
 
-
-;; Copyright (C) 2013-2017  yaruopooner
+;; Copyright (C) 2013-2019  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.3.7
+;; Version: 1.4.0
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
@@ -39,7 +38,7 @@
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
-;;     2017/2015/2013/2012/2010
+;;     2019/2017/2015/2013/2012/2010
 ;;   - code completion (auto / manual)
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
@@ -60,7 +59,7 @@
 ;;   - Microsoft Windows 64/32bit
 ;;     10/8/7/Vista
 ;;   - Microsoft Visual Studio Community/Professional/Enterprise
-;;     2017/2015/2013/2012/2010
+;;     2019/2017/2015/2013/2012/2010
 ;;   - Shell 64/32bit
 ;;     CYGWIN/MSYS/CMD(cmdproxy)
 ;;     CYGWIN's bash recommended
@@ -116,7 +115,7 @@
 ;;                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                       :platform "x64"
 ;;                                       :configuration "Release" 
-;;                                       :version "2013" 
+;;                                       :product-name "2019" 
 ;;                                       :toolset 'x86_amd64
 ;;                                       :md5-name-p nil
 ;;                                       :force-parse-p nil
@@ -131,7 +130,7 @@
 ;;   The project buffer name is based on the following format.
 ;;   *MSVC Project <`db-name`>*
 ;;   msvc-mode will be applied automatically when source code belonging to the project has been opened.
-;;   msvc-mode has been applied buffer in the mode line MSVC`version`[platform|configuration] and will be displayed.
+;;   msvc-mode has been applied buffer in the mode line MSVC`product-name`[platform|configuration] and will be displayed.
 ;;   You can activate a lot of projects.
 ;; 
 ;; * REQUIRED PROPERTIES
@@ -152,9 +151,9 @@
 ;;      Must be a configuration that exists in the project file.
 ;; 
 ;; * OPTIONAL PROPERTIES
-;;   - :version
-;;     Specifies the version of Visual Studio to be used.
-;;     If you do not specify or nil used, the value used is `msvc-env-default-use-version'.
+;;   - :product-name
+;;     Specifies the product-name of Visual Studio to be used.
+;;     If you do not specify or nil used, the value used is `msvc-env-default-use-product-name'.
 ;;   - :toolset
 ;;     Specifies the toolset of Visual Studio to be used.
 ;;     If you do not specify or nil used, the value used is `msvc-env-default-use-toolset'.
@@ -200,14 +199,14 @@
 ;;     For details, refer to CEDET manual.
 ;;   - :flymake-back-end
 ;;     nil recommended. 
-;;     specifiable : `msbuild' `clang' `nil'
+;;     specifiable : `msbuild' `clang-server' `nil'
 ;;     refer to `msvc--flymake-back-end'
 ;;   - :flymake-manually-p
 ;;     nil recommended. 
 ;;     If value is t, manual syntax check only.
 ;;   - :flymake-manually-back-end
 ;;     nil recommended.
-;;     specifiable : `msbuild' `clang' `nil'
+;;     specifiable : `msbuild' `clang-server' `nil'
 ;;     refer to `msvc--flymake-manually-back-end'
 ;; 
 ;; * DEFAULT KEYBIND(msvc on Source Code Buffer)
@@ -262,7 +261,7 @@
 
 
 
-(defconst msvc-version "1.3.7")
+(defconst msvc-version "1.4.0")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -277,7 +276,7 @@
 ;;          (project-file . project-file)
 ;;          (platform . nil)
 ;;          (configuration . nil)
-;;          (version . nil)
+;;          (product-name . nil)
 ;;          (toolset . nil)
 ;;          (allow-cedet-p . t)
 ;;          (allow-ac-clang-p . t)
@@ -316,7 +315,7 @@
                                         :project-file
                                         :platform
                                         :configuration
-                                        :version
+                                        :product-name
                                         :toolset
                                         :md5-name-p
                                         :allow-cedet-p
@@ -336,7 +335,7 @@
                                        :project-file path
                                        :platform value
                                        :configuration value
-                                       :version value
+                                       :product-name value
                                        :toolset value
                                        :md5-name-p value
                                        :allow-cedet-p value
@@ -373,22 +372,22 @@
 
 (defvar msvc-flymake-error-display-style 'popup
   "flymake error message display style symbols
-`popup'       : popup display
-`mini-buffer' : mini-buffer display
-`nil'         : user default style")
+`popup'        : popup display
+`mini-buffer'  : mini-buffer display
+`nil'          : user default style")
 
 
 (defvar-local msvc--flymake-back-end 'msbuild
   "flymake back-end symbols
-`msbuild'     : MSBuild
-`clang'       : clang
-`nil'         : native back-end")
+`msbuild'      : MSBuild
+`clang-server' : clang-server
+`nil'          : native back-end")
 
 (defvar-local msvc--flymake-manually-back-end nil
   "flymake manually mode back-end symbols
-`msbuild'     : MSBuild
-`clang'       : clang
-`nil'         : inherit msvc--flymake-back-end value")
+`msbuild'      : MSBuild
+`clang-server' : clang-server
+`nil'          : inherit msvc--flymake-back-end value")
 
 
 
@@ -443,11 +442,11 @@
 
 
 
-(defun msvc--regist-project (db-name details)
-  (msvc--unregist-project db-name)
+(defun msvc--register-project (db-name details)
+  (msvc--unregister-project db-name)
   (add-to-list 'msvc--active-projects `(,db-name . ,details)))
 
-(defun msvc--unregist-project (db-name)
+(defun msvc--unregister-project (db-name)
   (setq msvc--active-projects (delete (assoc-string db-name msvc--active-projects) msvc--active-projects)))
 
 
@@ -660,7 +659,7 @@
   (cl-case msvc--flymake-back-end
     (msbuild
      (msvc--flymake-start-syntax-check-process cmd args dir))
-    (clang
+    (clang-server
      (ac-clang-diagnostics))
     (t
      ad-do-it)))
@@ -670,16 +669,17 @@
 
 (defconst msvc--flymake-err-line-patterns
   '(
-    ;; Visual C/C++ 2013/2012/2010
+    ;; Visual C/C++ 2010 - 2017
     msbuild
     ;; (1:file, 2:line, 3:error-text) flymake only support
     ;; (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)" 1 2 nil 3))
     ;; (1:file, 2:line, 3:error-text, 4:project) flymake & solution build both support
     (("^[ 0-9>]*\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\)(\\([0-9]+\\))[ \t\n]*\:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\) \\(?:C[0-9]+\\):[ \t\n]*\\(?:[^[]+\\)\\)\\[\\(.+\\)\\]" 1 2 nil 3))
 
-    ;; clang 3.3
-    clang
+    ;; clang 3.3.0 - 5.0.0
+    clang-server
     (("^\\(\\(?:[a-zA-Z]:\\)?[^:(\t\n]+\\):\\([0-9]+\\):\\([0-9]+\\)[ \t\n]*:[ \t\n]*\\(\\(?:error\\|warning\\|fatal error\\):\\(?:.*\\)\\)" 1 2 3 4)))
+
   "  (REGEXP FILE-IDX LINE-IDX COL-IDX ERR-TEXT-IDX).")
 
 
@@ -694,7 +694,7 @@
 
          (details (msvc--query-project db-name))
          (db-path (plist-get details :db-path))
-         (version (plist-get details :version))
+         (product-name (plist-get details :product-name))
          (toolset (plist-get details :toolset))
          (md5-name-p (plist-get details :md5-name-p))
          (fix-file-name (if md5-name-p (md5 extract-file-name) extract-file-name))
@@ -731,7 +731,7 @@
 
     (list 
      msvc-env--invoke-command
-     (msvc-env--build-msb-command-args version toolset msb-rsp-file log-file))))
+     (msvc-env--build-msb-command-args product-name toolset msb-rsp-file log-file))))
 
 
 ;; error message display to Minibuf
@@ -964,6 +964,9 @@
       ;; (add-hook 'before-revert-hook #'msvc--detach-from-project nil t)
       (add-hook 'kill-buffer-hook #'msvc-mode-off nil t)
       (add-hook 'before-revert-hook #'msvc-mode-off nil t)
+      ;; msvc-mode-on don't add to after-revert-hook. 
+      ;; because it will call from c-mode-common-hook.
+      ;; sequence is revert-buffer -> c-mode-common-hook.
 
       ;; launch allow features(launch order low > high)
 
@@ -1029,12 +1032,15 @@
 (cl-defun msvc--evaluate-buffer ()
   (interactive)
 
-  (unless msvc--source-code-belonging-db-name
-    (cl-dolist (project msvc--active-projects)
-      (let* ((db-name (car project)))
-        (when (msvc--target-buffer-p db-name)
-          (msvc--attach-to-project db-name)
-          (cl-return-from msvc--evaluate-buffer t))))))
+  ;; This buffer already active
+  (when msvc--source-code-belonging-db-name
+    (cl-return-from msvc--evaluate-buffer t))
+
+  (cl-dolist (project msvc--active-projects)
+    (let* ((db-name (car project)))
+      (when (msvc--target-buffer-p db-name)
+        (msvc--attach-to-project db-name)
+        (cl-return-from msvc--evaluate-buffer t)))))
 
 
 
@@ -1067,7 +1073,7 @@
 :configuration
 
 -optionals
-:version
+:product-name
 :toolset
 :md5-name-p
 :force-parse-p
@@ -1100,9 +1106,9 @@
     ;; add force delete
     (setq args (plist-put args :parsing-buffer-delete-p t))
 
-    ;; check version
-    (unless (plist-get args :version)
-      (setq args (plist-put args :version msvc-env-default-use-version)))
+    ;; check product
+    (unless (plist-get args :product-name)
+      (setq args (plist-put args :product-name msvc-env-default-use-product-name)))
     
     ;; check toolset
     (unless (plist-get args :toolset)
@@ -1150,22 +1156,22 @@
   ;; DBリストからプロジェクトマネージャーを生成
   (let* ((property (msvc-flags--create-project-property db-name))
 
-         ;; project basic information(from property)
+         ;; project basic informations(from property)
          (project-buffer (format msvc--project-buffer-name-fmt db-name))
          (project-file (plist-get property :project-file))
          (platform (plist-get property :platform))
          (configuration (plist-get property :configuration))
-         (version (plist-get property :version))
+         (product-name (plist-get property :product-name))
          (toolset (plist-get property :toolset))
 
-         ;; project basic information(from args)
+         ;; project basic informations(from args)
          (md5-name-p (plist-get args :md5-name-p))
          (dir-name (if md5-name-p (md5 db-name) db-name))
          (db-path (msvc-flags--create-db-path dir-name))
 
          (solution-file (plist-get args :solution-file))
 
-         ;; project allow feature(from args)
+         ;; project allow features(from args)
          (allow-cedet-p (plist-get args :allow-cedet-p))
          (allow-ac-clang-p (plist-get args :allow-ac-clang-p))
          (allow-flymake-p (plist-get args :allow-flymake-p))
@@ -1193,26 +1199,26 @@
     ;; dbへ登録のみ
     ;; value が最初はnilだとわかっていても変数を入れておかないと評価時におかしくなる・・
     ;; args をそのまま渡したいが、 意図しないpropertyが紛れ込みそうなのでちゃんと指定する
-    (msvc--regist-project db-name `(
-                                    :db-path ,db-path
-                                    :project-buffer ,project-buffer
-                                    :solution-file ,solution-file
-                                    :project-file ,project-file
-                                    :platform ,platform
-                                    :configuration ,configuration
-                                    :version ,version
-                                    :toolset ,toolset
-                                    :md5-name-p ,md5-name-p
-                                    :allow-cedet-p ,allow-cedet-p
-                                    :allow-ac-clang-p ,allow-ac-clang-p
-                                    :allow-flymake-p ,allow-flymake-p
-                                    :cedet-root-path ,cedet-root-path
-                                    :cedet-spp-table ,cedet-spp-table
-                                    :flymake-back-end ,flymake-back-end
-                                    :flymake-manually-p ,flymake-manually-p
-                                    :flymake-manually-back-end ,flymake-manually-back-end
-                                    :target-buffers ,target-buffers
-                                    ))
+    (msvc--register-project db-name `(
+                                      :db-path ,db-path
+                                      :project-buffer ,project-buffer
+                                      :solution-file ,solution-file
+                                      :project-file ,project-file
+                                      :platform ,platform
+                                      :configuration ,configuration
+                                      :product-name ,product-name
+                                      :toolset ,toolset
+                                      :md5-name-p ,md5-name-p
+                                      :allow-cedet-p ,allow-cedet-p
+                                      :allow-ac-clang-p ,allow-ac-clang-p
+                                      :allow-flymake-p ,allow-flymake-p
+                                      :cedet-root-path ,cedet-root-path
+                                      :cedet-spp-table ,cedet-spp-table
+                                      :flymake-back-end ,flymake-back-end
+                                      :flymake-manually-p ,flymake-manually-p
+                                      :flymake-manually-back-end ,flymake-manually-back-end
+                                      :target-buffers ,target-buffers
+                                      ))
 
     ;; setup project buffer
     (with-current-buffer project-buffer
@@ -1289,7 +1295,7 @@
 
       ;; a project is removed from database.
       ;; (print (format "msvc--deactivate-project %s" db-name))
-      (msvc--unregist-project db-name)
+      (msvc--unregister-project db-name)
       t)))
 
 
@@ -1305,6 +1311,35 @@
                           msvc--active-projects)))
     (cl-dolist (db-name db-names)
       (apply #'msvc-activate-projects-after-parse (msvc--query-project db-name)))))
+
+
+
+(defcustom msvc-mode-feature-source-code-relate-extensions '("c" "cpp" "h" "hpp" "inl")
+  "The list of relate extension of source code file."
+  :group 'msvc
+  :type 'file-extension)
+
+(defun msvc-mode-feature-visit-to-related-source-code-buffer (&optional reverse-p)
+  (interactive)
+
+  (let* ((current-file-name (buffer-file-name))
+         (extension (file-name-extension current-file-name))
+         (found-index (or (cl-position extension msvc-mode-feature-source-code-relate-extensions :test 'equal) 0))
+         (access-index found-index)
+         (max-count (length msvc-mode-feature-source-code-relate-extensions))
+         (try-count 1)
+         (direction (if reverse-p -1 +1))
+         next-file-name
+         exist-p)
+
+    (while (and (< try-count max-count) (not exist-p))
+      (setq access-index (% (+ access-index max-count direction) max-count))
+      (setq next-file-name (format "%s.%s" (file-name-sans-extension current-file-name) (nth access-index msvc-mode-feature-source-code-relate-extensions)))
+      (setq exist-p (file-exists-p next-file-name))
+      (when exist-p
+        (find-file next-file-name))
+      (setq try-count (1+ try-count)))))
+
 
 
 
@@ -1345,8 +1380,8 @@
     (msbuild
      ;; back end : MSBuild
      (flymake-start-syntax-check))
-    (clang
-     ;; back end : clang
+    (clang-server
+     ;; back end : clang-server
      (ac-clang-diagnostics))))
 
 (defun msvc-mode-feature-jump-to-project-buffer ()
@@ -1541,7 +1576,7 @@
         (let* ((db-path (plist-get details :db-path))
                (platform (plist-get details :platform))
                (configuration (plist-get details :configuration))
-               (version (plist-get details :version))
+               (product-name (plist-get details :product-name))
                (toolset (plist-get details :toolset))
 
                (dst-file-base-name (file-name-nondirectory target-file))
@@ -1576,7 +1611,7 @@
                (display-file (if msvc-solution-build-report-realtime-display-p "" log-file))
 
                (command msvc-env--invoke-command)
-               (command-args (msvc-env--build-msb-command-args version toolset msb-rsp-file display-file)))
+               (command-args (msvc-env--build-msb-command-args product-name toolset msb-rsp-file display-file)))
 
           ;; create rsp file(always create)
           (msvc-env--create-msb-rsp-file msb-rsp-file msb-target-file msb-flags)
@@ -1634,6 +1669,7 @@
 
 (defvar msvc--mode-key-map 
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c @") #'msvc-mode-feature-visit-to-related-source-code-buffer)
     (define-key map (kbd "M-i") #'msvc-mode-feature-visit-to-include)
     (define-key map (kbd "M-I") #'msvc-mode-feature-return-from-include)
     (define-key map (kbd "M-[") #'msvc-mode-feature-flymake-goto-prev-error)
@@ -1648,8 +1684,8 @@
   "MSVC mode key map")
 
 
-(defun msvc--update-mode-line (version platform configuration)
-  (setq msvc--mode-line (format " MSVC%s[%s|%s]" version platform configuration))
+(defun msvc--update-mode-line (product-name platform configuration)
+  (setq msvc--mode-line (format " MSVC%s[%s|%s]" product-name platform configuration))
   (force-mode-line-update))
 
 
@@ -1662,16 +1698,16 @@
       (progn
         (if (msvc--evaluate-buffer)
             (let* ((property (msvc-flags--create-project-property msvc--source-code-belonging-db-name))
-                   (version (plist-get property :version))
+                   (product-name (plist-get property :product-name))
                    (platform (plist-get property :platform))
                    (configuration (plist-get property :configuration)))
-              (msvc--update-mode-line version platform configuration))
+              (msvc--update-mode-line product-name platform configuration))
           (progn
-            (msvc--update-mode-line "" "-" "-")
-            (message "This buffer don't belonging to the active projects.")
+            (message "msvc : This buffer don't belonging to the active projects.")
             (msvc-mode-off))))
     (progn
-      (msvc--detach-from-project))))
+      (msvc--detach-from-project)
+      (msvc--update-mode-line "" "-" "-"))))
 
 
 (defun msvc-mode-on ()
