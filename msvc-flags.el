@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/11.21:02:31
+;;; last updated : 2019/04/25.11:08:54
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -269,6 +269,18 @@
 
 
 
+;; check obsolete key(from v1.4.0)
+(defun msvc-flags--contain-obsolete-property (args)
+  (when (plist-get args :version)
+    (display-warning 'msvc
+                     (format "Obsolete property name detected in the arguments of parser function (msvc-activate-projects-after-parse, msvc-flags-parse-vcx-project)!!
+                  If you using property name :version in arguments, please change the property name to :product-name.
+                  And please delete msvc-db directory once. Because the database may also contain old property names.
+                  The location of msvc-db is %S.
+                  args is %S" msvc-flags-db-root-path args))
+    t))
+
+
 ;; バッファは同一名ではなく、Project+Platform+Configuration 毎に異なるバッファをバインドするので平行処理できる
 ;; バッファ名規則は、 (format msvc-flags--process-buffer-name-fmt db-name) とする
 ;; バッファ名はユニークになるように生成されて start-process-shell-command に渡される
@@ -313,6 +325,10 @@ attributes
         (parsing-buffer-delete-p (plist-get args :parsing-buffer-delete-p))
         (force-parse-p (plist-get args :force-parse-p))
         (sync-p (plist-get args :sync-p)))
+
+    ;; check obsolete key(from v1.4.0)
+    (when (msvc-flags--contain-obsolete-property args)
+      (cl-return-from msvc-flags-parse-vcx-project nil))
 
     ;; product check
     (unless (msvc-env--query-detected-product-name-p product-name)
@@ -552,6 +568,10 @@ attributes
         (let* ((property (msvc-flags--load-property-file dir-name))
                (db-name (plist-get property :db-name))
                (load-p (and db-name (if db-name-pattern (string-match db-name-pattern db-name) t))))
+
+          ;; check obsolete key(from v1.4.0)
+          (msvc-flags--contain-obsolete-property property)
+
           (when load-p
             (msvc-flags--register-db db-name (msvc-flags--parse-compilation-db dir-name db-name))
             (setq count (1+ count))))))
