@@ -1,6 +1,6 @@
 
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2019/04/25.14:07:10
+# last updated : 2019/04/26.10:40:38
 
 
 [[http://melpa.org/#/msvc][file:http://melpa.org/packages/msvc-badge.svg]] [[http://stable.melpa.org/#/msvc][file:http://stable.melpa.org/packages/msvc-badge.svg]]
@@ -20,6 +20,10 @@
   Because flymake has changed a lot with 26.x .
 
 * What's New?
+** MSVC 2019-04-26 was released
+*** others
+    - Small bug fixes.
+
 ** MSVC 2019-04-15 was released
 *** new feature
     - Supported Visual Studio 2019.

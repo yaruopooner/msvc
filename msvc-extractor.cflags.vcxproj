@@ -52,7 +52,7 @@
         <CompilerVersion Condition="'$(VisualStudioVersion)' == '12.0'">18.00.40629</CompilerVersion>
         <CompilerVersion Condition="'$(VisualStudioVersion)' == '14.0'">19.00.24215</CompilerVersion>
         <CompilerVersion Condition="'$(VisualStudioVersion)' == '15.0'">19.10.25017</CompilerVersion>
-        <CompilerVersion Condition="'$(VisualStudioVersion)' &gt;= '16.0'">20.00.00000</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' &gt;= '16.0'">19.20.27508</CompilerVersion>
 
         <!-- C++ Standard Version -->
         <CppLanguageStd Condition="'%(ClCompile.LanguageStandard)' == 'stdcpp14'">c++14</CppLanguageStd>
