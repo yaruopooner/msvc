@@ -12,6 +12,12 @@ Because flymake has changed a lot with 26.x .
 
 # What's New?
 
+## MSVC 2019-04-26 was released
+
+### others
+
+-   Small bug fixes.
+
 ## MSVC 2019-04-15 was released
 
 ### new feature
