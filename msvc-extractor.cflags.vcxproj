@@ -51,7 +51,8 @@
         <CompilerVersion Condition="'$(VisualStudioVersion)' == '11.0'">17.00.61030</CompilerVersion>
         <CompilerVersion Condition="'$(VisualStudioVersion)' == '12.0'">18.00.40629</CompilerVersion>
         <CompilerVersion Condition="'$(VisualStudioVersion)' == '14.0'">19.00.24215</CompilerVersion>
-        <CompilerVersion Condition="'$(VisualStudioVersion)' &gt;= '15.0'">19.10.25017</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' == '15.0'">19.10.25017</CompilerVersion>
+        <CompilerVersion Condition="'$(VisualStudioVersion)' &gt;= '16.0'">19.20.27508</CompilerVersion>
 
         <!-- C++ Standard Version -->
         <CppLanguageStd Condition="'%(ClCompile.LanguageStandard)' == 'stdcpp14'">c++14</CppLanguageStd>
@@ -60,6 +61,7 @@
         <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '10.0')">c++11</CppLanguageStd>
         <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '12.0')">c++14</CppLanguageStd>
         <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '15.0')">c++1z</CppLanguageStd>
+        <CppLanguageStd Condition="('%(ClCompile.LanguageStandard)' == '') AND ('$(VisualStudioVersion)' &gt;= '16.0')">c++17</CppLanguageStd>
 
         <!-- target machine architecture -->
         <TargetMachine Condition="('%(Lib.TargetMachine)' == 'MachineX64') OR ('%(ImpLib.TargetMachine)' == 'MachineX64') OR ('%(Link.TargetMachine)' == 'MachineX64') OR ('$(Platform)' == 'x64')">MachineX64</TargetMachine>

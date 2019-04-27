@@ -72,8 +72,8 @@ Visual Studio プロジェクトファイルをパースすることにより、
 
 ## バージョンの異なるVisual Studio共存と利用<a id="sec-1-2" name="sec-1-2"></a>
 
-Visual Studio [2017|2015|2013|2012|2010] などバージョンの異なるVisual Studioが複数インストールされている場合でも  
-msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioのバージョンを指定可能。  
+Visual Studio [2019/2017|2015|2013|2012|2010] などバージョンの異なるVisual Studioが複数インストールされている場合でも  
+msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioの製品名を指定可能。  
 これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。  
 
 ## IntelliSenseライクな補完機能<a id="sec-1-3" name="sec-1-3"></a>
@@ -121,14 +121,15 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
 # 必須環境<a id="sec-2" name="sec-2"></a>
 
 -   GNU Emacs 24.1以上  
-    24.1以降でのみ動作保証
+    24.1以降でのみ動作保証  
+    26.xはまだ未サポート
 -   shell  
     以下のいずれか  
     CYGWIN [64|32] bit (推奨)  
     MSYS  
     CMD
 -   Microsoft Windows [64|32] bit
--   Microsoft Visual Studio [2017|2015|2013|2012|2010]  
+-   Microsoft Visual Studio [2019/2017|2015|2013|2012|2010]  
     CL.exe/MSBuild.exe 等を使います
 
 # 必須パッケージ<a id="sec-3" name="sec-3"></a>
@@ -170,7 +171,7 @@ msvcを M-x list-packages でインストールした場合は自動インスト
         サポート対象外
 
 -   Microsoft Visual Studio [Community|Professional|Enterprise]  
-    [2017|2015|2013|2012|2010] 動作チェック済み
+    [2019/2017|2015|2013|2012|2010] 動作チェック済み
 
 -   SDK  
     下記SDKのサンプルプロジェクトでテスト。  
@@ -178,7 +179,7 @@ msvcを M-x list-packages でインストールした場合は自動インスト
     -   Windows SDK 10.0.15.x
     -   Direct X SDK(June 2010)  
         いくつかのサンプルでビルドテスト
-    -   ISO C++ Standard [C++11|C++14|C++1z]  
+    -   ISO C++ Standard [C++11|C++14|C++17]  
         ライブラリやテンプレートの展開などをテスト
     -   Boost  
         Nuget Package でテスト
@@ -269,7 +270,7 @@ ac-clangは外部プログラムと連携するためelispパッケージだけ�
 プロジェクトバッファ名は以下のフォーマットに基きます。  
 **MSVC Project<\`db-name\`>**  
 また、該当プロジェクトに属するソースコードがオープンされていたり、アクティブ中にオープンすると自動的にmsvc-modeが適用されます。  
-msvc-modeが適用されたバッファはモードラインに **MSVC\`version\`[platform|configuration]** と表示されます。  
+msvc-modeが適用されたバッファはモードラインに **MSVC\`product-name\`[platform|configuration]** と表示されます。  
 
 以下の関数でパース＆アクティブ化を行います。  
 `(msvc-activate-projects-after-parse &rest args)`  
@@ -287,7 +288,7 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
                                         :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
                                         :platform "x64"
                                         :configuration "Release" 
-                                        :version "2013" 
+                                        :product-name "2013" 
                                         :toolset "x86_amd64"
                                         :md5-name-p nil
                                         :force-parse-p nil
@@ -327,12 +328,15 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`version\
 ### オプションプロパティ<a id="sec-7-1-3" name="sec-7-1-3"></a>
 
 -   `:version`  
-    プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioのバージョンを指定。  
+    リネームしたので廃止されました。  
+    下記の :product-name を使用してください。
+-   `:product-name`  
+    プロジェクトパース、ac-clangに渡されるCFLAGS生成、シンタックスチェック、ソリューションビルドに使用されるVisual Studioの製品名を指定。  
     指定は文字列で行う。整数ではないので注意。  
     "2013" のように指定。  
-    指定しない or nil場合、msvc-env-default-use-versionの値がセットされる。  
-    msvc-env-default-use-versionは起動時に検出した最新のVisual Studioが割り当てられる。  
-    msvc-initialize実行後にmsvc-env-default-use-versionの値を再セットすることにより標準で使用されるversionを変更可能。
+    指定しない or nil場合、msvc-env-default-use-product-nameの値がセットされる。  
+    msvc-env-default-use-product-nameは起動時に検出した最新のVisual Studioが割り当てられる。  
+    msvc-initialize実行後にmsvc-env-default-use-product-nameの値を再セットすることにより標準で使用されるproduct-nameを変更可能。
 -   `:toolset`  
     コンパイラプラットフォームを指定。  
     指定は文字列で行う。シンボルではないので注意。  
