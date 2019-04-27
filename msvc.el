@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/26.10:37:37
+;;; last updated : 2019/04/27.18:39:50
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -536,7 +536,7 @@
      (msvc--visit-buffer (point) #'switch-to-buffer))
     (path
      (msvc--visit-path (point) #'find-file))))
-     
+
 
 (defun msvc--keyboard-visit-target-other-window ()
   "Toggle the display status of the filter group on this line."
@@ -547,7 +547,7 @@
      (msvc--visit-buffer (point) #'msvc--split-window))
     (path
      (msvc--visit-path (point) #'find-file-other-window))))
-    
+
 
 (defun msvc--mouse-visit-target (_event)
   "Toggle the display status of the filter group chosen with the mouse."
@@ -1109,11 +1109,11 @@
     ;; check product
     (unless (plist-get args :product-name)
       (setq args (plist-put args :product-name msvc-env-default-use-product-name)))
-    
+
     ;; check toolset
     (unless (plist-get args :toolset)
       (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
-    
+
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
       (setq db-names (apply #'msvc-flags-parse-vcx-solution args)))
@@ -1253,7 +1253,7 @@
       (cl-dolist (buffer target-buffers)
         (with-current-buffer buffer
           (msvc-mode-on))))
-    
+
     ;; プロジェクト状態をバッファへ表示
     (msvc--display-project-details db-name)
 
