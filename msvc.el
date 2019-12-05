@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/27.18:39:50
+;;; last updated : 2019/12/05.11:17:25
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -1659,6 +1659,32 @@
 (defun msvc-mode-feature-clean-project ()
   (interactive)
   (msvc-mode-feature-build :project-only-p t :target "Clean"))
+
+
+(defun msvc-mode-feature-helm-open-target-file-from-project ()
+  (interactive)
+  (when (featurep 'helm)
+    (let* ((db-name (or msvc--db-name msvc--source-code-belonging-db-name))
+           (target-files (msvc-flags--query-cflag db-name "CFLAG_TargetFilesAbs"))
+           (details (msvc--query-project db-name))
+           (project-file (plist-get details :project-file)))
+
+      (helm :sources `((name . ,(format "MSVC > vcx-project-file > %s" project-file))
+                       (candidates . ,target-files)
+                       (action . find-file))))))
+
+(defun msvc-mode-feature-helm-open-target-file-from-solution ()
+  (interactive)
+  (when (featurep 'helm)
+    ;; (let* ((db-name (or msvc--db-name msvc--source-code-belonging-db-name))
+    ;;        (target-files (msvc-flags--query-cflag db-name "CFLAG_TargetFilesAbs"))
+    ;;        (details (msvc--query-project db-name))
+    ;;        (project-file (plist-get details :project-file)))
+
+    ;;   (helm :sources `((name . ,(format "MSVC > vcx-project-file > %s" project-file))
+    ;;                    (candidates . ,target-files)
+    ;;                    (action . find-file))))))
+    ))
 
 
 
