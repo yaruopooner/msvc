@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/12/05.11:17:25
+;;; last updated : 2019/12/06.14:08:13
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -459,6 +459,9 @@
 
 (defsubst msvc--query-project-db-name (project)
   (car project))
+
+(defsubst msvc--query-project-details (project)
+  (cdr project))
 
 
 
@@ -1661,30 +1664,44 @@
   (msvc-mode-feature-build :project-only-p t :target "Clean"))
 
 
+(defun msvc--generate-helm-sources-project-target-file (db-name)
+  (let* ((target-files (msvc-flags--query-cflag db-name "CFLAG_TargetFilesAbs"))
+         (details (msvc--query-project db-name))
+         (project-file (plist-get details :project-file)))
+
+    `((name       . ,(format "MSVC > vcx-project-file > %s" project-file))
+      (candidates . ,target-files)
+      (action     . find-file))))
+
 (defun msvc-mode-feature-helm-open-target-file-from-project ()
   (interactive)
   (when (featurep 'helm)
     (let* ((db-name (or msvc--db-name msvc--source-code-belonging-db-name))
-           (target-files (msvc-flags--query-cflag db-name "CFLAG_TargetFilesAbs"))
-           (details (msvc--query-project db-name))
-           (project-file (plist-get details :project-file)))
+           (sources (msvc--generate-helm-sources-project-target-file db-name)))
 
-      (helm :sources `((name . ,(format "MSVC > vcx-project-file > %s" project-file))
-                       (candidates . ,target-files)
-                       (action . find-file))))))
+      (helm :sources sources))))
 
 (defun msvc-mode-feature-helm-open-target-file-from-solution ()
   (interactive)
   (when (featurep 'helm)
-    ;; (let* ((db-name (or msvc--db-name msvc--source-code-belonging-db-name))
-    ;;        (target-files (msvc-flags--query-cflag db-name "CFLAG_TargetFilesAbs"))
-    ;;        (details (msvc--query-project db-name))
-    ;;        (project-file (plist-get details :project-file)))
+    (let* ((details (msvc--query-current-project))
+           (belonging-solution-file (plist-get details :solution-file))
+           solution-db-names
+           sources)
 
-    ;;   (helm :sources `((name . ,(format "MSVC > vcx-project-file > %s" project-file))
-    ;;                    (candidates . ,target-files)
-    ;;                    (action . find-file))))))
-    ))
+      (when belonging-solution-file
+        (cl-dolist (project msvc--active-projects)
+          (let* ((db-name (msvc--query-project-db-name project))
+                 (details (msvc--query-project-details project))
+                 (solution-file (plist-get details :solution-file)))
+
+            (when (string= solution-file belonging-solution-file)
+              (push db-name solution-db-names)))))
+
+      (cl-dolist (db-name solution-db-names)
+        (push (msvc--generate-helm-sources-project-target-file db-name) sources))
+
+      (helm :sources sources))))
 
 
 
