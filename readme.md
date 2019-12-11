@@ -12,6 +12,17 @@ Because flymake has changed a lot with 26.x .
 
 # What's New?
 
+## MSVC 2019-12-11 was released
+
+### new feature
+
+-   Can search and visit the source file belonging the solution or the project by helm.  
+    `msvc-mode-feature-helm-open-target-file-from-solution`  
+    `msvc-mode-feature-helm-open-target-file-from-project`  
+    The helm package is required to use this function.  
+    This function search and visit the source file associated with the current source file belonging solution or project.  
+    Execute this function on a source file buffer with msvc-mode enabled or project buffer.
+
 ## MSVC 2019-04-26 was released
 
 ### others
@@ -26,7 +37,8 @@ Because flymake has changed a lot with 26.x .
 -   Can visit buffer to the related source file.  
     `msvc-mode-feature-visit-to-related-source-code-buffer`  
     This function visits the buffer associated with the current buffer.  
-    foo.cpp -> foo.h -> foo.inl -> foo.cpp -> &#x2026;
+    foo.cpp -> foo.h -> foo.inl -> foo.cpp -> &#x2026;  
+    Default keybind is `C-c @`
 
 ### others
 
