@@ -1,13 +1,13 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/12/11.13:39:04
+;;; last updated : 2019/12/11.14:36:59
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.4.1
+;; Version: 1.4.2
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
@@ -261,7 +261,7 @@
 
 
 
-(defconst msvc-version "1.4.1")
+(defconst msvc-version "1.4.2")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
