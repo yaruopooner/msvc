@@ -1,13 +1,13 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/26.10:37:37
+;;; last updated : 2019/12/11.14:36:59
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.4.1
+;; Version: 1.4.2
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
@@ -261,7 +261,7 @@
 
 
 
-(defconst msvc-version "1.4.1")
+(defconst msvc-version "1.4.2")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
@@ -460,6 +460,9 @@
 (defsubst msvc--query-project-db-name (project)
   (car project))
 
+(defsubst msvc--query-project-details (project)
+  (cdr project))
+
 
 
 (defsubst msvc--convert-to-target-buffer-style-path (paths)
@@ -536,7 +539,7 @@
      (msvc--visit-buffer (point) #'switch-to-buffer))
     (path
      (msvc--visit-path (point) #'find-file))))
-     
+
 
 (defun msvc--keyboard-visit-target-other-window ()
   "Toggle the display status of the filter group on this line."
@@ -547,7 +550,7 @@
      (msvc--visit-buffer (point) #'msvc--split-window))
     (path
      (msvc--visit-path (point) #'find-file-other-window))))
-    
+
 
 (defun msvc--mouse-visit-target (_event)
   "Toggle the display status of the filter group chosen with the mouse."
@@ -1109,11 +1112,11 @@
     ;; check product
     (unless (plist-get args :product-name)
       (setq args (plist-put args :product-name msvc-env-default-use-product-name)))
-    
+
     ;; check toolset
     (unless (plist-get args :toolset)
       (setq args (plist-put args :toolset msvc-env-default-use-toolset)))
-    
+
     ;; 指定ソリューションorプロジェクトのパース
     (when (and solution-file (not project-file))
       (setq db-names (apply #'msvc-flags-parse-vcx-solution args)))
@@ -1253,7 +1256,7 @@
       (cl-dolist (buffer target-buffers)
         (with-current-buffer buffer
           (msvc-mode-on))))
-    
+
     ;; プロジェクト状態をバッファへ表示
     (msvc--display-project-details db-name)
 
@@ -1659,6 +1662,44 @@
 (defun msvc-mode-feature-clean-project ()
   (interactive)
   (msvc-mode-feature-build :project-only-p t :target "Clean"))
+
+
+(defun msvc--generate-helm-sources-project-target-file (db-name)
+  (let* ((target-files (msvc-flags--query-cflag db-name "CFLAG_TargetFilesAbs"))
+         (details (msvc--query-project db-name))
+         (project-file (plist-get details :project-file)))
+
+    (helm-make-source (format "MSVC > vcx-project-file > %s" project-file) 'helm-source-sync :candidates target-files :action #'find-file)))
+
+(defun msvc-mode-feature-helm-open-target-file-from-project ()
+  (interactive)
+  (when (featurep 'helm)
+    (let* ((db-name (or msvc--db-name msvc--source-code-belonging-db-name))
+           (sources (msvc--generate-helm-sources-project-target-file db-name)))
+
+      (helm :sources sources))))
+
+(defun msvc-mode-feature-helm-open-target-file-from-solution ()
+  (interactive)
+  (when (featurep 'helm)
+    (let* ((details (msvc--query-current-project))
+           (belonging-solution-file (plist-get details :solution-file))
+           solution-db-names
+           sources)
+
+      (when belonging-solution-file
+        (cl-dolist (project msvc--active-projects)
+          (let* ((db-name (msvc--query-project-db-name project))
+                 (details (msvc--query-project-details project))
+                 (solution-file (plist-get details :solution-file)))
+
+            (when (string= solution-file belonging-solution-file)
+              (push db-name solution-db-names)))))
+
+      (cl-dolist (db-name solution-db-names)
+        (push (msvc--generate-helm-sources-project-target-file db-name) sources))
+
+      (helm :sources sources))))
 
 
 
