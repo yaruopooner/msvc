@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/12/06.14:08:13
+;;; last updated : 2019/12/11.13:39:04
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -1669,9 +1669,7 @@
          (details (msvc--query-project db-name))
          (project-file (plist-get details :project-file)))
 
-    `((name       . ,(format "MSVC > vcx-project-file > %s" project-file))
-      (candidates . ,target-files)
-      (action     . find-file))))
+    (helm-make-source (format "MSVC > vcx-project-file > %s" project-file) 'helm-source-sync :candidates target-files :action #'find-file)))
 
 (defun msvc-mode-feature-helm-open-target-file-from-project ()
   (interactive)
