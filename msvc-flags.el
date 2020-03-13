@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/25.11:08:54
+;;; last updated : 2020/03/13.15:18:08
 
 ;; Copyright (C) 2013-2019  yaruopooner
 ;; 
@@ -240,6 +240,7 @@
         (apply #'msvc-flags-parse-vcx-project request))
       ;; final request check
       (when (and (not msvc-flags--parsing-p) (null msvc-flags--parse-requests))
+        (message "msvc-flags : All projects parse completion.")
         ;; this sentinel is final request.
         ;; final sentinel hook exec
         ;; (apply #'final-hook args)
