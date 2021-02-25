@@ -317,6 +317,7 @@ attributes
 
   ;; get property from args
   (let ((project-file (plist-get args :project-file))
+        (solution-file (plist-get args :solution-file))
         (platform (plist-get args :platform))
         (configuration (plist-get args :configuration))
         (product-name (plist-get args :product-name))
@@ -432,7 +433,9 @@ attributes
                                                            ("CompileFile=%S"         .       ,compile-file)
                                                            ;; IntDir,OutDirは末尾にスラッシュが必須(MSBuildの仕様)
                                                            ("IntDir=%S"              .       ,db-path)
-                                                           ("OutDir=%S"              .       ,db-path)))
+                                                           ("OutDir=%S"              .       ,db-path)
+                                                           ("SolutionDir=%S"         .       ,(file-name-directory solution-file))
+                                                           ))
                              (msvc-env--create-msb-flags "/flp:"
                                                          `(("Verbosity=%s"           .       "normal")
                                                            ("LogFile=%S"             .       ,log-file)
