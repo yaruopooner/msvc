@@ -1,8 +1,8 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/11.20:56:21
+;;; last updated : 2021/04/07.13:09:09
 
-;; Copyright (C) 2013-2019  yaruopooner
+;; Copyright (C) 2013-2021  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -143,18 +143,19 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
 
 (defun msvc-env--detect-product-from-vswhere ()
   (let ((query-results (msvc-env--query-product-at-vswhere)))
-    (cl-dolist (detail msvc-env--product-details)
-      (let* ((name (plist-get detail :name))
-             (version (plist-get detail :version))
-             (vcvars-rpath (plist-get detail :vcvars-rpath))
-             (path (gethash version query-results)))
-        (when path
-          (setq path (expand-file-name vcvars-rpath path))
-          (when (file-exists-p path)
-            (setq msvc-env-product-detected-p t)
-            (add-to-list 'msvc-env--product-names name t)
-            (add-to-list 'msvc-env--product-versions version t)
-            (setq msvc-env--toolset-shells (plist-put msvc-env--toolset-shells (intern (concat ":" name)) path)))))))
+    (when query-results
+      (cl-dolist (detail msvc-env--product-details)
+        (let* ((name (plist-get detail :name))
+               (version (plist-get detail :version))
+               (vcvars-rpath (plist-get detail :vcvars-rpath))
+               (path (gethash version query-results)))
+          (when path
+            (setq path (expand-file-name vcvars-rpath path))
+            (when (file-exists-p path)
+              (setq msvc-env-product-detected-p t)
+              (add-to-list 'msvc-env--product-names name t)
+              (add-to-list 'msvc-env--product-versions version t)
+              (setq msvc-env--toolset-shells (plist-put msvc-env--toolset-shells (intern (concat ":" name)) path))))))))
   msvc-env-product-detected-p)
 
 
