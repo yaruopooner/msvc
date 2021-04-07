@@ -1,8 +1,8 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2020/03/13.15:18:08
+;;; last updated : 2021/04/07.13:09:52
 
-;; Copyright (C) 2013-2019  yaruopooner
+;; Copyright (C) 2013-2021  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 

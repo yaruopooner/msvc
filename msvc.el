@@ -2,7 +2,7 @@
 
 ;;; last updated : 2019/12/11.14:36:59
 
-;; Copyright (C) 2013-2019  yaruopooner
+;; Copyright (C) 2013-2021  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
