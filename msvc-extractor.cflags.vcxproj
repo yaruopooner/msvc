@@ -171,6 +171,12 @@
       <CFLAG_ExcludePath Include="$(ExcludePath)"/>
       <CFLAG_ForceIncludeFiles Include="%(ClCompile.ForcedIncludeFiles)"/>
 
+      <!-- NMake -->
+      <CFLAG_AdditionalPreprocessorDefinitions Include="$(NMakePreprocessorDefinitions)" Condition="'$(NMakePreprocessorDefinitions)' != ''"/>
+      <CFLAG_AdditionalIncludePath Include="$(NMakeIncludeSearchPath)" Condition="'$(NMakeIncludeSearchPath)' != ''"/>
+      <CFLAG_ForceIncludeFiles Include="$(NMakeForcedIncludes)" Condition="'$(NMakeForcedIncludes)' != ''"/>
+
+
       <!-- <CFLAG_TargetFiles Include="@(CFLAG_ForceIncludeFiles)"/> -->
 
     </ItemGroup>
@@ -181,17 +187,31 @@
     </ConvertToAbsolutePath>
 
     <ConvertToAbsolutePath Paths="@(CFLAG_SystemIncludePath)">
-      <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_SystemIncludeAbsPath"/>
+      <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_SystemIncludePath_ConvertedAbsPath"/>
     </ConvertToAbsolutePath>
     <ConvertToAbsolutePath Paths="@(CFLAG_AdditionalIncludePath)">
-       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_AdditionalIncludeAbsPath"/>
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_AdditionalIncludePath_ConvertedAbsPath"/>
     </ConvertToAbsolutePath>
     <ConvertToAbsolutePath Paths="@(CFLAG_ExcludePath)">
-       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_ExcludeAbsPath"/>
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_ExcludePath_ConvertedAbsPath"/>
     </ConvertToAbsolutePath>
     <ConvertToAbsolutePath Paths="@(CFLAG_ForceIncludeFiles)">
-       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_ForceIncludeFilesAbs"/>
+       <Output TaskParameter="AbsolutePaths" ItemName="CFLAG_ForceIncludeFiles_ConvertedAbsPath"/>
     </ConvertToAbsolutePath>
+
+    <!-- remove duplicates paths -->
+    <RemoveDuplicates Inputs="@(CFLAG_SystemIncludePath_ConvertedAbsPath)">
+      <Output TaskParameter="Filtered" ItemName="CFLAG_SystemIncludePath_Normalized"/>
+    </RemoveDuplicates>
+    <RemoveDuplicates Inputs="@(CFLAG_AdditionalIncludePath_ConvertedAbsPath)">
+      <Output TaskParameter="Filtered" ItemName="CFLAG_AdditionalIncludePath_Normalized"/>
+    </RemoveDuplicates>
+    <RemoveDuplicates Inputs="@(CFLAG_ExcludePath_ConvertedAbsPath)">
+      <Output TaskParameter="Filtered" ItemName="CFLAG_ExcludePath_Normalized"/>
+    </RemoveDuplicates>
+    <RemoveDuplicates Inputs="@(CFLAG_ForceIncludeFiles_ConvertedAbsPath)">
+      <Output TaskParameter="Filtered" ItemName="CFLAG_ForceIncludeFiles_Normalized"/>
+    </RemoveDuplicates>
 
     <ItemGroup>
       <!-- remove unnormalize path -->
@@ -201,16 +221,16 @@
       <CFLAG_ForceIncludeFiles Remove="@(CFLAG_ForceIncludeFiles)"/>
 
       <!-- store normalized path -->
-      <CFLAG_SystemIncludePath Include="@(CFLAG_SystemIncludeAbsPath)"/>
-      <CFLAG_AdditionalIncludePath Include="@(CFLAG_AdditionalIncludeAbsPath)"/>
-      <CFLAG_ExcludePath Include="@(CFLAG_ExcludeAbsPath)"/>
-      <CFLAG_ForceIncludeFiles Include="@(CFLAG_ForceIncludeFilesAbs)"/>
+      <CFLAG_SystemIncludePath Include="@(CFLAG_SystemIncludePath_Normalized)"/>
+      <CFLAG_AdditionalIncludePath Include="@(CFLAG_AdditionalIncludePath_Normalized)"/>
+      <CFLAG_ExcludePath Include="@(CFLAG_ExcludePath_Normalized)"/>
+      <CFLAG_ForceIncludeFiles Include="@(CFLAG_ForceIncludeFiles_Normalized)"/>
 
       <!-- replace path separator \ to / -->
-      <!-- <CFLAG_SystemIncludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_SystemIncludeAbsPath)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
-      <!-- <CFLAG_AdditionalIncludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_AdditionalIncludeAbsPath)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
-      <!-- <CFLAG_ExcludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_ExcludeAbsPath)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
-      <!-- <CFLAG_ForceIncludeFiles Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_ForceIncludeFilesAbs)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_SystemIncludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_SystemIncludePath_Normalized)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_AdditionalIncludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_AdditionalIncludePath_Normalized)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_ExcludePath Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_ExcludePath_Normalized)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
+      <!-- <CFLAG_ForceIncludeFiles Include="$([System.Text.RegularExpressions.Regex]::Replace( &apos;@(CFLAG_ForceIncludeFiles_Normalized)&apos;, &quot;\\+&quot;, &quot;/&quot; ))"/> -->
 
       <!-- generate clang options -->
       <CFLAG_ClangCC1Options Include="-I%(CFLAG_SystemIncludePath.Identity)" Condition="'@(CFLAG_SystemIncludePath)' != ''"/>
