@@ -1,6 +1,6 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2021/04/07.13:09:52
+;;; last updated : 2021/05/04.04:25:10
 
 ;; Copyright (C) 2013-2021  yaruopooner
 ;; 
@@ -296,6 +296,7 @@
   "parse *.vcxproj file : Microsoft Visual Studio
 attributes
 -requires
+:solution-file
 :project-file
 :platform
 :configuration
@@ -317,8 +318,8 @@ attributes
     (cl-return-from msvc-flags-parse-vcx-project nil))
 
   ;; get property from args
-  (let ((project-file (plist-get args :project-file))
-        (solution-file (plist-get args :solution-file))
+  (let ((solution-file (plist-get args :solution-file))
+        (project-file (plist-get args :project-file))
         (platform (plist-get args :platform))
         (configuration (plist-get args :configuration))
         (product-name (plist-get args :product-name))
@@ -436,6 +437,7 @@ attributes
                                                            ("IntDir=%S"              .       ,db-path)
                                                            ("OutDir=%S"              .       ,db-path)
                                                            ("SolutionDir=%S"         .       ,(file-name-directory solution-file))
+                                                           ;; ("ProjectDir=%S"          .       ,(file-name-directory project-file))
                                                            ))
                              (msvc-env--create-msb-flags "/flp:"
                                                          `(("Verbosity=%s"           .       "normal")
