@@ -1,6 +1,6 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/12/11.14:36:59
+;;; last updated : 2021/04/30.18:38:47
 
 ;; Copyright (C) 2013-2021  yaruopooner
 ;; 
@@ -1767,12 +1767,13 @@
 
     (add-hook 'after-init-hook
               '(lambda ()
-                 (when (file-readable-p msvc--after-init-file)
+                 (if (file-readable-p msvc--after-init-file)
                    (let ((result (ignore-errors
                                    (load-library msvc--after-init-file)
                                    t)))
                      (unless result
-                       (message ".msvc error!")))))
+                       (message "Error in %s!" msvc--after-init-file)))
+                   (copy-file (expand-file-name "minimal-config-sample/.msvc" msvc-env--package-directory) msvc--after-init-file)))
               t)))
 
 
