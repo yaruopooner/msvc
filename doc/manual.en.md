@@ -1,63 +1,52 @@
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. Provided Functions</a>
-<ul>
-<li><a href="#sec-1-1">1.1. Project Management</a></li>
-<li><a href="#sec-1-2">1.2. Coexistence and use of Visual Studio with different versions</a></li>
-<li><a href="#sec-1-3">1.3. IntelliSense-like Code Completion</a></li>
-<li><a href="#sec-1-4">1.4. Syntax check by flymake</a></li>
-<li><a href="#sec-1-5">1.5. Jump and return to definition/declaration</a></li>
-<li><a href="#sec-1-6">1.6. Jump to include file &amp; return</a></li>
-<li><a href="#sec-1-7">1.7. Build a project or solution</a></li>
-<li><a href="#sec-1-8">1.8. Start Visual Studio from project or solution</a></li>
-</ul>
-</li>
-<li><a href="#sec-2">2. Essential environment</a></li>
-<li><a href="#sec-3">3. Required package</a></li>
-<li><a href="#sec-4">4. Scope of correspondence</a></li>
-<li><a href="#sec-5">5. Limitations</a></li>
-<li><a href="#sec-6">6. Installation</a>
-<ul>
-<li><a href="#sec-6-1">6.1. Emacs startup setting</a></li>
-<li><a href="#sec-6-2">6.2. Emacs package settings</a></li>
-<li><a href="#sec-6-3">6.3. Initialization setting</a></li>
-</ul>
-</li>
-<li><a href="#sec-7">7. how to use</a>
-<ul>
-<li><a href="#sec-7-1">7.1. Project parsing and registration 1</a>
-<ul>
-<li><a href="#sec-7-1-1">7.1.1. Registration sample</a></li>
-<li><a href="#sec-7-1-2">7.1.2. Required property</a></li>
-<li><a href="#sec-7-1-3">7.1.3. Option property</a></li>
-</ul>
-</li>
-<li><a href="#sec-7-2">7.2. Project parsing and registration 2</a></li>
-<li><a href="#sec-7-3">7.3. Active project buffer</a></li>
-<li><a href="#sec-7-4">7.4. Code completion</a></li>
-<li><a href="#sec-7-5">7.5. Syntax check</a></li>
-<li><a href="#sec-7-6">7.6. Jump and return to definition/declaration/include</a></li>
-<li><a href="#sec-7-7">7.7. Jump and return for include files</a></li>
-<li><a href="#sec-7-8">7.8. Build project or solution</a></li>
-<li><a href="#sec-7-9">7.9. Jump to the error file from the build log of the project or solution</a></li>
-<li><a href="#sec-7-10">7.10. Re-parsing project or solution</a></li>
-<li><a href="#sec-7-11">7.11. Launching Visual Studio</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
+
+# Table of Contents
+
+1.  [Provided Functions](#orgf1c699d)
+    1.  [Project Management](#org264424d)
+    2.  [Coexistence and use of Visual Studio with different versions](#org6dd4aa0)
+    3.  [IntelliSense-like Code Completion](#orgccdd5e3)
+    4.  [Syntax check by flymake](#orgeac8d8d)
+    5.  [Jump and return to definition/declaration](#org3a5e04d)
+    6.  [Jump to include file & return](#org1a14b02)
+    7.  [Build a project or solution](#orgca52240)
+    8.  [Start Visual Studio from project or solution](#org110cc9d)
+2.  [Essential environment](#org153e51c)
+3.  [Required package](#org0b6774a)
+4.  [Scope of correspondence](#org1172482)
+5.  [Limitations](#orgd4d2329)
+6.  [Installation](#org1a60dad)
+    1.  [Emacs startup setting](#orgb5943d4)
+    2.  [Emacs package settings](#org5ee155d)
+    3.  [Initialization setting](#org6ad0e77)
+7.  [how to use](#org74bab8d)
+    1.  [Project parsing and registration 1](#orgb5dbebc)
+        1.  [Registration sample](#org137a769)
+        2.  [Required property](#orgcf5caca)
+        3.  [Option property](#org7701017)
+    2.  [Project parsing and registration 2](#orgf2635a5)
+    3.  [Active project buffer](#orgda647c0)
+    4.  [Code completion](#org65ba336)
+    5.  [Syntax check](#org237669a)
+    6.  [Jump and return to definition/declaration/include](#orgf79d7bd)
+    7.  [Jump and return for include files](#org6824c17)
+    8.  [Build project or solution](#orgbec1141)
+    9.  [Jump to the error file from the build log of the project or solution](#org37e9564)
+    10. [Re-parsing project or solution](#orgee9b6e7)
+    11. [Launching Visual Studio](#org297c9c2)
 
 
 
-# Provided Functions<a id="sec-1" name="sec-1"></a>
+<a id="orgf1c699d"></a>
+
+# Provided Functions
 
 By parsing the Visual Studio project file,the following functions become available.  
 It is not necessary to start Visual Studio in order to use the function. It is OK if it is installed.  
 
-## Project Management<a id="sec-1-1" name="sec-1-1"></a>
+
+<a id="org264424d"></a>
+
+## Project Management
 
 When a source file belonging to an activated project is opened, it is automatically registered in the management buffer.  
 Also, msvc-mode is automatically turned on in the corresponding source file buffer.  
@@ -69,13 +58,19 @@ A management buffer is created for each project
 In management buffer  
 ![img](./sample-pic-project-buffers.png)  
 
-## Coexistence and use of Visual Studio with different versions<a id="sec-1-2" name="sec-1-2"></a>
+
+<a id="org6dd4aa0"></a>
+
+## Coexistence and use of Visual Studio with different versions
 
 You can specify the product name of Visual Studio to be used for each solution / project handled  
-by msvc even when multiple Visual Studio [2019/2017|2015|2013|2012|2010] versions of different Visual Studio are installed.  
+by msvc even when multiple Visual Studio [2022/2019/2017|2015|2013|2012|2010] versions of different Visual Studio are installed.  
 This makes the old version of Visual Studio available only for specific projects.  
 
-## IntelliSense-like Code Completion<a id="sec-1-3" name="sec-1-3"></a>
+
+<a id="orgccdd5e3"></a>
+
+## IntelliSense-like Code Completion
 
 We provide IntelliSense-like completion function using auto-complete and libclang.  
 We will complement the project based on CFLAGS and include.  
@@ -83,27 +78,39 @@ It is possible to supplement using ac-source-semantic as the information source 
 
 ![img](./sample-pic-complete.png)  
 
-## Syntax check by flymake<a id="sec-1-4" name="sec-1-4"></a>
+
+<a id="orgeac8d8d"></a>
+
+## Syntax check by flymake
 
 We will check syntax on flymake based on the project CFLAGS and source code.  
 flymake back end is MSBuild.  
 
 ![img](./sample-pic-flymake.png)  
 
-## Jump and return to definition/declaration<a id="sec-1-5" name="sec-1-5"></a>
+
+<a id="org3a5e04d"></a>
+
+## Jump and return to definition/declaration
 
 In the buffer under project management,  
 you can jump to the source file where class/method/function/enum etc is defined/declared using ac-clang function.  
 I think that if you have used a tag jump function such as GTAGS, it is a familiar function.  
 
-## Jump to include file & return<a id="sec-1-6" name="sec-1-6"></a>
+
+<a id="org1a14b02"></a>
+
+## Jump to include file & return
 
 In the buffer under project management, you can jump to the file written in include using CEDET function.  
 Also, it is possible to return to the jump source by specific operation.  
 The jump history is stacked and popped back when returning, so it is possible to jump multiple times.  
 The difference with the tag file system is that it is not necessary to generate a tag file beforehand and it is advantageous that it can jump on the fly.  
 
-## Build a project or solution<a id="sec-1-7" name="sec-1-7"></a>
+
+<a id="orgca52240"></a>
+
+## Build a project or solution
 
 You can run builds on projects activated on Emacs.  
 Build logs are displayed in the buffer.  
@@ -111,14 +118,20 @@ Jumping from the build log to the error file is also possible.
 
 ![img](./sample-pic-build.png)  
 
-## Start Visual Studio from project or solution<a id="sec-1-8" name="sec-1-8"></a>
+
+<a id="org110cc9d"></a>
+
+## Start Visual Studio from project or solution
 
 Open Visual Studio and open the project activated on Emacs.  
 Even if the same project is already open, start Visual Studio again.  
 Visual check of process check etc is not done.  
 I am testing whether it can be done via powershell.  
 
-# Essential environment<a id="sec-2" name="sec-2"></a>
+
+<a id="org153e51c"></a>
+
+# Essential environment
 
 -   GNU Emacs 24.1 or higher  
     Operation guaranteed only after 24.1  
@@ -129,10 +142,13 @@ I am testing whether it can be done via powershell.
     MSYS  
     CMD
 -   Microsoft Windows [64|32] bit
--   Microsoft Visual Studio [2019/2017|2015|2013|2012|2010]  
+-   Microsoft Visual Studio [2022/2019/2017|2015|2013|2012|2010]  
     Use CL.exe/MSBuild.exe
 
-# Required package<a id="sec-3" name="sec-3"></a>
+
+<a id="org0b6774a"></a>
+
+# Required package
 
 Embedded with Emacs standard preinstalled & installable packages.  
 If msvc is installed with M-x list-packages it will be installed automatically.  
@@ -144,7 +160,10 @@ Manual installation Only the following packages need to be installed.
 -   yasnippet
 -   ac-clang
 
-# Scope of correspondence<a id="sec-4" name="sec-4"></a>
+
+<a id="org1172482"></a>
+
+# Scope of correspondence
 
 -   Emacs [64|32]bit  
     It works after CEDET becomes standard built-in version  
@@ -171,7 +190,7 @@ Manual installation Only the following packages need to be installed.
         Not supported
 
 -   Microsoft Visual Studio [Community|Professional|Enterprise]  
-    [2019/2017|2015|2013|2012|2010] Operation checked
+    [2022/2019/2017|2015|2013|2012|2010] Operation checked
 
 -   SDK  
     Tested in the sample project of SDK below.  
@@ -184,15 +203,24 @@ Manual installation Only the following packages need to be installed.
     -   Boost  
         Test with Nuget Package
 
-# Limitations<a id="sec-5" name="sec-5"></a>
+
+<a id="orgd4d2329"></a>
+
+# Limitations
 
 1.  Precompiled header (PCH) can not be used  
     PCH of Visual Studio can not be used.  
     It is ignored by MSVC even if it is set in the project to use PCH.
 
-# Installation<a id="sec-6" name="sec-6"></a>
 
-## Emacs startup setting<a id="sec-6-1" name="sec-6-1"></a>
+<a id="org1a60dad"></a>
+
+# Installation
+
+
+<a id="orgb5943d4"></a>
+
+## Emacs startup setting
 
 Make GNU Emacs bootable from CYGWIN or MSYS or CMD.  
 If you launch the .emacs file in the HOME directory of each shell and start it,  
@@ -216,7 +244,10 @@ c:/emacs/64/emacs-24.3-20130503
     There will be no problem if the path passes through  
     c:/emacs/64/emacs-24.3-20130503/bin
 
-## Emacs package settings<a id="sec-6-2" name="sec-6-2"></a>
+
+<a id="org5ee155d"></a>
+
+## Emacs package settings
 
 The following package settings are required.  
 The order in which settings are executed is as follows.  
@@ -241,7 +272,10 @@ You need to self-build the external program or download and install the prebuilt
 For details, refer to the ac-clang manual.  
 <https://github.com/yaruopooner/ac-clang>  
 
-## Initialization setting<a id="sec-6-3" name="sec-6-3"></a>
+
+<a id="org6ad0e77"></a>
+
+## Initialization setting
 
 After executing the initial settings including the loading of the above-mentioned required packages  
 (CEDET/flymake/auto-complete/yasnippet/ac-clang), the following must be executed.  
@@ -259,9 +293,15 @@ so please modify it according to your own environment.
       (msvc-flags-load-db :parsing-buffer-delete-p t)
       (add-hook 'c-mode-common-hook 'msvc-mode-on t))
 
-# how to use<a id="sec-7" name="sec-7"></a>
 
-## Project parsing and registration 1<a id="sec-7-1" name="sec-7-1"></a>
+<a id="org74bab8d"></a>
+
+# how to use
+
+
+<a id="orgb5dbebc"></a>
+
+## Project parsing and registration 1
 
 Execution of the function with the following parameters is executed asynchronously and the corresponding project database is created in msvc-db.  
 Project management, completion, syntax check etc. are executed based on this database.  
@@ -290,7 +330,10 @@ Because the buffer itself maintains what project and what [Platform|Configuratio
 Because the buffer itself maintains what project, what 'platform | configuration' will work.  
 The buffer itself holds which projects are active and what platforms and configurations to work with.  
 
-### Registration sample<a id="sec-7-1-1" name="sec-7-1-1"></a>
+
+<a id="org137a769"></a>
+
+### Registration sample
 
     (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
                                         :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
@@ -309,7 +352,10 @@ The buffer itself holds which projects are active and what platforms and configu
                                         :flymake-manually-p nil
                                         :flymake-manually-back-end nil)
 
-### Required property<a id="sec-7-1-2" name="sec-7-1-2"></a>
+
+<a id="orgcf5caca"></a>
+
+### Required property
 
 -   `:solution-file` or `:project-file`  
     If either is set, it is OK.  
@@ -333,7 +379,10 @@ The buffer itself holds which projects are active and what platforms and configu
     Parse Specify the configuration to activate.  
     It must be the configuration that exists in the project file.
 
-### Option property<a id="sec-7-1-3" name="sec-7-1-3"></a>
+
+<a id="org7701017"></a>
+
+### Option property
 
 -   `:version`  
     It has been discontinued because it has been renamed.  
@@ -429,13 +478,19 @@ The buffer itself holds which projects are active and what platforms and configu
     'msbuild  
     'clang-server
 
-## Project parsing and registration 2<a id="sec-7-2" name="sec-7-2"></a>
+
+<a id="orgf2635a5"></a>
+
+## Project parsing and registration 2
 
 If you create a file '.msvc' in '~/.emacs.d/', it will be executed at initialization.  
 Using `msvc-activate-projects-after-parse` you can activate the project at emacs launch.  
 It is a good idea to describe project settings to be used for a long time in this file.  
 
-## Active project buffer<a id="sec-7-3" name="sec-7-3"></a>
+
+<a id="orgda647c0"></a>
+
+## Active project buffer
 
 Active projects are given the following buffer names:  
 **MSVC Project<\`db-name\`>**  
@@ -446,7 +501,10 @@ Hold the cursor to the buffer name and enter Enter or jump to the buffer if you 
 
 When this buffer is deleted, msvc - mode of all relevant source code buffers is turned off.  
 
-## Code completion<a id="sec-7-4" name="sec-7-4"></a>
+
+<a id="org65ba336"></a>
+
+## Code completion
 
 Available places: msvc-mode on source code buffer  
 
@@ -457,7 +515,10 @@ Available places: msvc-mode on source code buffer
         Key Bind    : . or -> or ::  
         Explanation : Completion starts automatically.
 
-## Syntax check<a id="sec-7-5" name="sec-7-5"></a>
+
+<a id="org237669a"></a>
+
+## Syntax check
 
 Available places: msvc-mode on source code buffer  
 
@@ -491,7 +552,10 @@ The error display style can be changed by setting symbols in the following varia
         Key Bind    : M-]  
         Explanation : Jump to the error line and pop up the error contents.
 
-## Jump and return to definition/declaration/include<a id="sec-7-6" name="sec-7-6"></a>
+
+<a id="orgf79d7bd"></a>
+
+## Jump and return to definition/declaration/include
 
 Available places: msvc-mode on source code buffer.  
 
@@ -512,7 +576,10 @@ So, if you are using GTAGS+CTAGS as well as other scripting languages such as lu
         Explanation : Return to the previous jump source.  
                       By repeating this operation you can go back to the jump history.
 
-## Jump and return for include files<a id="sec-7-7" name="sec-7-7"></a>
+
+<a id="org6824c17"></a>
+
+## Jump and return for include files
 
 Available places: msvc-mode on source code buffer  
 
@@ -536,7 +603,10 @@ If the above message is displayed, "C-c , ,", let semantic reparse the correspon
         Explanation : Return to the previous jump source.  
                       By repeating this operation you can go back to the jump history.
 
-## Build project or solution<a id="sec-7-8" name="sec-7-8"></a>
+
+<a id="orgbec1141"></a>
+
+## Build project or solution
 
 Available places: active project buffer or msvc-mode on source code buffer.  
 
@@ -560,8 +630,9 @@ It is good to describe the following setting in `.msvc`.
 
 Configure build log report frame  
 `(setq msvc-solution-build-report-display-target TARGET-SYMBOL)`  
+
 -   `TARGET-SYMBOL`  
-         Specify the window to display the build log buffer.  
+    Specify the window to display the build log buffer.  
     -   'other-frame  
         Generate and display a separate frame from the own frame.
     -   nil  
@@ -572,7 +643,7 @@ It can be changed by setting symbols in the following variables.
 `(setq msvc-solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)`  
 
 -   `DISPLAY-TIMING-SYMBOL`  
-         Specify the window display timing of the build log buffer.  
+    Specify the window display timing of the build log buffer.  
     -   'before  
         When the build is started, windows are divided and displayed.
     -   'after  
@@ -589,7 +660,10 @@ Specify how to display in the build log buffer.
     -   nil  
         Batch display after completion of build.
 
-## Jump to the error file from the build log of the project or solution<a id="sec-7-9" name="sec-7-9"></a>
+
+<a id="org37e9564"></a>
+
+## Jump to the error file from the build log of the project or solution
 
 Available places: Log buffer of build for project or solution.  
 
@@ -613,7 +687,10 @@ Available places: Log buffer of build for project or solution.
         Key Bind    : RET or Mouse Click  
         Explanation : Open other window and jump to error file line
 
-## Re-parsing project or solution<a id="sec-7-10" name="sec-7-10"></a>
+
+<a id="orgee9b6e7"></a>
+
+## Re-parsing project or solution
 
 Available Places: Anywhere  
 
@@ -622,7 +699,10 @@ Re-parse and reactivate all projects currently active on Emacs.
 Re-parsing is done only for new projects with dates later than the previous analysis.  
 `(msvc-reparse-active-projects)`  
 
-## Launching Visual Studio<a id="sec-7-11" name="sec-7-11"></a>
+
+<a id="org297c9c2"></a>
+
+## Launching Visual Studio
 
 Available places: active project buffer or msvc-mode on source code buffer.  
 
@@ -633,6 +713,7 @@ Since we are only using the file association function of Windows, if more than o
     Launch with solution if solution is associated with buffer.  
     If it is only project, it is started by project.
 -   `(msvc-mode-feature-launch-msvs-by-project)`  
-         Launched in the project.
+    Launched in the project.
 -   `(msvc-mode-feature-launch-msvs-by-solution)`  
-         Launched in the solution.
+    Launched in the solution.
+

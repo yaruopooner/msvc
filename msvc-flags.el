@@ -1,8 +1,8 @@
 ;;; msvc-flags.el --- MSVC's CFLAGS extractor and database -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/25.11:08:54
+;;; last updated : 2022/10/15.19:28:25
 
-;; Copyright (C) 2013-2019  yaruopooner
+;; Copyright (C) 2013-2022  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -240,6 +240,7 @@
         (apply #'msvc-flags-parse-vcx-project request))
       ;; final request check
       (when (and (not msvc-flags--parsing-p) (null msvc-flags--parse-requests))
+        (message "msvc-flags : All projects parse completion.")
         ;; this sentinel is final request.
         ;; final sentinel hook exec
         ;; (apply #'final-hook args)
@@ -295,6 +296,7 @@
   "parse *.vcxproj file : Microsoft Visual Studio
 attributes
 -requires
+:solution-file
 :project-file
 :platform
 :configuration
@@ -316,8 +318,8 @@ attributes
     (cl-return-from msvc-flags-parse-vcx-project nil))
 
   ;; get property from args
-  (let ((project-file (plist-get args :project-file))
-        (solution-file (plist-get args :solution-file))
+  (let ((solution-file (plist-get args :solution-file))
+        (project-file (plist-get args :project-file))
         (platform (plist-get args :platform))
         (configuration (plist-get args :configuration))
         (product-name (plist-get args :product-name))
@@ -435,6 +437,7 @@ attributes
                                                            ("IntDir=%S"              .       ,db-path)
                                                            ("OutDir=%S"              .       ,db-path)
                                                            ("SolutionDir=%S"         .       ,(file-name-directory solution-file))
+                                                           ;; ("ProjectDir=%S"          .       ,(file-name-directory project-file))
                                                            ))
                              (msvc-env--create-msb-flags "/flp:"
                                                          `(("Verbosity=%s"           .       "normal")

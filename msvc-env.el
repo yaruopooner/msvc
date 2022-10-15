@@ -1,8 +1,8 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2019/04/11.20:56:21
+;;; last updated : 2022/10/15.19:29:33
 
-;; Copyright (C) 2013-2019  yaruopooner
+;; Copyright (C) 2013-2022  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -34,6 +34,7 @@
 (defvar msvc-env-default-use-product-name nil
   "MSVC default use product name
 Specifiable type [String]
+`2022'
 `2019'
 `2017'
 `2015'
@@ -44,7 +45,8 @@ Specifiable type [String]
 If the value is nil, latest version will be used.
 ")
 
-(defconst msvc-env--product-details '((:name "2019" :version "16" :env-var "VS160COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
+(defconst msvc-env--product-details '((:name "2022" :version "17" :env-var "VS170COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
+                                      (:name "2019" :version "16" :env-var "VS160COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
                                       (:name "2017" :version "15" :env-var "VS150COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
                                       (:name "2015" :version "14" :env-var "VS140COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
                                       (:name "2013" :version "12" :env-var "VS120COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
@@ -76,18 +78,18 @@ Specifiable type [Symbol]
   "MSVC toolset shell argument
 Specifiable type [String]
 toolset-name   : support product
-`x86'          : (2019/2017/2015/2013/2012/2010)
-`x86_x64'      : (2019/2017)
-`x86_amd64'    : (2019/2017/2015/2013/2012/2010)
-`x86_arm'      : (2019/2017/2015/2013/2012)
-`x86_ia64'     : (2010)
-`x64'          : (2019/2017)
-`x64_x86'      : (2019/2017)
-`x64_arm'      : (2019/2017)
-`amd64'        : (2019/2017/2015/2013/2012/2010)
-`amd64_x86'    : (2019/2017/2015/2013)
-`amd64_arm'    : (2019/2017/2015/2013)
-`arm'          : (2019/2017/2015/2013/2012)
+`x86'          : (2022/2019/2017/2015/2013/2012/2010)
+`x86_x64'      : (2022/2019/2017)
+`x86_amd64'    : (2022/2019/2017/2015/2013/2012/2010)
+`x86_arm'      : (2022/2019/2017/2015/2013/2012)
+`x86_ia64'     : (2022/2010)
+`x64'          : (2022/2019/2017)
+`x64_x86'      : (2022/2019/2017)
+`x64_arm'      : (2022/2019/2017)
+`amd64'        : (2022/2019/2017/2015/2013/2012/2010)
+`amd64_x86'    : (2022/2019/2017/2015/2013)
+`amd64_arm'    : (2022/2019/2017/2015/2013)
+`arm'          : (2022/2019/2017/2015/2013/2012)
 `ia64'         : (2010)
 see this page.
 https://msdn.microsoft.com/library/f2ccy3wt.aspx
@@ -143,18 +145,19 @@ https://msdn.microsoft.com/library/f2ccy3wt.aspx
 
 (defun msvc-env--detect-product-from-vswhere ()
   (let ((query-results (msvc-env--query-product-at-vswhere)))
-    (cl-dolist (detail msvc-env--product-details)
-      (let* ((name (plist-get detail :name))
-             (version (plist-get detail :version))
-             (vcvars-rpath (plist-get detail :vcvars-rpath))
-             (path (gethash version query-results)))
-        (when path
-          (setq path (expand-file-name vcvars-rpath path))
-          (when (file-exists-p path)
-            (setq msvc-env-product-detected-p t)
-            (add-to-list 'msvc-env--product-names name t)
-            (add-to-list 'msvc-env--product-versions version t)
-            (setq msvc-env--toolset-shells (plist-put msvc-env--toolset-shells (intern (concat ":" name)) path)))))))
+    (when query-results
+      (cl-dolist (detail msvc-env--product-details)
+        (let* ((name (plist-get detail :name))
+               (version (plist-get detail :version))
+               (vcvars-rpath (plist-get detail :vcvars-rpath))
+               (path (gethash version query-results)))
+          (when path
+            (setq path (expand-file-name vcvars-rpath path))
+            (when (file-exists-p path)
+              (setq msvc-env-product-detected-p t)
+              (add-to-list 'msvc-env--product-names name t)
+              (add-to-list 'msvc-env--product-versions version t)
+              (setq msvc-env--toolset-shells (plist-put msvc-env--toolset-shells (intern (concat ":" name)) path))))))))
   msvc-env-product-detected-p)
 
 

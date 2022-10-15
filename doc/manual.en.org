@@ -1,5 +1,5 @@
 # -*- mode: org ; coding: utf-8-unix -*-
-# last updated : 2019/04/15.10:46:02
+# last updated : 2022/10/15.19:33:51
 
 
 #+TITLE:     Microsoft Visual C/C++ Mode User Manual
@@ -25,7 +25,7 @@
 
 ** Coexistence and use of Visual Studio with different versions
    You can specify the product name of Visual Studio to be used for each solution / project handled
-   by msvc even when multiple Visual Studio [2019/2017|2015|2013|2012|2010] versions of different Visual Studio are installed.
+   by msvc even when multiple Visual Studio [2022/2019/2017|2015|2013|2012|2010] versions of different Visual Studio are installed.
    This makes the old version of Visual Studio available only for specific projects.
 
 ** IntelliSense-like Code Completion
@@ -75,7 +75,7 @@
     MSYS
     CMD
   - Microsoft Windows [64|32] bit
-  - Microsoft Visual Studio [2019/2017|2015|2013|2012|2010]
+  - Microsoft Visual Studio [2022/2019/2017|2015|2013|2012|2010]
     Use CL.exe/MSBuild.exe 
 
 * Required package
@@ -115,7 +115,7 @@
       Not supported
 
   - Microsoft Visual Studio [Community|Professional|Enterprise]
-    [2019/2017|2015|2013|2012|2010] Operation checked
+    [2022/2019/2017|2015|2013|2012|2010] Operation checked
 
   - SDK
     Tested in the sample project of SDK below.

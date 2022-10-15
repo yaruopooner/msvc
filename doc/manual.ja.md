@@ -1,64 +1,53 @@
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 提供される機能</a>
-<ul>
-<li><a href="#sec-1-1">1.1. プロジェクトの管理</a></li>
-<li><a href="#sec-1-2">1.2. バージョンの異なるVisual Studio共存と利用</a></li>
-<li><a href="#sec-1-3">1.3. IntelliSenseライクな補完機能</a></li>
-<li><a href="#sec-1-4">1.4. flymakeによるシンタックスチェック</a></li>
-<li><a href="#sec-1-5">1.5. 定義/宣言へのジャンプ＆リターン</a></li>
-<li><a href="#sec-1-6">1.6. includeファイルへのジャンプ＆リターン</a></li>
-<li><a href="#sec-1-7">1.7. プロジェクトorソリューションのビルド</a></li>
-<li><a href="#sec-1-8">1.8. プロジェクトorソリューションからVisual Studioを起動</a></li>
-</ul>
-</li>
-<li><a href="#sec-2">2. 必須環境</a></li>
-<li><a href="#sec-3">3. 必須パッケージ</a></li>
-<li><a href="#sec-4">4. 対応範囲</a></li>
-<li><a href="#sec-5">5. 制限事項</a></li>
-<li><a href="#sec-6">6. インストール</a>
-<ul>
-<li><a href="#sec-6-1">6.1. Emacsの起動設定</a></li>
-<li><a href="#sec-6-2">6.2. Emacsパッケージの設定</a></li>
-<li><a href="#sec-6-3">6.3. 初期化設定</a></li>
-</ul>
-</li>
-<li><a href="#sec-7">7. 使用方法</a>
-<ul>
-<li><a href="#sec-7-1">7.1. プロジェクトのパースと登録1</a>
-<ul>
-<li><a href="#sec-7-1-1">7.1.1. 登録サンプル</a></li>
-<li><a href="#sec-7-1-2">7.1.2. 必須プロパティ</a></li>
-<li><a href="#sec-7-1-3">7.1.3. オプションプロパティ</a></li>
-</ul>
-</li>
-<li><a href="#sec-7-2">7.2. プロジェクトのパースと登録2</a></li>
-<li><a href="#sec-7-3">7.3. アクティブプロジェクトバッファ</a></li>
-<li><a href="#sec-7-4">7.4. コード補完</a></li>
-<li><a href="#sec-7-5">7.5. シンタックスチェック</a></li>
-<li><a href="#sec-7-6">7.6. 定義/宣言/includeへのジャンプ＆リターン</a></li>
-<li><a href="#sec-7-7">7.7. includeファイルへのジャンプ＆リターン</a></li>
-<li><a href="#sec-7-8">7.8. プロジェクト・ソリューションのビルド</a></li>
-<li><a href="#sec-7-9">7.9. プロジェクト・ソリューションのビルドログからのエラーファイルへのジャンプ</a></li>
-<li><a href="#sec-7-10">7.10. プロジェクト・ソリューションの再パース</a></li>
-<li><a href="#sec-7-11">7.11. Visual Studio の起動</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
+
+# Table of Contents
+
+1.  [提供される機能](#org2687287)
+    1.  [プロジェクトの管理](#org0d95a13)
+    2.  [バージョンの異なるVisual Studio共存と利用](#org63651ba)
+    3.  [IntelliSenseライクな補完機能](#orgc3cbe59)
+    4.  [flymakeによるシンタックスチェック](#org8845635)
+    5.  [定義/宣言へのジャンプ＆リターン](#org6c0443a)
+    6.  [includeファイルへのジャンプ＆リターン](#orgbf70d81)
+    7.  [プロジェクトorソリューションのビルド](#org8e292a1)
+    8.  [プロジェクトorソリューションからVisual Studioを起動](#org6b4583a)
+2.  [必須環境](#orgc32f5c1)
+3.  [必須パッケージ](#orgdff089a)
+4.  [対応範囲](#orgb362cb0)
+5.  [制限事項](#org3c5d3b9)
+6.  [インストール](#org283caeb)
+    1.  [Emacsの起動設定](#org3d543dd)
+    2.  [Emacsパッケージの設定](#org8069eab)
+    3.  [初期化設定](#org274b1dc)
+7.  [使用方法](#orgd860831)
+    1.  [プロジェクトのパースと登録1](#org672514e)
+        1.  [登録サンプル](#org90870bc)
+        2.  [必須プロパティ](#orgc4773a3)
+        3.  [オプションプロパティ](#org9efcc19)
+    2.  [プロジェクトのパースと登録2](#orga9db812)
+    3.  [アクティブプロジェクトバッファ](#org4fd8478)
+    4.  [コード補完](#org39e668a)
+    5.  [シンタックスチェック](#org603ca93)
+    6.  [定義/宣言/includeへのジャンプ＆リターン](#org8e18f7a)
+    7.  [includeファイルへのジャンプ＆リターン](#org6e098f1)
+    8.  [プロジェクト・ソリューションのビルド](#org53080ca)
+    9.  [プロジェクト・ソリューションのビルドログからのエラーファイルへのジャンプ](#org066d3ec)
+    10. [プロジェクト・ソリューションの再パース](#org99da4f8)
+    11. [Visual Studio の起動](#org0b29482)
 
 
 
-# 提供される機能<a id="sec-1" name="sec-1"></a>
+<a id="org2687287"></a>
+
+# 提供される機能
 
 Visual Studio プロジェクトファイルをパースすることにより、  
 以下の機能が利用可能になります。  
 ※機能を利用するためにVisual Studioを起動しておく必要はありません。インストールされていればOK。  
 
-## プロジェクトの管理<a id="sec-1-1" name="sec-1-1"></a>
+
+<a id="org0d95a13"></a>
+
+## プロジェクトの管理
 
 アクティブ化したプロジェクトに属するソースファイルがオープンされると管理バッファに自動登録されます。  
 また、該当ソースファイルバッファは自動的に msvc-mode が on になります。  
@@ -70,13 +59,19 @@ Visual Studio プロジェクトファイルをパースすることにより、
 管理バッファ内  
 ![img](./sample-pic-project-buffers.png)  
 
-## バージョンの異なるVisual Studio共存と利用<a id="sec-1-2" name="sec-1-2"></a>
 
-Visual Studio [2019/2017|2015|2013|2012|2010] などバージョンの異なるVisual Studioが複数インストールされている場合でも  
+<a id="org63651ba"></a>
+
+## バージョンの異なるVisual Studio共存と利用
+
+Visual Studio [2022/2019/2017|2015|2013|2012|2010] などバージョンの異なるVisual Studioが複数インストールされている場合でも  
 msvcで扱うソリューション・プロジェクト毎に使用するVisual Studioの製品名を指定可能。  
 これにより特定プロジェクトのみ古いバージョンのVisual Studioが利用可能になります。  
 
-## IntelliSenseライクな補完機能<a id="sec-1-3" name="sec-1-3"></a>
+
+<a id="orgc3cbe59"></a>
+
+## IntelliSenseライクな補完機能
 
 auto-completeとlibclangを用いてIntelliSenseライクな補完機能を提供します。  
 プロジェクトのCFLAGSとincludeに基いて補完を行います。  
@@ -84,27 +79,39 @@ auto-completeとlibclangを用いてIntelliSenseライクな補完機能を提�
 
 ![img](./sample-pic-complete.png)  
 
-## flymakeによるシンタックスチェック<a id="sec-1-4" name="sec-1-4"></a>
+
+<a id="org8845635"></a>
+
+## flymakeによるシンタックスチェック
 
 flymakeでプロジェクトのCFLAGSとソースコードに基いてシンタックスチェックを行います。  
 flymakeのバックエンドはMSBuildです。  
 
 ![img](./sample-pic-flymake.png)  
 
-## 定義/宣言へのジャンプ＆リターン<a id="sec-1-5" name="sec-1-5"></a>
+
+<a id="org6c0443a"></a>
+
+## 定義/宣言へのジャンプ＆リターン
 
 プロジェクト管理下にあるバッファではac-clangの機能を使って  
 クラス/メソッド/関数/enumなどが定義/宣言されているソースファイルへジャンプすることが出来ます。  
 GTAGSなどのタグジャンプ機能を使った事があればなじみのある機能だと思います。  
 
-## includeファイルへのジャンプ＆リターン<a id="sec-1-6" name="sec-1-6"></a>
+
+<a id="orgbf70d81"></a>
+
+## includeファイルへのジャンプ＆リターン
 
 プロジェクト管理下にあるバッファではCEDETの機能を使ってinclude記述されているファイルへジャンプすることが出来ます。  
 また、特定操作によりジャンプ元へ戻る事も可能です。  
 ジャンプ履歴はスタックされ戻る場合はポップされるので、複数回のジャンプが可能です。  
 タグファイル系との差は事前にタグファイルを生成しておく必要がなくオンザフライでジャンプできるのが利点です。  
 
-## プロジェクトorソリューションのビルド<a id="sec-1-7" name="sec-1-7"></a>
+
+<a id="org8e292a1"></a>
+
+## プロジェクトorソリューションのビルド
 
 Emacs上でアクティブ化したプロジェクトに対してビルドを実行できます。  
 ビルドログはバッファに表示されます。  
@@ -112,13 +119,19 @@ Emacs上でアクティブ化したプロジェクトに対してビルドを実
 
 ![img](./sample-pic-build.png)  
 
-## プロジェクトorソリューションからVisual Studioを起動<a id="sec-1-8" name="sec-1-8"></a>
+
+<a id="org6b4583a"></a>
+
+## プロジェクトorソリューションからVisual Studioを起動
 
 Emacs上でアクティブ化したプロジェクトをVisual Studioを起動してオープンします。  
 既に同一のプロジェクトがオープンされていても、再度Visual Studioを起動します。  
 ※Visual Studioのプロセスチェック等は行っていません。powershell経由でできないかテスト中。  
 
-# 必須環境<a id="sec-2" name="sec-2"></a>
+
+<a id="orgc32f5c1"></a>
+
+# 必須環境
 
 -   GNU Emacs 24.1以上  
     24.1以降でのみ動作保証  
@@ -129,10 +142,13 @@ Emacs上でアクティブ化したプロジェクトをVisual Studioを起動�
     MSYS  
     CMD
 -   Microsoft Windows [64|32] bit
--   Microsoft Visual Studio [2019/2017|2015|2013|2012|2010]  
+-   Microsoft Visual Studio [2022/2019/2017|2015|2013|2012|2010]  
     CL.exe/MSBuild.exe 等を使います
 
-# 必須パッケージ<a id="sec-3" name="sec-3"></a>
+
+<a id="orgdff089a"></a>
+
+# 必須パッケージ
 
 Emacsで標準組み込み済み&インストールが必要なパッケージ  
 msvcを M-x list-packages でインストールした場合は自動インストールされます。  
@@ -144,7 +160,10 @@ msvcを M-x list-packages でインストールした場合は自動インスト
 -   yasnippet
 -   ac-clang
 
-# 対応範囲<a id="sec-4" name="sec-4"></a>
+
+<a id="orgb362cb0"></a>
+
+# 対応範囲
 
 -   Emacs [64|32]bit  
     CEDETが標準built-inになったバージョン以降で動作  
@@ -171,7 +190,7 @@ msvcを M-x list-packages でインストールした場合は自動インスト
         サポート対象外
 
 -   Microsoft Visual Studio [Community|Professional|Enterprise]  
-    [2019/2017|2015|2013|2012|2010] 動作チェック済み
+    [2022/2019/2017|2015|2013|2012|2010] 動作チェック済み
 
 -   SDK  
     下記SDKのサンプルプロジェクトでテスト。  
@@ -184,15 +203,24 @@ msvcを M-x list-packages でインストールした場合は自動インスト
     -   Boost  
         Nuget Package でテスト
 
-# 制限事項<a id="sec-5" name="sec-5"></a>
+
+<a id="org3c5d3b9"></a>
+
+# 制限事項
 
 1.  プリコンパイル済みヘッダ(PCH)は使用不可  
     Visual Studio のPCHは使用できません。  
     PCHを利用するようにプロジェクトで設定されていてもMSVCでは無視されます。
 
-# インストール<a id="sec-6" name="sec-6"></a>
 
-## Emacsの起動設定<a id="sec-6-1" name="sec-6-1"></a>
+<a id="org283caeb"></a>
+
+# インストール
+
+
+<a id="org3d543dd"></a>
+
+## Emacsの起動設定
 
 GNU Emacs を CYGWIN or MSYS or CMDから起動できるようにします。  
 各シェルのHOME directoryに .emacs ファイルを置いて起動する場合は  
@@ -216,7 +244,10 @@ c:/emacs/64/emacs-24.3-20130503
     特に設定はありません。  
     c:/emacs/64/emacs-24.3-20130503/bin あたりにパスが通っていれば問題ないでしょう
 
-## Emacsパッケージの設定<a id="sec-6-2" name="sec-6-2"></a>
+
+<a id="org8069eab"></a>
+
+## Emacsパッケージの設定
 
 以下のパッケージの設定が必要です。  
 設定が実行される順番も下記の順番が望ましいです。  
@@ -240,7 +271,10 @@ ac-clangは外部プログラムと連携するためelispパッケージだけ�
 詳細はac-clangのマニュアルを参照してください。  
 <https://github.com/yaruopooner/ac-clang>  
 
-## 初期化設定<a id="sec-6-3" name="sec-6-3"></a>
+
+<a id="org274b1dc"></a>
+
+## 初期化設定
 
 上記で説明した必須パッケージ群(CEDET/flymake/auto-complete/yasnippet/ac-clang)のロードも含めた初期設定を実行後に以下が実行される必要があります。  
 
@@ -256,9 +290,15 @@ ac-clangは外部プログラムと連携するためelispパッケージだけ�
       (msvc-flags-load-db :parsing-buffer-delete-p t)
       (add-hook 'c-mode-common-hook 'msvc-mode-on t))
 
-# 使用方法<a id="sec-7" name="sec-7"></a>
 
-## プロジェクトのパースと登録1<a id="sec-7-1" name="sec-7-1"></a>
+<a id="orgd860831"></a>
+
+# 使用方法
+
+
+<a id="org672514e"></a>
+
+## プロジェクトのパースと登録1
 
 下記パラメーターで関数を実行すると非同期実行されmsvc-dbに該当プロジェクトのデータベースが作成されます。  
 プロジェクト管理・補完・シンタックスチェックなどはこのデータベースを元にして実行されます。  
@@ -282,7 +322,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
 ※対象となるソースバッファが１つしか存在ないことが理由。  
   バッファ自身はどのプロジェクトで、どんな platform|configuration で動作するのかを保持しているため。  
 
-### 登録サンプル<a id="sec-7-1-1" name="sec-7-1-1"></a>
+
+<a id="org90870bc"></a>
+
+### 登録サンプル
 
     (msvc-activate-projects-after-parse :solution-file "d:/DirectXSamples/SubD11/SubD11_2010.sln"
                                         :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
@@ -301,7 +344,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
                                         :flymake-manually-p nil
                                         :flymake-manually-back-end nil)
 
-### 必須プロパティ<a id="sec-7-1-2" name="sec-7-1-2"></a>
+
+<a id="orgc4773a3"></a>
+
+### 必須プロパティ
 
 -   `:solution-file` or `:project-file`  
     いずれかが設定されていればOKです。  
@@ -325,7 +371,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
     パース・アクティブ化するコンフィグを指定します。  
     プロジェクトファイルに存在するコンフィグでなければなりません。
 
-### オプションプロパティ<a id="sec-7-1-3" name="sec-7-1-3"></a>
+
+<a id="org9efcc19"></a>
+
+### オプションプロパティ
 
 -   `:version`  
     リネームしたので廃止されました。  
@@ -415,7 +464,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
     'msbuild  
     'clang-server
 
-## プロジェクトのパースと登録2<a id="sec-7-2" name="sec-7-2"></a>
+
+<a id="orga9db812"></a>
+
+## プロジェクトのパースと登録2
 
 ~/.emacs.d/  
 に  
@@ -423,7 +475,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
 というファイルを作成しておくと初期化時に実行されます。  
 `msvc-activate-projects-after-parse` などはこのファイルに記述しておくとよいでしょう。  
 
-## アクティブプロジェクトバッファ<a id="sec-7-3" name="sec-7-3"></a>
+
+<a id="org4fd8478"></a>
+
+## アクティブプロジェクトバッファ
 
 アクティブなプロジェクトは以下のバッファ名が与えられます。  
 **MSVC Project<\`db-name\`>**  
@@ -434,7 +489,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
 
 このバッファを削除すると、関連する全ソースコードバッファのmsvc-modeがoffになります。  
 
-## コード補完<a id="sec-7-4" name="sec-7-4"></a>
+
+<a id="org39e668a"></a>
+
+## コード補完
 
 利用可能な場所：msvc-mode onのソースコードバッファ上  
 
@@ -445,7 +503,10 @@ msvc-modeが適用されたバッファはモードラインに **MSVC\`product-
         キー : . or -> or ::  
         説明 : 補完が自動起動します。
 
-## シンタックスチェック<a id="sec-7-5" name="sec-7-5"></a>
+
+<a id="org603ca93"></a>
+
+## シンタックスチェック
 
 利用可能な場所：msvc-mode onのソースコードバッファ上  
 
@@ -478,7 +539,10 @@ buffer modified で自動起動します。
         キー : M-]  
         説明 : エラー行へジャンプしてエラー内容をポップアップ表示します
 
-## 定義/宣言/includeへのジャンプ＆リターン<a id="sec-7-6" name="sec-7-6"></a>
+
+<a id="org8e18f7a"></a>
+
+## 定義/宣言/includeへのジャンプ＆リターン
 
 利用可能な場所：msvc-mode onのソースコードバッファ上  
 
@@ -498,7 +562,10 @@ msvc-modeによるジャンプ機能はac-clangで実装されており、
         説明 : 一つ前のジャンプ元へリターンします  
                この操作を繰り返す事によりジャンプ履歴をさかのぼれます
 
-## includeファイルへのジャンプ＆リターン<a id="sec-7-7" name="sec-7-7"></a>
+
+<a id="org6e098f1"></a>
+
+## includeファイルへのジャンプ＆リターン
 
 利用可能な場所：msvc-mode onのソースコードバッファ上  
 
@@ -526,7 +593,10 @@ includeのライン上で"M-i" すると対象ファイルへジャンプしま�
         説明 : 一つ前のジャンプ元へリターンします  
                この操作を繰り返す事によりジャンプ履歴をさかのぼれます
 
-## プロジェクト・ソリューションのビルド<a id="sec-7-8" name="sec-7-8"></a>
+
+<a id="org53080ca"></a>
+
+## プロジェクト・ソリューションのビルド
 
 利用可能な場所：アクティブなプロジェクトバッファ・msvc-mode onのソースコードバッファ上  
 
@@ -550,8 +620,9 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
 
 ビルドログ報告フレームを設定可能  
 `(setq msvc-solution-build-report-display-target TARGET-SYMBOL)`  
+
 -   `TARGET-SYMBOL`  
-         ビルドログバッファを表示するウィンドウを指定  
+    ビルドログバッファを表示するウィンドウを指定  
     -   'other-frame  
         自フレームとは別フレームを生成して表示する
     -   nil  
@@ -562,7 +633,7 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
 `(setq msvc-solution-build-report-display-timing DISPLAY-TIMING-SYMBOL)`  
 
 -   `DISPLAY-TIMING-SYMBOL`  
-         ビルドログバッファのウィンドウ表示タイミングを指定  
+    ビルドログバッファのウィンドウ表示タイミングを指定  
     -   'before  
         ビルドを開始した時点でウィンドウを分割して表示します。
     -   'after  
@@ -579,7 +650,10 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
     -   nil  
         ビルド完了後に一括表示
 
-## プロジェクト・ソリューションのビルドログからのエラーファイルへのジャンプ<a id="sec-7-9" name="sec-7-9"></a>
+
+<a id="org066d3ec"></a>
+
+## プロジェクト・ソリューションのビルドログからのエラーファイルへのジャンプ
 
 利用可能な場所：プロジェクト・ソリューションのビルドログバッファ上  
 
@@ -603,7 +677,10 @@ C-f5 でプロジェクト・ソリューションのビルドが起動します
         キー : RET, mouseクリック  
         説明 : 他ウィンドウを開きエラーファイル行へジャンプします
 
-## プロジェクト・ソリューションの再パース<a id="sec-7-10" name="sec-7-10"></a>
+
+<a id="org99da4f8"></a>
+
+## プロジェクト・ソリューションの再パース
 
 利用可能な場所：どこでも  
 
@@ -614,7 +691,10 @@ Visual Studio上でプロジェクトファイルを編集したり、
 再パースは前回解析時より日付の新しいプロジェクトに対してのみ行われます。  
 `(msvc-reparse-active-projects)`  
 
-## Visual Studio の起動<a id="sec-7-11" name="sec-7-11"></a>
+
+<a id="org0b29482"></a>
+
+## Visual Studio の起動
 
 利用可能な場所：アクティブなプロジェクトバッファ・msvc-mode onのソースコードバッファ上  
 
@@ -625,6 +705,7 @@ Visual Studio上でプロジェクトファイルを編集したり、
     バッファにソリューションが関連付けされていればソリューションで起動。  
     プロジェクトのみの場合はプロジェクトで起動。
 -   `(msvc-mode-feature-launch-msvs-by-project)`  
-         プロジェクトで起動。
+    プロジェクトで起動。
 -   `(msvc-mode-feature-launch-msvs-by-solution)`  
-         ソリューションで起動。
+    ソリューションで起動。
+
