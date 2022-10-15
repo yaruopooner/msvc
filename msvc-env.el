@@ -1,8 +1,8 @@
 ;;; msvc-env.el --- MSVC basic environment -*- lexical-binding: t; -*-
 
-;;; last updated : 2021/04/07.13:09:09
+;;; last updated : 2022/10/15.19:29:33
 
-;; Copyright (C) 2013-2021  yaruopooner
+;; Copyright (C) 2013-2022  yaruopooner
 ;; 
 ;; This file is part of MSVC.
 
@@ -34,6 +34,7 @@
 (defvar msvc-env-default-use-product-name nil
   "MSVC default use product name
 Specifiable type [String]
+`2022'
 `2019'
 `2017'
 `2015'
@@ -44,7 +45,8 @@ Specifiable type [String]
 If the value is nil, latest version will be used.
 ")
 
-(defconst msvc-env--product-details '((:name "2019" :version "16" :env-var "VS160COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
+(defconst msvc-env--product-details '((:name "2022" :version "17" :env-var "VS170COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
+                                      (:name "2019" :version "16" :env-var "VS160COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
                                       (:name "2017" :version "15" :env-var "VS150COMNTOOLS" :vcvars-rpath "VC/Auxiliary/Build/vcvarsall.bat")
                                       (:name "2015" :version "14" :env-var "VS140COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
                                       (:name "2013" :version "12" :env-var "VS120COMNTOOLS" :vcvars-rpath "VC/vcvarsall.bat")
@@ -76,18 +78,18 @@ Specifiable type [Symbol]
   "MSVC toolset shell argument
 Specifiable type [String]
 toolset-name   : support product
-`x86'          : (2019/2017/2015/2013/2012/2010)
-`x86_x64'      : (2019/2017)
-`x86_amd64'    : (2019/2017/2015/2013/2012/2010)
-`x86_arm'      : (2019/2017/2015/2013/2012)
-`x86_ia64'     : (2010)
-`x64'          : (2019/2017)
-`x64_x86'      : (2019/2017)
-`x64_arm'      : (2019/2017)
-`amd64'        : (2019/2017/2015/2013/2012/2010)
-`amd64_x86'    : (2019/2017/2015/2013)
-`amd64_arm'    : (2019/2017/2015/2013)
-`arm'          : (2019/2017/2015/2013/2012)
+`x86'          : (2022/2019/2017/2015/2013/2012/2010)
+`x86_x64'      : (2022/2019/2017)
+`x86_amd64'    : (2022/2019/2017/2015/2013/2012/2010)
+`x86_arm'      : (2022/2019/2017/2015/2013/2012)
+`x86_ia64'     : (2022/2010)
+`x64'          : (2022/2019/2017)
+`x64_x86'      : (2022/2019/2017)
+`x64_arm'      : (2022/2019/2017)
+`amd64'        : (2022/2019/2017/2015/2013/2012/2010)
+`amd64_x86'    : (2022/2019/2017/2015/2013)
+`amd64_arm'    : (2022/2019/2017/2015/2013)
+`arm'          : (2022/2019/2017/2015/2013/2012)
 `ia64'         : (2010)
 see this page.
 https://msdn.microsoft.com/library/f2ccy3wt.aspx

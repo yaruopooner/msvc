@@ -1,13 +1,13 @@
 ;;; msvc.el --- Microsoft Visual C/C++ mode -*- lexical-binding: t; -*-
 
-;;; last updated : 2021/04/30.18:38:47
+;;; last updated : 2022/10/15.19:28:57
 
-;; Copyright (C) 2013-2021  yaruopooner
+;; Copyright (C) 2013-2022  yaruopooner
 ;; 
 ;; Author: yaruopooner [https://github.com/yaruopooner]
 ;; URL: https://github.com/yaruopooner/msvc
 ;; Keywords: languages, completion, syntax check, mode, intellisense
-;; Version: 1.4.2
+;; Version: 1.4.3
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cedet "1.0") (ac-clang "2.0.0"))
 
 ;; This file is part of MSVC.
@@ -38,7 +38,7 @@
 ;;   - Visual Studio project file manager
 ;;     backend: msvc + ede
 ;;   - coexistence of different versions
-;;     2019/2017/2015/2013/2012/2010
+;;     2022/2019/2017/2015/2013/2012/2010
 ;;   - code completion (auto / manual)
 ;;     backend: ac-clang
 ;;     ac-sources: ac-clang or semantic
@@ -59,7 +59,7 @@
 ;;   - Microsoft Windows 64/32bit
 ;;     10/8/7/Vista
 ;;   - Microsoft Visual Studio Community/Professional/Enterprise
-;;     2019/2017/2015/2013/2012/2010
+;;     2022/2019/2017/2015/2013/2012/2010
 ;;   - Shell 64/32bit
 ;;     CYGWIN/MSYS/CMD(cmdproxy)
 ;;     CYGWIN's bash recommended
@@ -115,7 +115,7 @@
 ;;                                       :project-file "d:/DirectXSamples/SubD11/SubD11_2010.vcxproj"
 ;;                                       :platform "x64"
 ;;                                       :configuration "Release" 
-;;                                       :product-name "2019" 
+;;                                       :product-name "2022" 
 ;;                                       :toolset 'x86_amd64
 ;;                                       :md5-name-p nil
 ;;                                       :force-parse-p nil
@@ -261,7 +261,7 @@
 
 
 
-(defconst msvc-version "1.4.2")
+(defconst msvc-version "1.4.3")
 
 
 (defconst msvc--project-buffer-name-fmt "*MSVC Project<%s>*")
